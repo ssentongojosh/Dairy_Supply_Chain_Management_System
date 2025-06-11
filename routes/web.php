@@ -1,6 +1,6 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\layouts\WithoutMenu;
 use App\Http\Controllers\layouts\WithoutNavbar;
@@ -44,8 +44,15 @@ use App\Http\Controllers\form_layouts\VerticalForm;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 
-// Main Page Route
-Route::get('/', [Analytics::class, 'index'])->name('dashboard-analytics');
+// Root route - Welcome page
+Route::get('/', [HomeController::class, 'index'])->name('home');
+
+// Authentication routes
+Route::get('/login', [LoginBasic::class, 'index'])->name('login');
+Route::get('/forgot-password', [ForgotPasswordBasic::class, 'index'])->name('password.request');
+
+// Analytics dashboard route
+Route::get('/analytics', [Analytics::class, 'index'])->name('dashboard.analytics');
 
 // layout
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');

@@ -37,22 +37,32 @@ const LibsCssFiles = GetFilesArray('resources/assets/vendor/libs/**/*.css');
 const FontsScssFiles = GetFilesArray('resources/assets/vendor/fonts/**/!(_)*.scss');
 
 export default defineConfig({
-  plugins: [
-    laravel({
-      input: [
-        'resources/css/app.css',
-        'resources/assets/css/demo.css',
-        'resources/js/app.js',
-        ...pageJsFiles,
-        ...vendorJsFiles,
-        ...LibsJsFiles,
-        ...CoreScssFiles,
-        ...LibsScssFiles,
-        ...LibsCssFiles,
-        ...FontsScssFiles
-      ],
-      refresh: true
-    }),
-    html()
-  ]
+    plugins: [
+        laravel({
+            input: [
+                'resources/css/app.css',
+                'resources/assets/css/demo.css',
+                'resources/js/app.js',
+                ...pageJsFiles,
+                ...vendorJsFiles,
+                ...LibsJsFiles,
+                ...CoreScssFiles,
+                ...LibsScssFiles,
+                ...LibsCssFiles,
+                ...FontsScssFiles
+            ],
+            refresh: true,
+        }),
+        html()
+    ],
+    build: {
+        // Generate manifest for Laravel to use
+        manifest: true,
+    },
+    // Make sure server is configured properly
+    server: {
+        hmr: {
+            host: 'localhost',
+        },
+    },
 });
