@@ -1,3 +1,4 @@
+
 <?php
 
 use App\Http\Controllers\HomeController;
@@ -43,40 +44,101 @@ use App\Http\Controllers\form_elements\InputGroups;
 use App\Http\Controllers\form_layouts\VerticalForm;
 use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
+use App\Http\Controllers\dashboard\RetailerDashboard;
+use App\Http\Controllers\dashboard\WholesalerDashboard;
 
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Authentication routes
 Route::get('/login', [LoginBasic::class, 'index'])->name('login');
+Route::post('/login', [LoginBasic::class, 'authenticate'])->name('login.submit');
+Route::post('/logout', [LoginBasic::class, 'logout'])->name('logout');
 Route::get('/forgot-password', [ForgotPasswordBasic::class, 'index'])->name('password.request');
 
-// Analytics dashboard route
-Route::get('/analytics', [Analytics::class, 'index'])->name('dashboard.analytics');
+// Registration routes
+Route::get('/register', [RegisterBasic::class, 'index'])->name('register');
+Route::post('/register', [RegisterBasic::class, 'register'])->name('register.submit');
 
-// layout
+// Dashboard routes with role middleware
+Route::get('/analytics', [Analytics::class, 'index'])
+  ->name('dashboard.analytics')
+  ->middleware(['auth', 'role:admin']);
+
+Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
+  ->name('retailer.dashboard')
+  ->middleware(['auth', 'role:retailer']);
+
+Route::get('/wholesaler/dashboard', [WholesalerDashboard::class, 'index'])
+  ->name('wholesaler.dashboard')
+  ->middleware(['auth', 'role:wholesaler']);
+
+// Other role dashboard routes
+Route::get('/farmer/dashboard', function() {
+  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::FARMER) {
+    return redirect()->route('home')->with('error', 'Access denied.');
+  }
+  return view('dashboard.farmer');
+})->name('farmer.dashboard');
+
+Route::get('/driver/dashboard', function() {
+  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::DRIVER) {
+    return redirect()->route('home')->with('error', 'Access denied.');
+  }
+  return view('dashboard.driver');
+})->name('driver.dashboard');
+
+Route::get('/warehouse/dashboard', function() {
+  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::WAREHOUSE_MANAGER) {
+    return redirect()->route('home')->with('error', 'Access denied.');
+  }
+  return view('dashboard.warehouse');
+})->name('warehouse.dashboard');
+
+Route::get('/executive/dashboard', function() {
+  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::EXECUTIVE) {
+    return redirect()->route('home')->with('error', 'Access denied.');
+  }
+  return view('dashboard.executive');
+})->name('executive.dashboard');
+
+Route::get('/inspector/dashboard', function() {
+  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::INSPECTOR) {
+    return redirect()->route('home')->with('error', 'Access denied.');
+  }
+  return view('dashboard.inspector');
+})->name('inspector.dashboard');
+
+Route::get('/quality/dashboard', function() {
+  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::QUALITY_ASSURANCE) {
+    return redirect()->route('home')->with('error', 'Access denied.');
+  }
+  return view('dashboard.quality');
+})->name('quality.dashboard');
+
+// Layout routes
 Route::get('/layouts/without-menu', [WithoutMenu::class, 'index'])->name('layouts-without-menu');
 Route::get('/layouts/without-navbar', [WithoutNavbar::class, 'index'])->name('layouts-without-navbar');
 Route::get('/layouts/fluid', [Fluid::class, 'index'])->name('layouts-fluid');
 Route::get('/layouts/container', [Container::class, 'index'])->name('layouts-container');
 Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 
-// pages
+// Page routes
 Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-account');
 Route::get('/pages/account-settings-notifications', [AccountSettingsNotifications::class, 'index'])->name('pages-account-settings-notifications');
 Route::get('/pages/account-settings-connections', [AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
 Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
 Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
 
-// authentication
+// Authentication page routes (for demo purposes)
 Route::get('/auth/login-basic', [LoginBasic::class, 'index'])->name('auth-login-basic');
 Route::get('/auth/register-basic', [RegisterBasic::class, 'index'])->name('auth-register-basic');
 Route::get('/auth/forgot-password-basic', [ForgotPasswordBasic::class, 'index'])->name('auth-reset-password-basic');
 
-// cards
+// Card routes
 Route::get('/cards/basic', [CardBasic::class, 'index'])->name('cards-basic');
 
-// User Interface
+// User Interface routes
 Route::get('/ui/accordion', [Accordion::class, 'index'])->name('ui-accordion');
 Route::get('/ui/alerts', [Alerts::class, 'index'])->name('ui-alerts');
 Route::get('/ui/badges', [Badges::class, 'index'])->name('ui-badges');
@@ -97,20 +159,20 @@ Route::get('/ui/toasts', [Toasts::class, 'index'])->name('ui-toasts');
 Route::get('/ui/tooltips-popovers', [TooltipsPopovers::class, 'index'])->name('ui-tooltips-popovers');
 Route::get('/ui/typography', [Typography::class, 'index'])->name('ui-typography');
 
-// extended ui
+// Extended UI routes
 Route::get('/extended/ui-perfect-scrollbar', [PerfectScrollbar::class, 'index'])->name('extended-ui-perfect-scrollbar');
 Route::get('/extended/ui-text-divider', [TextDivider::class, 'index'])->name('extended-ui-text-divider');
 
-// icons
+// Icon routes
 Route::get('/icons/icons-ri', [RiIcons::class, 'index'])->name('icons-ri');
 
-// form elements
+// Form element routes
 Route::get('/forms/basic-inputs', [BasicInput::class, 'index'])->name('forms-basic-inputs');
 Route::get('/forms/input-groups', [InputGroups::class, 'index'])->name('forms-input-groups');
 
-// form layouts
+// Form layout routes
 Route::get('/form/layouts-vertical', [VerticalForm::class, 'index'])->name('form-layouts-vertical');
 Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('form-layouts-horizontal');
 
-// tables
+// Table routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');

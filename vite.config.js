@@ -1,7 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import html from '@rollup/plugin-html';
-import { glob } from 'glob';
+import { glob } from 'glob'; // Add this import
 
 /**
  * Get Files from a directory
@@ -11,6 +10,7 @@ import { glob } from 'glob';
 function GetFilesArray(query) {
   return glob.sync(query);
 }
+
 /**
  * Js Files
  */
@@ -53,13 +53,7 @@ export default defineConfig({
             ],
             refresh: true,
         }),
-        html()
     ],
-    build: {
-        // Generate manifest for Laravel to use
-        manifest: true,
-    },
-    // Make sure server is configured properly
     server: {
         hmr: {
             host: 'localhost',
