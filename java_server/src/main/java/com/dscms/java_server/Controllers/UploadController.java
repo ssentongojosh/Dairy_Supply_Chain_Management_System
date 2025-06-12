@@ -1,73 +1,33 @@
 package com.dscms.java_server.Controllers;
 
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.rendering.PDFRenderer;
-import org.springframework.http.HttpStatus;
+import com.dscms.java_server.Requests.ValidationRequest;
+import com.dscms.java_server.Services.BankStatementService;
+import com.dscms.java_server.Services.IdService;
+import com.dscms.java_server.Services.UrsbCertificateService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 @RestController
 public class UploadController {
 
-        @PostMapping("/doc")
-    public ResponseEntity<?> fileUpload(@RequestParam("file") MultipartFile file){
-        String path="D:/uploads/";
-        try {
-            File tempFile = File.createTempFile("doc", ".pdf");
-            file.transferTo(tempFile);
+    private  final IdService idService;
+    private final BankStatementService bankStatementService;
+    private final UrsbCertificateService ursbCertificateService;
+    public UploadController(IdService idService,BankStatementService bankStatementService, UrsbCertificateService ursbCertificateService){
+        this.idService = idService;
+        this.bankStatementService = bankStatementService;
+        this.ursbCertificateService = ursbCertificateService;
+    }
 
-            PDDocument doc= PDDocument.load(tempFile);
+    @PostMapping("/doc")
+    public ResponseEntity<?> fileUpload(@ModelAttribute ValidationRequest request){
 
-            PDFRenderer renderer= new PDFRenderer(doc);
+            return idService.verify(request.getNationalId());
+            /*bankStatementService.verify(request.getBankStatement());
+            ursbCertificateService.verify(request.getUrsbCertificate());*/
 
-            StringBuilder extractedText=new StringBuilder();
-
-            for(int i=0; i< doc.getNumberOfPages(); i++){
-                BufferedImage img= renderer.renderImageWithDPI(i, 300);
-
-                File imageFile= File.createTempFile("page_",".png");
-                ImageIO.write(img, "png", imageFile);
-
-                ITesseract tesseract= new Tesseract();
-                tesseract.setDatapath("C:/Tesseract-OCR/tessdata");
-                tesseract.setLanguage("eng");
-
-                String text=tesseract.doOCR(imageFile);
-
-                extractedText.append(text).append("\n");
-            }
-            doc.close();
-
-            String text= extractedText.toString();
-
-            return ResponseEntity.ok().body(text);
-
-        } catch (IOException | TesseractException e) {
-            return  ResponseEntity.status(HttpStatus.valueOf(500)).body("Error processing file");
-        }
-
-        /*File dir= new File(path);
-        if(!dir.exists()){
-            dir.mkdirs();
-        }
-
-        try {
-            file.transferTo(new File(path + file.getOriginalFilename()));
-            return ResponseEntity.ok("Document uploaded successfully");
-        } catch (IOException e) {
-            return  ResponseEntity.status(HttpStatus.valueOf(500)).body("Error uploading file");
-        }*/
     }
 
 }
