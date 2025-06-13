@@ -46,7 +46,7 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
-
+use App\Http\Controllers\DocumentVerificationController;
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -176,3 +176,13 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // Table routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+
+// Add these routes to your web.php file
+Route::middleware(['auth'])->group(function () {
+    Route::get('/verification/upload', [DocumentVerificationController::class, 'showUploadForm'])
+        ->name('verification.upload');
+    Route::post('/verification/upload', [DocumentVerificationController::class, 'uploadDocument'])
+        ->name('verification.upload.submit');
+    Route::get('/verification/pending', [DocumentVerificationController::class, 'pendingVerification'])
+        ->name('verification.pending');
+});
