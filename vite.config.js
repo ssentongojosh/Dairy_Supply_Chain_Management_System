@@ -42,7 +42,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/assets/css/demo.css',
-                'resources/js/app.js',
+                'resources/js/app.js','resources/js/upload-document.js',
                 ...pageJsFiles,
                 ...vendorJsFiles,
                 ...LibsJsFiles,
