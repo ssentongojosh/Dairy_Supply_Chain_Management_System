@@ -1,61 +1,77 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# DSCMS - Dairy Supply Chain Management System
 
-## About Laravel
+A comprehensive Laravel-based system for managing dairy supply chain operations from farm to retail.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Overview
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+DSCMS (Dairy Supply Chain Management System) is designed to track and manage the movement of dairy products through the entire supply chain — from raw milk collection by dairy farmers, processing in factories, distribution to wholesalers, and finally to retailers.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Features
 
-## Learning Laravel
+- **Product Tracking**: Complete traceability from farm to consumer
+- **Inventory Management**: Smart FEFO (First Expired, First Out) system
+- **Role-based Access**: Different dashboards for farmers, wholesalers, retailers, and administrators
+- **Quality Monitoring**: Automated quality control and testing workflows
+- **Analytics Dashboard**: ML-driven insights and demand prediction
+- **Real-time Reporting**: Live updates on supply chain metrics
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## User Roles
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+- **Admin**: System oversight and analytics access
+- **Farmers**: Milk production and quality data input
+- **Wholesalers**: Bulk distribution management
+- **Retailers**: End-point sales and inventory
+- **Warehouse Managers**: Storage and logistics coordination
+- **Quality Assurance**: Testing and compliance monitoring
+- **Drivers**: Delivery tracking and route optimization
+- **Executives**: High-level reporting and decision making
+- **Inspectors**: Regulatory compliance and auditing
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Installation
 
-## Laravel Sponsors
+1. Clone the repository
+2. Install dependencies: `composer install`
+3. Generate application key: `php artisan key:generate`
+4. Install frontend dependencies: `yarn install`
+5. Build assets: `yarn build`
+6. Start the server: `php artisan serve`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
+# Admin User Setup
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+After setting up the project, you can create admin users using one of these methods:
 
-## Contributing
+## Using Database Seeders (Recommended)
+```bash
+php artisan db:seed --class=AdminUserSeeder
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Using Tinker
+```bash
+php artisan tinker $user = new App\Models\User();
+$user->name = 'Your Name'; $user->email = 'your@email.com';
+$user->password = Hash::make('your_password');
+$user->role = 'admin'; $user->save();
+```
 
-## Code of Conduct
+> after that you can log in with the default admin credentils shown below
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Default admin credentials:
+- Email: admin@dscms.com
+- Password: admin123 
 
-## Security Vulnerabilities
+## Technology Stack
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- **Backend**: Laravel 10, PHP 8.1+
+- **Frontend**: Blade templates, Bootstrap 5, AlpineJS
+- **Database**: MySQL
+- **Build Tools**: Vite, Yarn
+- **Styling**: TailwindCSS, SCSS
+
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+This project is proprietary software developed for dairy supply chain management.
+
+© 2025 DSCMS. All rights reserved.
