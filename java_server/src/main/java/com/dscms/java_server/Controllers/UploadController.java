@@ -1,0 +1,33 @@
+package com.dscms.java_server.Controllers;
+
+import com.dscms.java_server.Requests.ValidationRequest;
+import com.dscms.java_server.Services.BankStatementService;
+import com.dscms.java_server.Services.IdService;
+import com.dscms.java_server.Services.UrsbCertificateService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class UploadController {
+
+    private  final IdService idService;
+    private final BankStatementService bankStatementService;
+    private final UrsbCertificateService ursbCertificateService;
+    public UploadController(IdService idService,BankStatementService bankStatementService, UrsbCertificateService ursbCertificateService){
+        this.idService = idService;
+        this.bankStatementService = bankStatementService;
+        this.ursbCertificateService = ursbCertificateService;
+    }
+
+    @PostMapping("/doc")
+    public ResponseEntity<?> fileUpload(@ModelAttribute ValidationRequest request){
+
+            return idService.verify(request.getNationalId());
+            /*bankStatementService.verify(request.getBankStatement());
+            ursbCertificateService.verify(request.getUrsbCertificate());*/
+
+    }
+
+}
