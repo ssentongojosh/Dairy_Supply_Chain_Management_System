@@ -1,7 +1,9 @@
 <?php
 
-return [
+use Illuminate\Support\Facades\Facade;
+use Illuminate\Support\ServiceProvider;
 
+return [
   /*
   |--------------------------------------------------------------------------
   | Application Name
@@ -122,5 +124,78 @@ return [
     'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
     'store' => env('APP_MAINTENANCE_STORE', 'database'),
   ],
+
+  /*
+  |--------------------------------------------------------------------------
+  | Autoloaded Service Providers
+  |--------------------------------------------------------------------------
+  |
+  | The service providers listed here will be automatically loaded on the
+  | request to your application. Feel free to add your own services to
+  | this array to grant expanded functionality to your applications.
+  |
+  */
+
+  'providers' => [
+    /*
+     * Laravel Framework Service Providers...
+     */
+    Illuminate\Auth\AuthServiceProvider::class,
+    Illuminate\Broadcasting\BroadcastServiceProvider::class, // You might have this commented if not using broadcasting
+    Illuminate\Bus\BusServiceProvider::class,
+    Illuminate\Cache\CacheServiceProvider::class,
+    Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
+    Illuminate\Cookie\CookieServiceProvider::class,
+    Illuminate\Database\DatabaseServiceProvider::class,
+    Illuminate\Encryption\EncryptionServiceProvider::class,
+    Illuminate\Filesystem\FilesystemServiceProvider::class,
+    Illuminate\Foundation\Providers\FoundationServiceProvider::class,
+    Illuminate\Hashing\HashServiceProvider::class,
+    Illuminate\Mail\MailServiceProvider::class,
+    Illuminate\Notifications\NotificationServiceProvider::class,
+    Illuminate\Pagination\PaginationServiceProvider::class,
+    Illuminate\Pipeline\PipelineServiceProvider::class,
+    Illuminate\Queue\QueueServiceProvider::class,
+    Illuminate\Redis\RedisServiceProvider::class, // You might have this commented if not using Redis
+    Illuminate\Auth\Passwords\PasswordResetServiceProvider::class,
+    Illuminate\Session\SessionServiceProvider::class,
+    Illuminate\Translation\TranslationServiceProvider::class,
+    Illuminate\Validation\ValidationServiceProvider::class,
+    Illuminate\View\ViewServiceProvider::class,
+
+    /*
+     * Package Service Providers...
+     */
+    // Example: Laravel\Tinker\TinkerServiceProvider::class,
+    // Example: Laravel\Sanctum\SanctumServiceProvider::class, // Make sure Sanctum's provider is here if you use it
+
+    /*
+     * Application Service Providers...
+     */
+    App\Providers\AppServiceProvider::class,
+    App\Providers\AuthServiceProvider::class, // Note: Laravel's AuthServiceProvider is usually listed above.
+                                                 // If you have a custom App\Providers\AuthServiceProvider, ensure it's distinct
+                                                 // or correctly overrides/extends. Often, you only need Laravel's.
+    // App\Providers\BroadcastServiceProvider::class, // If you have a custom one
+    App\Providers\EventServiceProvider::class,
+    App\Providers\RouteServiceProvider::class, // <-- YOUR NEWLY ADDED PROVIDER
+    // Add any other custom providers like App\Providers\FortifyServiceProvider if using Fortify, etc.
+
+  ],
+
+  /*
+  |--------------------------------------------------------------------------
+  | Class Aliases
+  |--------------------------------------------------------------------------
+  |
+  | This array of class aliases will be registered when this application
+  | is started. However, feel free to register as many as you wish as
+  | the aliases are "lazy" loaded so they don't hinder performance.
+  |
+  */
+
+  'aliases' => Facade::defaultAliases()->merge([ // Ensure use Illuminate\Support\Facades\Facade; is at the top
+    // 'Example' => App\Facades\Example::class,
+  ])->toArray(),
 
 ];
