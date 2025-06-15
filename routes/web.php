@@ -60,6 +60,9 @@ Route::get('/forgot-password', [ForgotPasswordBasic::class, 'index'])->name('pas
 Route::get('/register', [RegisterBasic::class, 'index'])->name('register');
 Route::post('/register', [RegisterBasic::class, 'register'])->name('register.submit');
 
+// General dashboard route that redirects based on role and verification status
+Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+
 // Dashboard routes with role middleware
 Route::get('/analytics', [Analytics::class, 'index'])
   ->name('dashboard.analytics')
