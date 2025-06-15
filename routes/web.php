@@ -176,3 +176,28 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // Table routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+use App\Http\Controllers\VendorController;
+
+Route::get('/vendor/apply', [VendorController::class, 'showApplicationForm'])->name('vendor.apply');
+Route::post('/vendor/register', [VendorController::class, 'register'])->name('vendor.register');
+
+use App\Http\Controllers\Retailer\RetailerDashboardController;
+Route::get('/retailer/dashboard', [RetailerDashboardController::class, 'index'])->name('retailer.dashboard');
+
+use App\Http\Controllers\Wholesaler\WholesalerDashboardController;
+
+Route::get('/wholesaler/dashboard', [WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
+
+use App\Http\Controllers\Supplier\SupplierDashboardController;
+
+Route::get('/supplier/dashboard', [SupplierDashboardController::class, 'index'])->name('supplier.dashboard');
+
+use App\Http\Controllers\Factory\FactoryDashboardController;
+
+Route::get('/factory/dashboard', [FactoryDashboardController::class, 'index'])->name('factory.dashboard');
+
+use App\Http\Controllers\ChatController;
+
+Route::post('/chat/send', [ChatController::class, 'send']);
+Route::get('/chat/messages', [ChatController::class, 'fetchMessages']);
+

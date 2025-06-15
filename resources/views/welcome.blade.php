@@ -261,6 +261,7 @@
         <p class="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
           Are you a dairy farmer, ingredient provider, or packaging supplier interested in partnering with us?
         </p>
+        <a href="{{route('vendor.apply')}}">
         <button id="applyVendorBtn" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-md transition-colors duration-200 shadow-sm hover:shadow-md btn-primary">
           Apply as a Vendor
         </button>
