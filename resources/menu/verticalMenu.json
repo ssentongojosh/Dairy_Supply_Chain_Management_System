@@ -5,10 +5,7 @@
       "name": "Dashboards",
       "icon": "menu-icon tf-icons ri-home-smile-line",
       "slug": "dashboard",
-      "badge": [
-        "danger",
-        "5"
-      ],
+      "badge": ["danger", "5"],
       "submenu": [
         {
           "url": "/",
@@ -16,6 +13,12 @@
           "slug": "dashboard-analytics"
         }
       ]
+    },
+    {
+      "url": "app/chat",
+      "name": "Chat",
+      "icon": "menu-icon tf-icons ri-wechat-line",
+      "slug": "app-chat"
     },
     {
       "name": "Layouts",

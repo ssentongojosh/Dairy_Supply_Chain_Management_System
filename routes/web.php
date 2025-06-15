@@ -47,6 +47,7 @@ use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
 use App\Http\Controllers\DocumentVerificationController;
+use App\Http\Controllers\ChatController;
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -62,6 +63,11 @@ Route::post('/register', [RegisterBasic::class, 'register'])->name('register.sub
 
 // General dashboard route that redirects based on role and verification status
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+
+// Chat routes
+Route::get('/app/chat', [ChatController::class, 'index'])->name('app-chat')->middleware('auth');
+Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send')->middleware('auth');
+Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages')->middleware('auth');
 
 // Dashboard routes with role middleware
 Route::get('/analytics', [Analytics::class, 'index'])
