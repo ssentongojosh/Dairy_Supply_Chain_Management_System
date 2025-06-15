@@ -146,7 +146,7 @@
     @if (Route::has('login'))
       <div class="flex items-center">
         @auth
-          <a href="{{ url('/dashboard') }}"
+          <a href="{{ route('dashboard') }}"
              class="inline-block px-5 py-2 bg-primary/10 dark:bg-primary-dark/20 text-primary dark:text-primary-dark hover:bg-primary/20 dark:hover:bg-primary-dark/30 font-medium rounded-md transition-all duration-200 ease-in-out">
             Dashboard
           </a>
