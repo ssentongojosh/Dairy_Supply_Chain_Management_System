@@ -4,22 +4,44 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use App\Enums\Role;
 
 class ChatController extends Controller
 {
     /**
-     * Display the chat page.
+     * Display the chat page
      */
     public function index()
     {
         if (!Auth::check()) {
             return redirect()->route('login');
         }
-
         $user = Auth::user();
+        // Determine which roles this user can chat with
+        $allowedRoles = [];
+        switch ($user->role) {
+            case Role::FARMER:
+                $allowedRoles = [Role::EXECUTIVE];
+                break;
+            case Role::EXECUTIVE:
+                $allowedRoles = [Role::FARMER, Role::WHOLESALER];
+                break;
+            case Role::WHOLESALER:
+                $allowedRoles = [Role::EXECUTIVE, Role::RETAILER];
+                break;
+            case Role::RETAILER:
+                $allowedRoles = [Role::WHOLESALER];
+                break;
+        }
+        // Load contacts from database
+        $contacts = User::whereIn('role', $allowedRoles)
+                        ->select('id', 'name', 'role')
+                        ->get();
 
         return view('content.apps.app-chat', [
-            'user' => $user
+            'user'     => $user,
+            'contacts' => $contacts,
         ]);
     }
 

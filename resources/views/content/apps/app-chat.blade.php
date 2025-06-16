@@ -529,61 +529,17 @@
         </div>
 
         <div class="chat-contacts-list">
-          <button class="chat-contact-item active" data-contact="support" data-name="DSCMS Support" data-status="Online">
-            <div class="contact-avatar bg-primary online">DS</div>
-            <div class="contact-info">
-              <p class="contact-name">DSCMS Support</p>
-              <p class="contact-status">Always here to help</p>
-            </div>
-            <div class="contact-meta">
-              <span class="contact-time">Now</span>
-              <span class="unread-badge">2</span>
-            </div>
-          </button>
-
-          <button class="chat-contact-item" data-contact="team" data-name="Development Team" data-status="3 members online">
-            <div class="contact-avatar bg-success online">DT</div>
-            <div class="contact-info">
-              <p class="contact-name">Development Team</p>
-              <p class="contact-status">Working on new features</p>
-            </div>
-            <div class="contact-meta">
-              <span class="contact-time">5m</span>
-            </div>
-          </button>
-
-          <button class="chat-contact-item" data-contact="admin" data-name="Admin Panel" data-status="Last seen 1h ago">
-            <div class="contact-avatar bg-warning">AP</div>
-            <div class="contact-info">
-              <p class="contact-name">Admin Panel</p>
-              <p class="contact-status">System notifications</p>
-            </div>
-            <div class="contact-meta">
-              <span class="contact-time">1h</span>
-            </div>
-          </button>
-
-          <button class="chat-contact-item" data-contact="security" data-name="Security Team" data-status="Online">
-            <div class="contact-avatar bg-danger online">ST</div>
-            <div class="contact-info">
-              <p class="contact-name">Security Team</p>
-              <p class="contact-status">Monitoring systems</p>
-            </div>
-            <div class="contact-meta">
-              <span class="contact-time">2h</span>
-            </div>
-          </button>
-
-          <button class="chat-contact-item" data-contact="general" data-name="General Discussion" data-status="12 members">
-            <div class="contact-avatar bg-info">GD</div>
-            <div class="contact-info">
-              <p class="contact-name">General Discussion</p>
-              <p class="contact-status">Share ideas and feedback</p>
-            </div>
-            <div class="contact-meta">
-              <span class="contact-time">4h</span>
-            </div>
-          </button>
+          @forelse($contacts as $c)
+            <button class="chat-contact-item" data-id="{{ $c->id }}" data-name="{{ $c->name }}">
+              <div class="contact-avatar bg-secondary">{{ strtoupper(substr($c->name, 0, 2)) }}</div>
+              <div class="contact-info">
+                <p class="contact-name">{{ $c->name }}</p>
+                <p class="contact-status">{{ $c->role->label() }}</p>
+              </div>
+            </button>
+          @empty
+            <p class="text-center text-muted p-3">No contacts available.</p>
+          @endforelse
         </div>
       </div>
 
