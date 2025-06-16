@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Enums\Role;
 use App\Models\User; // Import User model
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class DocumentVerificationController extends Controller
 {
@@ -63,12 +64,29 @@ class DocumentVerificationController extends Controller
 
         $path = $request->file('business_document')->store('business-documents/' . $user->id, 'private');
 
-        $user->update([
-            'business_document_path' => $path,
-        ]);
+        $user->business_document_path = $path;
+        $user->save();
+
+        // Call Java verification microservice
+        $javaUrl = env('JAVA_SERVER_URL', 'http://localhost:8080');
+        $fileContents = Storage::disk('private')->get($path);
+        $response = Http::timeout(120)
+            ->attach('nationalId', $fileContents, basename($path))
+            ->post($javaUrl . '/doc');
+
+        if ($response->ok()) {
+            $extractedText = $response->body();
+            $verified = trim($extractedText) !== '';
+            $user->verified = $verified;
+            $user->verification_notes = $extractedText;
+            $user->save();
+        } else {
+            return redirect()->route('verification.pending')
+                ->with('error', 'Document processing failed on Java server.');
+        }
 
         return redirect()->route('verification.pending')
-            ->with('success', 'Document uploaded successfully! Your account is pending verification.');
+            ->with('success', 'Document uploaded and verification initiated.');
     }
 
     public function pendingVerification()
