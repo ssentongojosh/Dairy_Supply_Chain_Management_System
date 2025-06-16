@@ -46,6 +46,8 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
+use App\Http\Controllers\RetailerOrderController;
+
 
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -176,3 +178,27 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 
 // Table routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
+
+Route::middleware(['auth', 'role:wholesaler'])->prefix('wholesaler')->group(function () {
+    Route::get('/dashboard', [WholesalerController::class, 'index'])->name('wholesaler.dashboard');
+    Route::post('/orders/{order}/approve', [WholesalerController::class, 'approveOrder'])->name('wholesaler.orders.approve');
+    Route::get('/orders/create', [WholesalerController::class, 'createOrder'])->name('wholesaler.orders.create');
+    Route::post('/orders', [WholesalerController::class, 'storeOrder'])->name('wholesaler.orders.store');
+});
+
+Route::middleware(['auth', 'role:factory'])->prefix('factory')->group(function () {
+    Route::get('/dashboard', [FactoryController::class, 'index'])->name('factory.dashboard');
+    Route::post('/orders/{order}/approve', [FactoryController::class, 'approveOrder'])->name('factory.orders.approve');
+    Route::get('/orders/create', [FactoryController::class, 'createOrder'])->name('factory.orders.create');
+    Route::post('/orders', [FactoryController::class, 'storeOrder'])->name('factory.orders.store');
+});
+
+use App\Http\Controllers\SupplierController;
+
+Route::middleware(['auth', 'role:supplier'])->prefix('supplier')->group(function () {
+    Route::get('/dashboard', [SupplierController::class, 'index'])->name('supplier.dashboard');
+    Route::post('/orders/{order}/approve', [SupplierController::class, 'approveOrder'])->name('supplier.orders.approve');
+    Route::post('/orders/{order}/mark-shipped', [SupplierController::class, 'markShipped'])->name('supplier.orders.ship');
+});
+
+
