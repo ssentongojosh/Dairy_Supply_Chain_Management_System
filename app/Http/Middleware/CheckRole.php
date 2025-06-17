@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Enums\Role;
 
@@ -15,7 +16,7 @@ class CheckRole
   public function handle(Request $request, Closure $next, ...$roles)
   {
     // Get the authenticated user
-    $user = auth()->user();
+    $user = Auth::user();
 
     // Convert single role to array for consistency
     if (!is_array($roles)) {

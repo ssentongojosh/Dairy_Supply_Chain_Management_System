@@ -75,7 +75,7 @@
     }
 
     .theme-toggle.dark {
-      background: #374151;
+      background: #0d2244;
     }
 
     .theme-toggle::before {
@@ -93,7 +93,7 @@
 
     .theme-toggle.dark::before {
       transform: translateX(25px);
-      background: #1f2937;
+      background: #091c37;
     }
 
     .theme-icon {
@@ -125,9 +125,9 @@
   </style>
 </head>
 
-<body class="bg-[#FDFDFC] dark:bg-[#0a0a0a] text-[#1b1b18] dark:text-[#e5e5e5] font-sans flex flex-col min-h-screen transition-colors duration-300">
+<body class="bg-[#FDFDFC] dark:bg-[#0d1b2a] text-[#1b1b18] dark:text-[#e5e5e5] font-sans flex flex-col min-h-screen transition-colors duration-300">
 <!-- Header with logo and login buttons -->
-<header class="w-full px-6 py-5 lg:px-8 lg:py-6 flex items-center justify-between bg-white/80 dark:bg-black/30 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
+<header class="w-full px-6 py-5 lg:px-8 lg:py-6 flex items-center justify-between bg-white/80 dark:bg-[#0d1b2a]/30 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
   <!-- Logo -->
   <div class="flex items-center">
     <span class="text-primary dark:text-primary-dark font-bold text-3xl font-display tracking-tight">DSCMS</span>
@@ -146,7 +146,7 @@
     @if (Route::has('login'))
       <div class="flex items-center">
         @auth
-          <a href="{{ url('/dashboard') }}"
+          <a href="{{ route('dashboard') }}"
              class="inline-block px-5 py-2 bg-primary/10 dark:bg-primary-dark/20 text-primary dark:text-primary-dark hover:bg-primary/20 dark:hover:bg-primary-dark/30 font-medium rounded-md transition-all duration-200 ease-in-out">
             Dashboard
           </a>
@@ -213,7 +213,7 @@
   </div>
 
   <!-- System Description -->
-  <div class="max-w-4xl mx-auto bg-white dark:bg-[#161615] p-8 md:p-10 rounded-xl shadow-lg">
+  <div class="max-w-4xl mx-auto bg-white dark:bg-[#0d1b2a] p-8 md:p-10 rounded-xl shadow-lg">
     <h1 class="text-3xl font-bold mb-6 text-primary dark:text-primary-dark font-display">Dairy Supply Chain Management System</h1>
 
     <div class="mb-10">
@@ -230,7 +230,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-      <div class="bg-gray-50 dark:bg-[#1D1D1B] p-7 rounded-lg shadow-sm feature-card">
+      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg shadow-sm feature-card">
         <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Key Features</h3>
         <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li>Product tracking and supply chain monitoring</li>
@@ -242,7 +242,7 @@
         </ul>
       </div>
 
-      <div class="bg-gray-50 dark:bg-[#1D1D1B] p-7 rounded-lg shadow-sm feature-card">
+      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg shadow-sm feature-card">
         <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">User Roles</h3>
         <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
           <li><strong>Suppliers:</strong> Dairy farmers and raw material providers</li>
@@ -256,7 +256,7 @@
 
     <div class="flex flex-col md:flex-row gap-8 justify-between">
       <!-- Prospective Vendor Section -->
-      <div class="bg-emerald-50 dark:bg-[#1D2A20] p-7 rounded-lg border border-emerald-100 dark:border-emerald-900 flex-1 feature-card">
+      <div class="bg-emerald-50 dark:bg-[#1D2A20] p-7 rounded-lg border border-emerald-100 dark:border-[#8c57ff] flex-1 feature-card">
         <h2 class="text-xl font-semibold text-emerald-800 dark:text-emerald-400 mb-4">Prospective Dairy Suppliers</h2>
         <p class="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
           Are you a dairy farmer, ingredient provider, or packaging supplier interested in partnering with us?
@@ -267,7 +267,7 @@
       </div>
 
       <!-- General New User Registration Section -->
-      <div class="bg-gray-50 dark:bg-[#1D1D1B] p-7 rounded-lg border border-gray-200 dark:border-gray-800 flex-1 feature-card">
+      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg border border-gray-200 dark:border-[#8c57ff] flex-1 feature-card">
         <h2 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-4">New Wholesalers or Retailers</h2>
         <p class="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
           Join our network to streamline your dairy product procurement and distribution.
@@ -281,7 +281,7 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-white dark:bg-[#161615] py-8 mt-16 border-t border-gray-200 dark:border-gray-800">
+<footer class="bg-white dark:bg-[#0d1b2a] py-8 mt-16 border-t border-gray-200 dark:border-[#8c57ff]">
   <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center text-gray-500 dark:text-gray-400">
     <div class="flex items-center justify-center mb-4">
       <span class="text-primary dark:text-primary-dark font-bold text-xl font-display">DSCMS</span>
