@@ -28,7 +28,7 @@ class PredictResponse(BaseModel):
     prediction: float
 
 @app.post("/predict_sales", response_model=PredictResponse)
-def predict(request: PredictRequest):
+def predict_sales(request: PredictRequest):
     features = [request.features]
     pred = model.predict(features)
     return PredictResponse(prediction=float(pred[0]))

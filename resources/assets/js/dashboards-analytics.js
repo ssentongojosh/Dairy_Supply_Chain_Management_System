@@ -5,11 +5,10 @@ import 'bootstrap';
 import dt_bs5 from 'datatables.net-bs5';
 // Responsive extension
 import 'datatables.net-responsive-bs5';
-// Buttons extension
+// Buttons extension (without HTML5 export yet)
 import 'datatables.net-buttons-bs5';
-// HTML5 export buttons
-import 'datatables.net-buttons/js/buttons.html5.js';
-// Export file generators
+
+// Export file generators must load before HTML5 export plugin
 import JSZip from 'jszip';
 import pdfMake from 'pdfmake/build/pdfmake';
 import 'pdfmake/build/vfs_fonts';
@@ -17,6 +16,9 @@ import 'pdfmake/build/vfs_fonts';
 // Expose export dependencies globally for DataTables HTML5 export
 window.JSZip = JSZip;
 window.pdfMake = pdfMake;
+
+// HTML5 export buttons (after JSZip and pdfMake are set)
+import 'datatables.net-buttons/js/buttons.html5.js';
 
 // Now all DataTable plugins are attached to jQuery
 
