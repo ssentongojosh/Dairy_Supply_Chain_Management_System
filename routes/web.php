@@ -1,4 +1,3 @@
-
 <?php
 
 use App\Http\Controllers\HomeController;
@@ -48,6 +47,8 @@ use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\dashboard\UserController;
+use App\Models\User;
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -195,3 +196,13 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/verification/pending', [DocumentVerificationController::class, 'pendingVerification'])
         ->name('verification.pending');
 });
+
+// User CRUD routes for admin
+Route::resource('users', UserController::class)
+    ->except(['show'])
+    ->middleware(['auth', 'role:admin']);
+
+// Add user detail route
+Route::get('/users/{user}', function (User $user) {
+    return view('content.dashboard.user-view', compact('user'));
+})->name('users.show')->middleware('auth');

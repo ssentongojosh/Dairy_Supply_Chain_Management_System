@@ -1,20 +1,36 @@
-/**
- * Dashboard Analytics
- */
+// === Load dependencies via Vite ===
+import $ from 'jquery';
+import 'bootstrap';
+// DataTables core + Bootstrap 5 styling
+import dt_bs5 from 'datatables.net-bs5';
+// Responsive extension
+import 'datatables.net-responsive-bs5';
+// Buttons extension
+import 'datatables.net-buttons-bs5';
+// HTML5 export buttons
+import 'datatables.net-buttons/js/buttons.html5.js';
+// Export file generators
+import JSZip from 'jszip';
+import pdfMake from 'pdfmake/build/pdfmake';
+import 'pdfmake/build/vfs_fonts';
 
-'use strict';
+// Expose export dependencies globally for DataTables HTML5 export
+window.JSZip = JSZip;
+window.pdfMake = pdfMake;
 
-(function () {
-  let cardColor, labelColor, borderColor, chartBgColor, bodyColor;
+// Now all DataTable plugins are attached to jQuery
 
-  cardColor = config.colors.cardColor;
-  labelColor = config.colors.textMuted;
-  borderColor = config.colors.borderColor;
-  chartBgColor = config.colors.chartBgColor;
-  bodyColor = config.colors.bodyColor;
+$(function() {
+  'use strict';
+
+  // Chart setup
+  let cardColor = config.colors.cardColor;
+  let labelColor = config.colors.textMuted;
+  let borderColor = config.colors.borderColor;
+  let chartBgColor = config.colors.chartBgColor;
+  let bodyColor = config.colors.bodyColor;
 
   // Weekly Overview Line Chart
-  // --------------------------------------------------------------------
   const weeklyOverviewChartEl = document.querySelector('#weeklyOverviewChart'),
     weeklyOverviewChartConfig = {
       chart: {
@@ -178,13 +194,11 @@
         }
       ]
     };
-  if (typeof weeklyOverviewChartEl !== undefined && weeklyOverviewChartEl !== null) {
-    const weeklyOverviewChart = new ApexCharts(weeklyOverviewChartEl, weeklyOverviewChartConfig);
-    weeklyOverviewChart.render();
+  if (weeklyOverviewChartEl) {
+    new ApexCharts(weeklyOverviewChartEl, weeklyOverviewChartConfig).render();
   }
 
   // Total Profit line chart
-  // --------------------------------------------------------------------
   const totalProfitLineChartEl = document.querySelector('#totalProfitLineChart'),
     totalProfitLineChartConfig = {
       chart: {
@@ -297,13 +311,11 @@
         }
       ]
     };
-  if (typeof totalProfitLineChartEl !== undefined && totalProfitLineChartEl !== null) {
-    const totalProfitLineChart = new ApexCharts(totalProfitLineChartEl, totalProfitLineChartConfig);
-    totalProfitLineChart.render();
+  if (totalProfitLineChartEl) {
+    new ApexCharts(totalProfitLineChartEl, totalProfitLineChartConfig).render();
   }
 
   // Sessions Column Chart
-  // --------------------------------------------------------------------
   const sessionsColumnChartEl = document.querySelector('#sessionsColumnChart'),
     sessionsColumnChartConfig = {
       chart: {
@@ -439,8 +451,69 @@
         }
       ]
     };
-  if (typeof sessionsColumnChartEl !== undefined && sessionsColumnChartEl !== null) {
-    const sessionsColumnChart = new ApexCharts(sessionsColumnChartEl, sessionsColumnChartConfig);
-    sessionsColumnChart.render();
+  if (sessionsColumnChartEl) {
+    new ApexCharts(sessionsColumnChartEl, sessionsColumnChartConfig).render();
   }
-})();
+
+  // === DataTables & CRUD ===
+  const usersTable = $('#users-table').DataTable({
+    responsive: true,
+    dom: 'rtip',       // r=processing, t=table, i=info, p=pagination (no default filter or buttons)
+    buttons: ['excelHtml5']  // Only Excel export, removed PDF button
+  });
+
+  // Custom search input binding
+  $('#dt-search-0').on('keyup', function() {
+    usersTable.search(this.value).draw();
+  });
+
+  // Custom length selector binding
+  $('#dt-length-0').on('change', function() {
+    usersTable.page.len(this.value).draw();
+  });
+
+  // Add/Edit User Form via AJAX
+  $('#addNewUserForm').on('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const userId = formData.get('id');
+    $.ajax({
+      url: userId ? `/users/${userId}` : '/users',
+      type: userId ? 'PUT' : 'POST',
+      data: formData,
+      processData: false,
+      contentType: false,
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      success: function() {
+        bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasAddUser')).hide();
+        location.reload();
+      }
+    });
+  });
+
+  // Delete User via Modal and AJAX
+  let deleteUrl = '';
+  let deleteRow = null;
+  $('#deleteUserModal').on('show.bs.modal', function(e) {
+    const btn = $(e.relatedTarget);
+    deleteUrl = btn.data('url');
+    deleteRow = btn.closest('tr');
+    $('#deleteUserName').text(btn.data('name'));
+  });
+  $('#confirmDeleteUser').on('click', function() {
+    $.ajax({
+      url: deleteUrl,
+      type: 'DELETE',
+      headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+      success: function() {
+        bootstrap.Modal.getInstance(document.getElementById('deleteUserModal')).hide();
+        usersTable.row(deleteRow).remove().draw(false);
+      }
+    });
+  });
+
+  // Static export button binding (use class selector for Excel button)
+  $('#staticExportBtn').off('click').on('click', function() {
+    usersTable.button(0).trigger();
+  });
+});

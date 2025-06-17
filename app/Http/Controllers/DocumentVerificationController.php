@@ -114,7 +114,7 @@ class DocumentVerificationController extends Controller
             Log::error('User role in redirectToDashboard is not valid.', ['user_id' => $user->id, 'role_data' => $userRole]);
             return redirect()->route('home')->with('error', 'Invalid user role.');
         }
-        
+
         switch ($roleValue) {
             case 'admin':
             case 'retailer': // Assuming retailer also goes to analytics
