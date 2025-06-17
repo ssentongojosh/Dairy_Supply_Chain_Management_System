@@ -122,10 +122,48 @@
     .theme-toggle.dark .theme-icon.moon {
       opacity: 1;
     }
+
+    /* Add AOS base styles if not using CDN for CSS, or to override */
+    /* [data-aos] { transition-property: transform, opacity; } */
+
+    .slideshow-container {
+      position: relative;
+      max-width: 100%; /* Or your desired max-width */
+      margin: auto;
+      overflow: hidden; /* Important for slide transitions */
+      border-radius: 0.75rem; /* Equivalent to rounded-xl */
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-lg */
+      height: 450px; /* Set height on container if slides are absolute */
+    }
+
+    .slide {
+      width: 100%;
+      height: 100%; /* Make slide fill the container height */
+      background-size: cover;
+      background-position: center;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      visibility: hidden;
+      /* Transition for fade-out: opacity animates, then visibility changes */
+      transition: opacity 0.7s ease-in-out, visibility 0s linear 0.7s;
+      z-index: 0; /* Default z-index for inactive slides */
+    }
+
+    .slide-active {
+      opacity: 1;
+      visibility: visible;
+      /* Transition for fade-in: opacity animates. Visibility changes instantly (no delay needed here) */
+      transition: opacity 0.7s ease-in-out;
+      z-index: 1; /* Active slide on top */
+    }
   </style>
+  <!-- AOS CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/aos@next/dist/aos.css" />
 </head>
 
-<body class="bg-[#FDFDFC] dark:bg-[#0d1b2a] text-[#1b1b18] dark:text-[#e5e5e5] font-sans flex flex-col min-h-screen transition-colors duration-300">
+<body class="bg-gradient-to-br from-purple-50 via-indigo-50 to-sky-100 dark:bg-gradient-to-br dark:from-slate-900 dark:via-indigo-950 dark:to-purple-950 text-[#1b1b18] dark:text-[#e5e5e5] font-sans flex flex-col min-h-screen transition-colors duration-300">
 <!-- Header with logo and login buttons -->
 <header class="w-full px-6 py-5 lg:px-8 lg:py-6 flex items-center justify-between bg-white/80 dark:bg-[#0d1b2a]/30 backdrop-blur-sm sticky top-0 z-50 shadow-sm">
   <!-- Logo -->
@@ -230,33 +268,76 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg shadow-sm feature-card">
-        <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">Key Features</h3>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li>Product tracking and supply chain monitoring</li>
-          <li>Inventory management and order processing</li>
-          <li>Role-specific dashboards and scheduled reporting</li>
-          <li>Machine learning-driven analytics and demand prediction</li>
-          <li>Vendor validation with identity verification</li>
-          <li>Workforce distribution and optimization</li>
+      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg shadow-sm feature-card transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl" data-aos="fade-right" data-aos-delay="100">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 mr-2 text-primary dark:text-primary-dark">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z" clip-rule="evenodd" />
+          </svg>
+          Key Features
+        </h3>
+        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Product tracking and supply chain monitoring</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Inventory management and order processing</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Role-specific dashboards and scheduled reporting</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Machine learning-driven analytics and demand prediction</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Vendor validation with identity verification</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            <span>Workforce distribution and optimization</span>
+          </li>
         </ul>
       </div>
 
-      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg shadow-sm feature-card">
-        <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200">User Roles</h3>
-        <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
-          <li><strong>Suppliers:</strong> Dairy farmers and raw material providers</li>
-          <li><strong>Factory:</strong> Processing plants and manufacturers</li>
-          <li><strong>Wholesalers:</strong> Bulk product distributors</li>
-          <li><strong>Retailers:</strong> End-point sellers to consumers</li>
-          <li><strong>Administrators:</strong> System managers and supervisors</li>
+      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg shadow-sm feature-card transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl" data-aos="fade-left" data-aos-delay="200">
+        <h3 class="text-xl font-semibold mb-4 text-gray-800 dark:text-gray-200 flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-6 h-6 mr-2 text-primary dark:text-primary-dark">
+            <path d="M10 8a3 3 0 100-6 3 3 0 000 6zM3.465 14.493a1.23 1.412A9.957 9.957 0 0010 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 00-13.074.003z" />
+          </svg>
+          User Roles
+        </h3>
+        <ul class="space-y-3 text-gray-700 dark:text-gray-300">
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" /></svg>
+            <span><strong>Suppliers:</strong> Dairy farmers and raw material providers</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18A2.25 2.25 0 004.5 21h15a2.25 2.25 0 002.25-2.25V3A2.25 2.25 0 0019.5 0H4.5A2.25 2.25 0 002.25 3z" /></svg>
+            <span><strong>Factory:</strong> Processing plants and manufacturers</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" /></svg>
+            <span><strong>Wholesalers:</strong> Bulk product distributors</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5A2.25 2.25 0 0011.25 11.25H6.75A2.25 2.25 0 004.5 13.5V21M6.75 6.75h.75v.75h-.75v-.75zM6.75 9.75h.75v.75h-.75v-.75zM6.75 12.75h.75v.75h-.75v-.75zM9.75 6.75h.75v.75h-.75v-.75zM9.75 9.75h.75v.75h-.75v-.75zM9.75 12.75h.75v.75h-.75v-.75zM12.75 6.75h.75v.75h-.75v-.75zM12.75 9.75h.75v.75h-.75v-.75zM12.75 12.75h.75v.75h-.75v-.75zM15.75 6.75h.75v.75h-.75v-.75zM15.75 9.75h.75v.75h-.75v-.75zM15.75 12.75h.75v.75h-.75v-.75z" /></svg>
+            <span><strong>Retailers:</strong> End-point sellers to consumers</span>
+          </li>
+          <li class="flex items-start">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 mt-1 text-primary dark:text-primary-dark flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6h9.75M10.5 6a1.5 1.5 0 11-3 0m3 0a1.5 1.5 0 10-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m-9.75 0h9.75" /></svg>
+            <span><strong>Administrators:</strong> System managers and supervisors</span>
+          </li>
         </ul>
       </div>
     </div>
 
     <div class="flex flex-col md:flex-row gap-8 justify-between">
       <!-- Prospective Vendor Section -->
-      <div class="bg-emerald-50 dark:bg-[#1D2A20] p-7 rounded-lg border border-emerald-100 dark:border-[#8c57ff] flex-1 feature-card">
+      <div class="bg-emerald-50 dark:bg-[#1D2A20] p-7 rounded-lg border border-emerald-100 dark:border-[#8c57ff] flex-1 feature-card transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl" data-aos="zoom-in-up" data-aos-delay="300">
         <h2 class="text-xl font-semibold text-emerald-800 dark:text-emerald-400 mb-4">Prospective Dairy Suppliers</h2>
         <p class="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
           Are you a dairy farmer, ingredient provider, or packaging supplier interested in partnering with us?
@@ -267,7 +348,7 @@
       </div>
 
       <!-- General New User Registration Section -->
-      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg border border-gray-200 dark:border-[#8c57ff] flex-1 feature-card">
+      <div class="bg-gray-50 dark:bg-[#0d1b2a] p-7 rounded-lg border border-gray-200 dark:border-[#8c57ff] flex-1 feature-card transition-all duration-300 ease-in-out hover:scale-[1.02] hover:shadow-xl" data-aos="zoom-in-up" data-aos-delay="400">
         <h2 class="text-xl font-semibold text-slate-700 dark:text-slate-300 mb-4">New Wholesalers or Retailers</h2>
         <p class="text-slate-700 dark:text-slate-300 mb-6 leading-relaxed">
           Join our network to streamline your dairy product procurement and distribution.
@@ -281,7 +362,7 @@
 </main>
 
 <!-- Footer -->
-<footer class="bg-white dark:bg-[#0d1b2a] py-8 mt-16 border-t border-gray-200 dark:border-[#8c57ff]">
+<footer class="bg-white dark:bg-[#0d1b2a] py-8 mt-16 border-t border-gray-200 dark:border-[#8c57ff]" data-aos="fade-up" data-aos-anchor-placement="top-bottom">
   <div class="max-w-7xl mx-auto px-6 lg:px-8 text-center text-gray-500 dark:text-gray-400">
     <div class="flex items-center justify-center mb-4">
       <span class="text-primary dark:text-primary-dark font-bold text-xl font-display">DSCMS</span>
@@ -291,8 +372,18 @@
 </footer>
 
 <!-- JavaScript -->
+<!-- AOS JS -->
+<script src="https://unpkg.com/aos@next/dist/aos.js"></script>
 <script>
   document.addEventListener('DOMContentLoaded', function() {
+    // Initialize AOS
+    AOS.init({
+      duration: 700, // values from 0 to 3000, with step 50ms
+      easing: 'ease-in-out', // default easing for AOS animations
+      once: true, // whether animation should happen only once - while scrolling down
+      mirror: false, // whether elements should animate out while scrolling past them
+    });
+
     // Theme Toggle Functionality
     const themeToggle = document.getElementById('themeToggle');
     const html = document.documentElement;
@@ -338,6 +429,11 @@
     const dots = document.querySelectorAll('.dot');
     const totalSlides = slides.length;
 
+    // Ensure the first slide is active on load by calling showSlide
+    if (totalSlides > 0) {
+      showSlide(currentSlide); // currentSlide is already 0
+    }
+
     // Next/previous controls
     document.querySelector('.next').addEventListener('click', () => {
       changeSlide(1);
@@ -366,21 +462,27 @@
     }
 
     function showSlide(n) {
-      // Hide all slides
-      slides.forEach(slide => {
-        slide.classList.remove('slide-active');
+      const newIndex = (n + totalSlides) % totalSlides;
+
+      // Remove active class from all slides
+      slides.forEach((slide, index) => {
+        if (index === newIndex) {
+          slide.classList.add('slide-active');
+        } else {
+          slide.classList.remove('slide-active');
+        }
       });
 
-      // Remove active state from all dots
-      dots.forEach(dot => {
-        dot.classList.remove('dot-active');
+      // Remove active state from all dots and add to current
+      dots.forEach((dot, index) => {
+        if (index === newIndex) {
+          dot.classList.add('dot-active');
+        } else {
+          dot.classList.remove('dot-active');
+        }
       });
 
-      // Show the selected slide and dot
-      slides[n].classList.add('slide-active');
-      dots[n].classList.add('dot-active');
-
-      currentSlide = n;
+      currentSlide = newIndex;
     }
 
     // Button event handlers

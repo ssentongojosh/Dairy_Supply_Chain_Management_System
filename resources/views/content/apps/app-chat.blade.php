@@ -35,21 +35,19 @@
   margin-bottom: 1rem;
 }
 
+/* Remove the padding styles from CSS since we're using inline styles for better control */
 .chat-sidebar-search input {
   width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
   border: 1px solid var(--bs-border-color);
   border-radius: 0.375rem;
   font-size: 0.875rem;
+  background-color: #fff;
 }
 
-.chat-sidebar-search .search-icon {
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #a8b1bb;
-  font-size: 1.125rem;
+.chat-sidebar-search input:focus {
+  outline: none;
+  border-color: #696cff;
+  box-shadow: 0 0 0 0.2rem rgba(105, 108, 255, 0.25);
 }
 
 .chat-contacts-header {
@@ -519,8 +517,13 @@
           </div>
 
           <div class="chat-sidebar-search">
-            <i class="ri-search-line search-icon"></i>
-            <input type="text" placeholder="Search contacts..." class="form-control">
+            <div style="position: relative; width: 100%;">
+              <input type="text" placeholder="Search contacts..." class="form-control" style="padding-left: 35px;">
+              <div style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; pointer-events: none;">
+                <i class="ri-search-line" style="font-size: 16px; color: #a8b1bb;"></i>
+              </div>
+              <button type="button" class="btn-close search-clear-btn" style="display: none; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; font-size: 10px; background-size: 10px; border: none; background-color: transparent;"></button>
+            </div>
           </div>
         </div>
 
@@ -623,12 +626,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const chatHeaderName = document.getElementById('chatHeaderName');
     const chatHeaderStatus = document.getElementById('chatHeaderStatus');
     const chatHeaderAvatar = document.getElementById('chatHeaderAvatar');
+    const searchInput = document.querySelector('.chat-sidebar-search input');
 
     console.log('Elements initialized:', {
         chatMessages: !!chatMessages,
         messageInput: !!messageInput,
         sendButton: !!sendButton,
-        contactItems: contactItems.length
+        contactItems: contactItems.length,
+        searchInput: !!searchInput
     });
 
     // Check if all required elements exist
@@ -641,6 +646,96 @@ document.addEventListener('DOMContentLoaded', function() {
     let messages = [];
     let currentContact = 'support';
     let currentContactName = 'DSCMS Support';
+
+    // Contact search functionality
+    if (searchInput) {
+        const clearBtn = document.querySelector('.search-clear-btn');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase().trim();
+            filterContacts(searchTerm);
+
+            // Show/hide clear button
+            if (searchTerm.length > 0) {
+                clearBtn.style.display = 'block';
+            } else {
+                clearBtn.style.display = 'none';
+            }
+        });
+
+        // Clear search button functionality
+        if (clearBtn) {
+            clearBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                filterContacts('');
+                this.style.display = 'none';
+                searchInput.focus();
+            });
+        }
+    }
+
+    // Function to filter contacts based on search term
+    function filterContacts(searchTerm) {
+        let foundResults = false;
+
+        contactItems.forEach(contact => {
+            const name = contact.dataset.name.toLowerCase();
+            const role = contact.querySelector('.contact-status').textContent.toLowerCase();
+            const nameElement = contact.querySelector('.contact-name');
+            const statusElement = contact.querySelector('.contact-status');
+
+            // Reset highlights first
+            nameElement.innerHTML = contact.dataset.name;
+            statusElement.innerHTML = statusElement.textContent;
+
+            if (name.includes(searchTerm) || role.includes(searchTerm) || searchTerm === '') {
+                contact.style.display = 'flex';
+                foundResults = true;
+
+                // Highlight matching text if there's a search term
+                if (searchTerm !== '') {
+                    if (name.includes(searchTerm)) {
+                        const regex = new RegExp(escapeRegExp(searchTerm), 'gi');
+                        nameElement.innerHTML = contact.dataset.name.replace(
+                            regex,
+                            match => `<span class="highlight" style="background-color: rgba(105, 108, 255, 0.2);">${match}</span>`
+                        );
+                    }
+
+                    if (role.includes(searchTerm)) {
+                        const roleText = statusElement.textContent;
+                        const regex = new RegExp(escapeRegExp(searchTerm), 'gi');
+                        statusElement.innerHTML = roleText.replace(
+                            regex,
+                            match => `<span class="highlight" style="background-color: rgba(105, 108, 255, 0.2);">${match}</span>`
+                        );
+                    }
+                }
+            } else {
+                contact.style.display = 'none';
+            }
+        });
+
+        // Show/hide no results message
+        let noResultsMsg = document.getElementById('noSearchResults');
+
+        if (!foundResults) {
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('p');
+                noResultsMsg.id = 'noSearchResults';
+                noResultsMsg.className = 'text-center text-muted p-3';
+                noResultsMsg.textContent = 'No contacts found.';
+                document.querySelector('.chat-contacts-list').appendChild(noResultsMsg);
+            }
+        } else if (noResultsMsg) {
+            noResultsMsg.remove();
+        }
+    }
+
+    // Helper function to escape special characters in regex
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
 
     // Auto-resize textarea
     if (messageInput) {
@@ -677,9 +772,9 @@ document.addEventListener('DOMContentLoaded', function() {
             this.classList.add('active');
 
             // Get contact data
-            const contactId = this.dataset.contact;
+            const contactId = this.dataset.id;
             const contactName = this.dataset.name;
-            const contactStatus = this.dataset.status;
+            const contactStatus = this.dataset.status || 'Online';
 
             // Update current contact
             currentContact = contactId;
@@ -731,24 +826,53 @@ document.addEventListener('DOMContentLoaded', function() {
         // Clear current messages
         messages = [];
 
-        // Show welcome message for new contact
-        if (contactId === 'support') {
+        // Get messages from the server
+        fetch('{{ route('chat.messages') }}?recipient_id=' + contactId, {
+            method: 'GET',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.messages.length > 0) {
+                messages = data.messages;
+                renderMessages();
+                return;
+            }
+
+            // Show welcome message if no messages
+            if (contactId === 'support') {
+                chatMessages.innerHTML = `
+                    <div class="chat-welcome">
+                        <i class="ri-customer-service-2-line chat-welcome-icon"></i>
+                        <h5>DSCMS Support</h5>
+                        <p>Hi! I'm here to help you with any questions about the DSCMS platform.</p>
+                    </div>
+                `;
+            } else {
+                chatMessages.innerHTML = `
+                    <div class="chat-welcome">
+                        <i class="ri-message-3-line chat-welcome-icon"></i>
+                        <h5>${currentContactName}</h5>
+                        <p>Start a conversation with ${currentContactName}.</p>
+                    </div>
+                `;
+            }
+        })
+        .catch(error => {
+            console.error('Error loading messages:', error);
+            // Show error message
             chatMessages.innerHTML = `
                 <div class="chat-welcome">
-                    <i class="ri-customer-service-2-line chat-welcome-icon"></i>
-                    <h5>DSCMS Support</h5>
-                    <p>Hi! I'm here to help you with any questions about the DSCMS platform.</p>
+                    <i class="ri-error-warning-line chat-welcome-icon text-danger"></i>
+                    <h5>Error Loading Messages</h5>
+                    <p>Unable to load your conversation history. Please try again later.</p>
                 </div>
             `;
-        } else {
-            chatMessages.innerHTML = `
-                <div class="chat-welcome">
-                    <i class="ri-message-3-line chat-welcome-icon"></i>
-                    <h5>${currentContactName}</h5>
-                    <p>Start a conversation with ${currentContactName}.</p>
-                </div>
-            `;
-        }
+        });
     }
 
     function loadMessages() {
@@ -757,6 +881,7 @@ document.addEventListener('DOMContentLoaded', function() {
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             }
         })
         .then(response => response.json())
@@ -780,15 +905,20 @@ document.addEventListener('DOMContentLoaded', function() {
         // Disable input while sending
         setInputState(false);
 
+        // Get the currently selected contact ID
+        const recipientId = currentContact !== 'support' ? currentContact : null;
+
         fetch('{{ route('chat.send') }}', {
             method: 'POST',
             headers: {
                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
                 'Content-Type': 'application/json',
+                'Accept': 'application/json'
             },
             body: JSON.stringify({
                 message: message,
-                contact: currentContact
+                contact: currentContact,
+                recipient_id: recipientId
             })
         })
         .then(response => response.json())
@@ -807,11 +937,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 renderMessages();
                 messageInput.value = '';
                 messageInput.style.height = 'auto';
-
-                // Simulate a response after a delay
-                setTimeout(() => {
-                    simulateResponse();
-                }, 1000 + Math.random() * 2000);
             } else {
                 showNotification('Failed to send message. Please try again.', 'error');
             }
@@ -823,65 +948,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .finally(() => {
             setInputState(true);
         });
-    }
-
-    function simulateResponse() {
-        const responses = {
-            support: [
-                "Thanks for reaching out! How can I assist you with DSCMS today?",
-                "I've received your message and I'm here to help. What specific issue are you facing?",
-                "That's a great question! Let me provide you with the information you need.",
-                "I understand your concern. Here's what I recommend...",
-                "Thanks for using DSCMS! Is there anything else I can help you with?",
-                "I'm here 24/7 to support you with any DSCMS related questions."
-            ],
-            team: [
-                "Hey! The development team is currently working on some exciting new features.",
-                "Thanks for the feedback! We'll discuss this in our next sprint planning.",
-                "Great idea! We've added this to our feature request backlog.",
-                "The latest update includes the improvements you suggested.",
-                "We're always looking for ways to improve DSCMS. What do you think about...?"
-            ],
-            admin: [
-                "System status: All services are running normally.",
-                "Your account permissions have been updated successfully.",
-                "New security patches have been applied to the system.",
-                "Scheduled maintenance will occur this weekend from 2-4 AM.",
-                "Database backup completed successfully."
-            ],
-            security: [
-                "Security team here. All systems are secure and monitored 24/7.",
-                "No security threats detected in the last 24 hours.",
-                "Please follow the security guidelines when accessing sensitive data.",
-                "Two-factor authentication is recommended for all admin accounts.",
-                "Security audit completed successfully with no issues found."
-            ],
-            general: [
-                "Welcome to the general discussion! Feel free to share your thoughts.",
-                "That's an interesting point! What does everyone else think?",
-                "Thanks for sharing! This could be a great addition to our roadmap.",
-                "Let's brainstorm some solutions for this challenge.",
-                "Great collaboration everyone! These discussions really help improve DSCMS."
-            ]
-        };
-
-        const contactResponses = responses[currentContact] || responses.support;
-        const randomResponse = contactResponses[Math.floor(Math.random() * contactResponses.length)];
-
-        const responseMessage = {
-            id: Date.now(),
-            sender: currentContactName,
-            message: randomResponse,
-            timestamp: new Date().toLocaleTimeString('en-US', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-            }),
-            is_own: false
-        };
-
-        messages.push(responseMessage);
-        renderMessages();
     }
 
     function renderMessages() {
@@ -943,6 +1009,22 @@ document.addEventListener('DOMContentLoaded', function() {
     window.addEventListener('resize', function() {
         if (window.innerWidth > 991 && chatSidebar && chatSidebar.classList.contains('show')) {
             chatSidebar.classList.remove('show');
+        }
+    });
+
+    // Add keyboard shortcut for search (Ctrl+F or Cmd+F)
+    document.addEventListener('keydown', function(e) {
+        // Check if Ctrl+F or Cmd+F is pressed and we're not in an input field
+        if ((e.ctrlKey || e.metaKey) && e.key === 'f' &&
+            !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+            e.preventDefault(); // Prevent the browser's default search
+            if (searchInput) {
+                // If sidebar is hidden on mobile, show it first
+                if (window.innerWidth <= 991 && chatSidebar) {
+                    chatSidebar.classList.add('show');
+                }
+                searchInput.focus();
+            }
         }
     });
 
