@@ -22,7 +22,7 @@ public class UploadController {
         this.ursbCertificateService = ursbCertificateService;
     }
 
-    @PostMapping("/doc")
+    @PostMapping("/verified")
     public ResponseEntity<?> fileUpload(@ModelAttribute ValidationRequest request){
 
       if(idService.isVerified(request.getNationalId()) && ursbCertificateService.isVerified(request.getUrsbCertificate())){
