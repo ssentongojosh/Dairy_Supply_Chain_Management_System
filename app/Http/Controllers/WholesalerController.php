@@ -1,67 +1,92 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Order;
+use App\Models\User;
+use App\Models\Product;
+use Illuminate\Http\Request;
+
 class WholesalerController extends Controller
 {
+    // View incoming orders from retailers
     public function index()
     {
-        // Incoming orders from retailers
-        $incomingOrders = Order::where('seller_id', auth()->id())->with('buyer', 'items')->get();
-
-        return view('wholesaler.dashboard', compact('incomingOrders'));
+        $incomingOrders = Order::where('seller_id', auth()->id())
+                              ->with('buyer', 'items.product')
+                              ->get();
+        
+        $factories = User::where('role', 'factory')->get();
+        $products = Product::all();
+        
+        return view('wholesaler.dashboard', compact('incomingOrders', 'factories', 'products'));
     }
 
+    // Approve retailer order
     public function approveOrder(Order $order)
     {
-        // Only allow wholesaler to approve orders directed to them
         if ($order->seller_id !== auth()->id()) {
             abort(403);
         }
 
         $order->update(['status' => 'approved']);
+        
+        // Automatically create factory order if needed
+        $this->createFactoryOrder($order);
 
-        return redirect()->route('wholesaler.dashboard')->with('success', 'Order approved!');
+        return redirect()->route('wholesaler.dashboard')
+                        ->with('success', 'Retailer order approved and factory order created!');
     }
 
-    public function createOrder()
+    // Mark retailer order as shipped
+    public function markShipped(Order $order)
     {
-        $factories = User::role('factory')->get();
-        $products = Product::whereIn('owner_id', $factories->pluck('id'))->get();
+        if ($order->seller_id !== auth()->id() || $order->status !== 'approved') {
+            abort(403);
+        }
 
-        return view('wholesaler.create-order', compact('factories', 'products'));
+        $order->update(['status' => 'shipped']);
+
+        return redirect()->route('wholesaler.dashboard')
+                        ->with('success', 'Order marked as shipped.');
     }
 
-    public function storeOrder(Request $request)
+    // Create order to factory
+    public function createFactoryOrder(Order $retailerOrder)
     {
-        $request->validate([
-            'seller_id' => 'required|exists:users,id',
-            'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1'
+        // Find default factory or use logic to select appropriate factory
+        $factory = User::where('role', 'factory')->first();
+        
+        $factoryOrder = Order::create([
+            'buyer_id' => auth()->id(),
+            'seller_id' => $factory->id,
+            'status' => 'pending',
+            'payment_status' => 'unpaid',
+            'parent_order_id' => $retailerOrder->id // Link to retailer order
         ]);
-
-        DB::transaction(function () use ($request) {
-            $order = Order::create([
-                'buyer_id' => auth()->id(),
-                'seller_id' => $request->seller_id,
-                'status' => 'pending',
-                'total_amount' => 0,
+        
+        // Convert retailer order items to factory order items
+        foreach ($retailerOrder->items as $item) {
+            $factoryOrder->items()->create([
+                'product_id' => $item->product_id,
+                'quantity' => $item->quantity * 2 // Example: order 2x from factory for 1x retailer order
             ]);
-
-            $total = 0;
-            foreach ($request->items as $item) {
-                $product = Product::findOrFail($item['product_id']);
-                $subtotal = $product->price * $item['quantity'];
-                $total += $subtotal;
-
-                $order->items()->create([
-                    'product_id' => $product->id,
-                    'quantity' => $item['quantity'],
-                    'price' => $product->price,
-                ]);
-            }
-
-            $order->update(['total_amount' => $total]);
-        });
-
-        return redirect()->route('wholesaler.dashboard')->with('success', 'Order sent to factory.');
+        }
+        
+        return $factoryOrder;
+    }
+    
+    // View factory orders
+    public function factoryOrders()
+    {
+        $factoryOrders = Order::where('buyer_id', auth()->id())
+                             ->whereHas('seller', function($q) {
+                                 $q->where('role', 'factory');
+                             })
+                             ->with('seller', 'items.product')
+                             ->get();
+        
+        return view('wholesaler.factory_orders', compact('factoryOrders'));
     }
 }
 

@@ -200,3 +200,64 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/verification/pending', [DocumentVerificationController::class, 'pendingVerification'])
         ->name('verification.pending');
 });
+
+use App\Http\Controllers\SupplierOrderController;
+
+Route::prefix('supplier')->name('supplier.')->group(function () {
+    Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+
+    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approve'])->name('orders.approve');
+
+    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'ship'])->name('orders.ship');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    // Payment routes
+    Route::get('/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])
+        ->name('payments.initiate');
+    Route::post('/orders/{order}/pay', [PaymentController::class, 'processPayment'])
+        ->name('payments.process');
+});
+
+Route::middleware(['auth', 'order.paid'])->group(function () {
+    Route::post('/orders/{order}/approve', [SupplierController::class, 'approveOrder']);
+    Route::post('/orders/{order}/ship', [SupplierController::class, 'markShipped']);
+});
+
+Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(function () {
+    // Retailer orders
+    Route::get('/dashboard', [WholesalerController::class, 'index'])->name('wholesaler.dashboard');
+    Route::post('/orders/{order}/approve', [WholesalerController::class, 'approveOrder'])->name('wholesaler.orders.approve');
+    Route::post('/orders/{order}/ship', [WholesalerController::class, 'markShipped'])->name('wholesaler.orders.ship');
+    
+    // Factory orders
+    Route::get('/factory-orders', [WholesalerController::class, 'factoryOrders'])->name('wholesaler.factory.orders');
+    Route::post('/factory-orders', [WholesalerController::class, 'storeFactoryOrder'])->name('wholesaler.factory.orders.store');
+});
+Route::prefix('factory')->middleware(['auth', 'role:factory'])->group(function () {
+    // Wholesaler orders
+    Route::get('/dashboard', [FactoryController::class, 'index'])->name('factory.dashboard');
+    Route::post('/orders/{order}/approve', [FactoryController::class, 'approveOrder'])->name('factory.orders.approve');
+    Route::post('/orders/{order}/ship', [FactoryController::class, 'markShipped'])->name('factory.orders.ship');
+    
+    // Supplier orders
+    Route::get('/supplier-orders', [FactoryController::class, 'supplierOrders'])->name('factory.supplier.orders');
+    Route::post('/supplier-orders', [FactoryController::class, 'storeSupplierOrder'])->name('factory.supplier.orders.store');
+});
+
+//retailer orders
+Route::prefix('retailer')->middleware(['auth', 'role:retailer'])->group(function () {
+    Route::get('/dashboard', [RetailerController::class, 'index'])->name('retailer.dashboard');
+    Route::post('/orders', [RetailerController::class, 'storeOrder'])->name('retailer.orders.store');
+    Route::get('/orders/{order}', [RetailerController::class, 'showOrder'])->name('retailer.orders.show');
+    Route::post('/orders/{order}/receive', [RetailerController::class, 'markReceived'])->name('retailer.orders.receive');
+});
+
+// For all roles
+Route::middleware('auth')->group(function () {
+    Route::get('/orders/{order}/verify', [PaymentController::class, 'showVerificationForm'])
+         ->name('payments.verify.form');
+    Route::post('/orders/{order}/verify', [PaymentController::class, 'verifyPayment'])
+         ->name('payments.verify');
+});

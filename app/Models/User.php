@@ -82,6 +82,23 @@ class User extends Authenticatable
     {
         return in_array($this->role, [Role::WHOLESALER, Role::RETAILER]);
     }
+    // In Product.php (for Bill of Materials)
+public function materials()
+{
+    return $this->belongsToMany(Product::class, 'product_materials', 'product_id', 'material_id')
+                ->withPivot('quantity');
+}
+
+// In Order.php
+public function parentOrder()
+{
+    return $this->belongsTo(Order::class, 'parent_order_id');
+}
+
+public function childOrders()
+{
+    return $this->hasMany(Order::class, 'parent_order_id');
+}
 }
 
 

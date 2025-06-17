@@ -11,10 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+        Schema::table('payments', function (Blueprint $table) {
+    $table->foreignId('verified_by')->nullable()->constrained('users');
+    $table->text('verification_notes')->nullable();
+});
     }
 
     /**
@@ -22,6 +22,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::table('payments', function (Blueprint $table) {
+            //
+        });
     }
 };

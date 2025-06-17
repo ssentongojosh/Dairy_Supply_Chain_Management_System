@@ -15,26 +15,34 @@ class SupplierController extends Controller
         return view('supplier.dashboard', compact('incomingOrders'));
     }
 
-    public function approveOrder(Order $order)
-    {
-        if ($order->seller_id !== auth()->id()) {
-            abort(403);
-        }
+ public function approveOrder(Order $order)
+{
+    if ($order->seller_id !== auth()->id()) {
+        abort(403);
+    }
 
+    // Only approve if payment is completed
+    if ($order->payment_status === 'paid') {
         $order->update(['status' => 'approved']);
-
         return redirect()->route('supplier.dashboard')->with('success', 'Order approved!');
     }
 
-    public function markShipped(Order $order)
-    {
-        if ($order->seller_id !== auth()->id() || $order->status !== 'approved') {
-            abort(403);
-        }
+    return back()->with('error', 'Order must be paid before approval');
+}
 
+public function markShipped(Order $order)
+{
+    if ($order->seller_id !== auth()->id() || $order->status !== 'approved') {
+        abort(403);
+    }
+
+    // Only ship if payment is completed
+    if ($order->payment_status === 'paid') {
         $order->update(['status' => 'shipped']);
-
         return redirect()->route('supplier.dashboard')->with('success', 'Order marked as shipped.');
     }
+
+    return back()->with('error', 'Order must be paid before shipping');
+}
 }
 

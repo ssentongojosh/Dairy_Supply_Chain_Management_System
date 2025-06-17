@@ -59,6 +59,36 @@
                 <button type="submit" class="btn btn-primary">Send Order</button>
                 <a href="{{ route('factory.dashboard') }}" class="btn btn-link">Cancel</a>
             </div>
+            <div class="mb-3">
+    <label for="payment_method" class="form-label">Payment Method</label>
+    <select name="payment_method" id="payment_method" class="form-select" required>
+        <option value="" disabled selected>Choose payment method</option>
+        <option value="mpesa">M-Pesa</option>
+        <option value="bank">Bank Transfer</option>
+        <option value="credit">Credit (30 days)</option>
+    </select>
+</div>
+
+<div id="mpesa-details" class="mb-3" style="display: none;">
+    <label for="mpesa_number" class="form-label">M-Pesa Phone Number</label>
+    <input type="text" name="mpesa_number" id="mpesa_number" class="form-control" placeholder="e.g. 254712345678">
+</div>
+
+<div id="bank-details" class="mb-3" style="display: none;">
+    <label for="bank_reference" class="form-label">Bank Reference Number</label>
+    <input type="text" name="bank_reference" id="bank_reference" class="form-control">
+</div>
+<div class="card mb-3">
+    <div class="card-header">Order Summary</div>
+    <div class="card-body">
+        <div id="order-summary">
+            <p>Total Items: <span id="total-items">0</span></p>
+            <p>Subtotal: Ksh <span id="subtotal">0.00</span></p>
+            <p>Tax (16%): Ksh <span id="tax">0.00</span></p>
+            <p class="fw-bold">Total: Ksh <span id="total">0.00</span></p>
+        </div>
+    </div>
+</div>
         </form>
     </div>
 
@@ -89,6 +119,10 @@
                     <div class="col-md-3 d-flex align-items-end">
                         <button type="button" class="btn btn-danger btn-remove-item">Remove</button>
                     </div>
+                    <div class="mb-3">
+    <label for="notes" class="form-label">Order Notes (Optional)</label>
+    <textarea name="notes" id="notes" class="form-control" rows="3">{{ old('notes') }}</textarea>
+</div>
                 `;
 
                 orderItemsContainer.appendChild(newItem);
@@ -102,5 +136,79 @@
                 }
             });
         });
+
+        // Payment method toggle
+const paymentMethod = document.getElementById('payment_method');
+const mpesaDetails = document.getElementById('mpesa-details');
+const bankDetails = document.getElementById('bank-details');
+
+paymentMethod.addEventListener('change', () => {
+    mpesaDetails.style.display = 'none';
+    bankDetails.style.display = 'none';
+    
+    if (paymentMethod.value === 'mpesa') {
+        mpesaDetails.style.display = 'block';
+    } else if (paymentMethod.value === 'bank') {
+        bankDetails.style.display = 'block';
+    }
+});
+// Price calculation
+function calculateTotal() {
+    let totalItems = 0;
+    let subtotal = 0;
+    
+    document.querySelectorAll('.order-item').forEach(item => {
+        const productSelect = item.querySelector('select[name^="items"]');
+        const quantityInput = item.querySelector('input[name^="items"]');
+        
+        if (productSelect && quantityInput) {
+            const selectedOption = productSelect.options[productSelect.selectedIndex];
+            const priceText = selectedOption.text.match(/\$([\d.]+)/);
+            
+            if (priceText && priceText[1]) {
+                const price = parseFloat(priceText[1]);
+                const quantity = parseInt(quantityInput.value) || 0;
+                
+                totalItems += quantity;
+                subtotal += price * quantity;
+            }
+        }
+    });
+    
+    const tax = subtotal * 0.16;
+    const total = subtotal + tax;
+    
+    document.getElementById('total-items').textContent = totalItems;
+    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('tax').textContent = tax.toFixed(2);
+    document.getElementById('total').textContent = total.toFixed(2);
+}
+
+// Recalculate when products or quantities change
+orderItemsContainer.addEventListener('change', (e) => {
+    if (e.target.name.includes('product_id') || e.target.name.includes('quantity')) {
+        calculateTotal();
+    }
+});
+
+// Initial calculation
+calculateTotal();
+document.querySelector('form').addEventListener('submit', (e) => {
+    const paymentMethod = document.getElementById('payment_method').value;
+    
+    if (paymentMethod === 'mpesa' && !document.getElementById('mpesa_number').value) {
+        e.preventDefault();
+        alert('Please enter your M-Pesa phone number');
+        return;
+    }
+    
+    if (paymentMethod === 'bank' && !document.getElementById('bank_reference').value) {
+        e.preventDefault();
+        alert('Please enter your bank reference number');
+        return;
+    }
+    
+    // Additional validation if needed
+});
     </script>
 @endsection
