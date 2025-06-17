@@ -15,7 +15,7 @@ public class IdService {
         this.documentVerification = documentVerification;
     }
 
-    public ResponseEntity<?> verify (MultipartFile nationalId) {
+    public boolean isVerified (MultipartFile nationalId) {
 
         String extractedText = documentVerification.extractText(nationalId);
 
@@ -26,7 +26,7 @@ public class IdService {
 
         //Verification logic based on the extracted text
 
-        return ResponseEntity.ok(text);
+        return true;
 
         //Pattern pattern = Pattern.compile("cupcake?", Pattern.CASE_INSENSITIVE);
 
