@@ -9,6 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::create('order_items', function (Blueprint $table) {
+            $table->engine = 'InnoDB';
             $table->id();
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('product_id');

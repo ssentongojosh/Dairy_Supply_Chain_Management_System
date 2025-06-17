@@ -71,8 +71,11 @@ class DocumentVerificationController extends Controller
         $javaUrl = env('JAVA_SERVER_URL', 'http://localhost:8080');
         $fileContents = Storage::disk('private')->get($path);
         $response = Http::timeout(120)
-            ->attach('nationalId', $fileContents, basename($path))
-            ->post($javaUrl . '/doc');
+            ->attach('file', $fileContents, basename($path))
+            ->post($javaUrl . '/verification', [
+                'user_id' => $user->id,
+                'business_description' => $request->input('business_description'),
+            ]);
 
         if ($response->ok()) {
             $extractedText = $response->body();
