@@ -11,10 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->engine = 'InnoDB';
-            $table->id();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('national_id_path')->nullable()->after('business_document_path');
         });
     }
 
@@ -23,7 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('national_id_path');
+        });
     }
 };
-

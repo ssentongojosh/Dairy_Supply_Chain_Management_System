@@ -58,28 +58,43 @@ class DocumentVerificationController extends Controller
         if (!$user) return redirect()->route('login')->withErrors(['session_error' => 'Your session is invalid. Please log in again.']);
 
         $request->validate([
-            'business_document' => ['required', 'file', 'mimes:pdf', 'max:10240'],
+            'national_id' => ['required', 'file', 'mimes:pdf', 'max:10240'],
+            'ursb_certificate' => ['required', 'file', 'mimes:pdf', 'max:10240'],
             'business_description' => 'required|string|max:1000'
         ]);
 
-        $path = $request->file('business_document')->store('business-documents/' . $user->id, 'private');
+        // Store both files
+        $nationalIdPath = $request->file('national_id')->store('business-documents/' . $user->id . '/national-id', 'private');
+        $ursbCertificatePath = $request->file('ursb_certificate')->store('business-documents/' . $user->id . '/ursb-certificate', 'private');
 
-        $user->business_document_path = $path;
+        // Save paths to user record
+        $user->business_document_path = $ursbCertificatePath; // For backward compatibility
+        $user->national_id_path = $nationalIdPath; // New field - you may need to add this to your users table
         $user->save();
 
         // Call Java verification microservice
         $javaUrl = env('JAVA_SERVER_URL', 'http://localhost:8080');
-        $fileContents = Storage::disk('private')->get($path);
+        $nationalIdContents = Storage::disk('private')->get($nationalIdPath);
+        $ursbCertificateContents = Storage::disk('private')->get($ursbCertificatePath);
+
         $response = Http::timeout(120)
-            ->attach('nationalId', $fileContents, basename($path))
-            ->post($javaUrl . '/doc');
+            ->attach('nationalId', $nationalIdContents, basename($nationalIdPath))
+            ->attach('ursbCertificate', $ursbCertificateContents, basename($ursbCertificatePath))
+            ->post($javaUrl . '/verified', [
+                'user_id' => $user->id,
+            ]);
 
         if ($response->ok()) {
-            $extractedText = $response->body();
-            $verified = trim($extractedText) !== '';
-            $user->verified = $verified;
-            $user->verification_notes = $extractedText;
-            $user->save();
+            $responseBody = $response->body();
+            if (strpos($responseBody, "Verified successfully") !== false) {
+                $user->verified = true;
+                $user->verification_notes = "Document verified successfully via Java server.";
+                $user->save();
+            } else {
+                $user->verified = false;
+                $user->verification_notes = "Verification failed. Please submit a valid document.";
+                $user->save();
+            }
         } else {
             return redirect()->route('verification.pending')
                 ->with('error', 'Document processing failed on Java server.');
@@ -114,7 +129,7 @@ class DocumentVerificationController extends Controller
             Log::error('User role in redirectToDashboard is not valid.', ['user_id' => $user->id, 'role_data' => $userRole]);
             return redirect()->route('home')->with('error', 'Invalid user role.');
         }
-        
+
         switch ($roleValue) {
             case 'admin':
             case 'retailer': // Assuming retailer also goes to analytics

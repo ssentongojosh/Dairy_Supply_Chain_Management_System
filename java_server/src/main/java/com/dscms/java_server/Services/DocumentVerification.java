@@ -101,7 +101,7 @@ public class DocumentVerification {
         Mat blurredImage = new Mat();
         Imgproc.GaussianBlur(gray, blurredImage, new Size(5,5),0);
 
-        return blurredImage;
+        return gray;
     }
 
     //Method to turn a Mat object(the preprocessed image in this case) to a buffered image
