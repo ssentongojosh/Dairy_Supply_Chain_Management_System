@@ -194,4 +194,15 @@ Route::middleware(['auth'])->group(function () {
         ->name('verification.upload.submit');
     Route::get('/verification/pending', [DocumentVerificationController::class, 'pendingVerification'])
         ->name('verification.pending');
+
+
+//route for product
+Route::resource('products', \App\Http\Controllers\ProductController::class);
+
+//route for order
+Route::resource('orders', \App\Http\Controllers\OrderController::class);
+
+//route for inventory
+Route::resource('inventories', \App\Http\Controllers\InventoryController::class);
+
 });
