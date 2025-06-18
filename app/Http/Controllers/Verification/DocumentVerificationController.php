@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Verification;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\Role;
-use App\Models\User; // Import User model
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 
@@ -44,7 +45,6 @@ class DocumentVerificationController extends Controller
         $user = $this->ensureUserIsValid('showUploadForm');
         if (!$user) return redirect()->route('login')->withErrors(['session_error' => 'Your session is invalid. Please log in again.']);
 
-
         if ($user->verified) {
             return $this->redirectToDashboard($user);
         }
@@ -74,34 +74,71 @@ class DocumentVerificationController extends Controller
 
         // Call Java verification microservice
         $javaUrl = env('JAVA_SERVER_URL', 'http://localhost:8080');
+
+        Log::info('Preparing to send documents to Java server', [
+            'url' => $javaUrl . '/verification',
+            'nationalIdSize' => Storage::disk('private')->size($nationalIdPath),
+            'ursbCertificateSize' => Storage::disk('private')->size($ursbCertificatePath),
+            'user_id' => $user->id
+        ]);
+
         $nationalIdContents = Storage::disk('private')->get($nationalIdPath);
         $ursbCertificateContents = Storage::disk('private')->get($ursbCertificatePath);
 
-        $response = Http::timeout(120)
-            ->attach('nationalId', $nationalIdContents, basename($nationalIdPath))
-            ->attach('ursbCertificate', $ursbCertificateContents, basename($ursbCertificatePath))
-            ->post($javaUrl . '/verification', [
-                'user_id' => $user->id,
+        try {
+            $response = Http::timeout(120)
+                ->attach('nationalId', $nationalIdContents, basename($nationalIdPath))
+                ->attach('ursbCertificate', $ursbCertificateContents, basename($ursbCertificatePath))
+                ->post($javaUrl . '/verification', [
+                    'user_id' => $user->id,
+                ]);
+
+            // Log the response for debugging
+            Log::info('Java server verification response', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+                'headers' => $response->headers()
             ]);
 
-        if ($response->ok()) {
-            $responseBody = $response->body();
-            if (strpos($responseBody, "Verified successfully") !== false) {
-                $user->verified = true;
-                $user->verification_notes = "Document verified successfully via Java server.";
-                $user->save();
-            } else {
-                $user->verified = false;
-                $user->verification_notes = "Verification failed. Please submit a valid document.";
-                $user->save();
-            }
-        } else {
-            return redirect()->route('verification.pending')
-                ->with('error', 'Document processing failed on Java server.');
-        }
+            if ($response->ok()) {
+                $responseBody = $response->body();
+                Log::debug('Response body for verification', ['body' => $responseBody]);
 
-        return redirect()->route('verification.pending')
-            ->with('success', 'Document uploaded and verification initiated.');
+                // Look for the success message in various forms
+                if (strpos($responseBody, "Verified successfully") !== false ||
+                    strpos($responseBody, "verified successfully") !== false ||
+                    strpos($responseBody, "verification successful") !== false) {
+                    $user->verified = true;
+                    $user->verification_notes = "Document verified successfully via Java server.";
+                    $user->save();
+
+                    // Redirect directly to dashboard on success
+                    return $this->redirectToDashboard($user)
+                        ->with('success', 'Your documents have been verified successfully. Welcome to the system!');
+                } else {
+                    $user->verified = false;
+                    $user->verification_notes = "Verification failed. Please submit a valid document.";
+                    $user->save();
+
+                    return redirect()->route('verification.pending')
+                        ->with('warning', 'Document verification failed. Our team will review your submission manually.');
+                }
+            } else {
+                Log::error('Java server returned an error', [
+                    'status' => $response->status(),
+                    'body' => $response->body()
+                ]);
+                return redirect()->route('verification.pending')
+                    ->with('error', 'Document processing failed on Java server. Please try again later or contact support.');
+            }
+        } catch (\Exception $e) {
+            Log::error('Exception while communicating with Java server', [
+                'exception' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->route('verification.pending')
+                ->with('error', 'Connection to document verification service failed: ' . $e->getMessage());
+        }
     }
 
     public function pendingVerification()
@@ -132,13 +169,12 @@ class DocumentVerificationController extends Controller
 
         switch ($roleValue) {
             case 'admin':
-                return redirect()->route('dashboard.analytics');
             case 'retailer': // Assuming retailer also goes to analytics
-                return redirect()->route('retailer.dashboard');
-            case 'wholesaler':
-                return redirect()->route('wholesaler.dashboard');
-            case 'farmer':
-                return redirect()->route('farmer.dashboard');
+                return redirect()->route('dashboard.analytics');
+            // case 'wholesaler':
+            //     return redirect()->route('wholesaler.dashboard');
+            // case 'farmer':
+            //     return redirect()->route('farmer.dashboard');
             default:
                 return redirect()->route('home');
         }
