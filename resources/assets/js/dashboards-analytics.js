@@ -22,7 +22,7 @@ import 'datatables.net-buttons/js/buttons.html5.js';
 
 // Now all DataTable plugins are attached to jQuery
 
-$(function() {
+$(function () {
   'use strict';
 
   // Chart setup
@@ -460,22 +460,24 @@ $(function() {
   // === DataTables & CRUD ===
   const usersTable = $('#users-table').DataTable({
     responsive: true,
-    dom: 'rtip',       // r=processing, t=table, i=info, p=pagination (no default filter or buttons)
-    buttons: ['excelHtml5']  // Only Excel export, removed PDF button
+    dom: 'rt', // r=processing, t=table only (no pagination, no info)
+    paging: false, // Disable DataTables pagination
+    info: false, // Disable DataTables info
+    buttons: ['excelHtml5'] // Only Excel export, removed PDF button
   });
 
   // Custom search input binding
-  $('#dt-search-0').on('keyup', function() {
+  $('#dt-search-0').on('keyup', function () {
     usersTable.search(this.value).draw();
   });
 
   // Custom length selector binding
-  $('#dt-length-0').on('change', function() {
+  $('#dt-length-0').on('change', function () {
     usersTable.page.len(this.value).draw();
   });
 
   // Add/Edit User Form via AJAX
-  $('#addNewUserForm').on('submit', function(e) {
+  $('#addNewUserForm').on('submit', function (e) {
     e.preventDefault();
     const formData = new FormData(this);
     const userId = formData.get('id');
@@ -486,7 +488,7 @@ $(function() {
       processData: false,
       contentType: false,
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-      success: function() {
+      success: function () {
         bootstrap.Offcanvas.getInstance(document.getElementById('offcanvasAddUser')).hide();
         location.reload();
       }
@@ -496,18 +498,18 @@ $(function() {
   // Delete User via Modal and AJAX
   let deleteUrl = '';
   let deleteRow = null;
-  $('#deleteUserModal').on('show.bs.modal', function(e) {
+  $('#deleteUserModal').on('show.bs.modal', function (e) {
     const btn = $(e.relatedTarget);
     deleteUrl = btn.data('url');
     deleteRow = btn.closest('tr');
     $('#deleteUserName').text(btn.data('name'));
   });
-  $('#confirmDeleteUser').on('click', function() {
+  $('#confirmDeleteUser').on('click', function () {
     $.ajax({
       url: deleteUrl,
       type: 'DELETE',
       headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-      success: function() {
+      success: function () {
         bootstrap.Modal.getInstance(document.getElementById('deleteUserModal')).hide();
         usersTable.row(deleteRow).remove().draw(false);
       }
@@ -515,7 +517,9 @@ $(function() {
   });
 
   // Static export button binding (use class selector for Excel button)
-  $('#staticExportBtn').off('click').on('click', function() {
-    usersTable.button(0).trigger();
-  });
+  $('#staticExportBtn')
+    .off('click')
+    .on('click', function () {
+      usersTable.button(0).trigger();
+    });
 });

@@ -8,6 +8,37 @@
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.6/css/buttons.bootstrap5.min.css">
 <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.4.1/css/responsive.bootstrap5.min.css">
+<style>
+    .dt-paging {
+        max-width: 100%;
+        overflow-x: auto;
+    }
+    .dt-paging .pagination {
+        margin-bottom: 0;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+    .dt-paging .page-link {
+        white-space: nowrap;
+        padding: .375rem .5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .dt-paging .page-item {
+        margin-bottom: 5px;
+    }
+    .dt-paging .page-item.active .page-link {
+        background-color: #696cff;
+        border-color: #696cff;
+    }
+    .dt-paging .page-item .page-link:focus {
+        box-shadow: none;
+    }
+    .dt-paging .icon-base {
+        font-size: 1.2rem;
+    }
+</style>
 @endpush
 
 @section('content')
@@ -218,9 +249,9 @@
                     </div>
                 </div>
                 <div class="row mx-3 justify-content-between">
-                    <div class="d-md-flex align-items-center dt-layout-end col-md-auto ms-auto d-flex gap-md-4 justify-content-md-between justify-content-center gap-md-2 flex-wrap mt-0">
-                        <div class="dt-paging">
-                            {{ $users->links() }} {{-- Laravel Pagination Links --}}
+                    <div class="col-12 d-flex justify-content-end">
+                         <div class="dt-paging mt-3">
+                            {{ $users->links('pagination.custom') }} {{-- Custom pagination view --}}
                         </div>
                     </div>
                 </div>
@@ -258,7 +289,7 @@
                     <label for="add-user-company">Company</label>
                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
                 </div>
-                <div class="form-floating form-floating-outline mb-5 form-floating-select2">
+                {{-- <div class="form-floating form-floating-outline mb-5 form-floating-select2">
                     <div class="position-relative">
                         <select id="country" class="select2 form-select select2-hidden-accessible" data-select2-id="country" tabindex="-1" aria-hidden="true" name="country">
                             <option value="" data-select2-id="2">Select</option>
@@ -289,24 +320,21 @@
                         </select>
                     </div>
                     <label for="country">Country</label>
-                </div>
+                </div> --}}
                 <div class="form-floating form-floating-outline mb-5">
                     <select id="user-role" class="form-select" name="role">
-                        <option value="subscriber">Subscriber</option>
-                        <option value="editor">Editor</option>
-                        <option value="maintainer">Maintainer</option>
-                        <option value="author">Author</option>
+                        <option value="subscriber">Plant Manager</option>
+                        <option value="editor">Inspector</option>
+                        <option value="maintainer">Driver</option>
+                        <option value="author">Plant Worker</option>
                         <option value="admin">Admin</option>
                         {{-- Add other specific roles for your dairy system --}}
-                        <option value="farmer">Farmer</option>
-                        <option value="collector">Collector</option>
-                        <option value="processor">Processor</option>
-                        <option value="qc_officer">QC Officer</option>
+
                         <option value="sales_manager">Sales Manager</option>
                     </select>
                     <label for="user-role">User Role</label>
                 </div>
-                <div class="form-floating form-floating-outline mb-5">
+                {{-- <div class="form-floating form-floating-outline mb-5">
                     <select id="user-plan" class="form-select" name="plan">
                         <option value="basic">Basic</option>
                         <option value="enterprise">Enterprise</option>
@@ -314,7 +342,7 @@
                         <option value="team">Team</option>
                     </select>
                     <label for="user-plan">Select Plan</label>
-                </div>
+                </div> --}}
                 <div class="form-check mb-5">
                     <input class="form-check-input" type="checkbox" value="1" id="add-user-verified" name="verified">
                     <label class="form-check-label" for="add-user-verified">
@@ -353,4 +381,38 @@
 @vite(['resources/assets/vendor/libs/apex-charts/apex-charts.js',
         'resources/assets/vendor/libs/datatables-bs5/datatables.bootstrap5.js',
         'resources/assets/js/dashboards-analytics.js'])
+<script>
+    // Handle pagination links to work with DataTables
+    $(document).ready(function() {
+        // Listen for pagination clicks and update the table
+        $(document).on('click', '.dt-paging .pagination a', function(e) {
+            e.preventDefault();
+
+            // Get the URL from the pagination link
+            let url = $(this).attr('href');
+
+            // Reload the page with the new URL
+            window.location.href = url;
+        });
+
+        // Ensure the pagination container is properly styled
+        $('.dt-paging').css('max-width', '100%');
+
+        // If the pagination is wider than its container, add scrolling
+        if ($('.dt-paging').width() > $('.col-12').width()) {
+            $('.dt-paging').css('overflow-x', 'auto');
+        }
+
+        // Listen for window resize
+        $(window).on('resize', function() {
+            // Reset width to recalculate
+            $('.dt-paging').css('width', '');
+
+            // If the pagination is wider than its container, add scrolling
+            if ($('.dt-paging').width() > $('.col-12').width()) {
+                $('.dt-paging').css('overflow-x', 'auto');
+            }
+        });
+    });
+</script>
 @endpush
