@@ -12,7 +12,7 @@
                 <strong>Method:</strong> {{ Str::upper($payment->method) }}
             </div>
 
-            <form method="POST" action="{{ route('retailer.payments.verify', $order) }}">
+            <form method="POST" action="{{ route('payments.verify', $order) }}">
                 @csrf
 
                 <div class="mb-3">

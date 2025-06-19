@@ -6,6 +6,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use App\Enums\Role;
+use App\Models\Inventory;
+use App\Models\Product;
 
 class User extends Authenticatable
 {
@@ -82,23 +84,30 @@ class User extends Authenticatable
     {
         return in_array($this->role, [Role::WHOLESALER, Role::RETAILER]);
     }
-    // In Product.php (for Bill of Materials)
-public function materials()
-{
-    return $this->belongsToMany(Product::class, 'product_materials', 'product_id', 'material_id')
-                ->withPivot('quantity');
-}
 
-// In Order.php
-public function parentOrder()
-{
-    return $this->belongsTo(Order::class, 'parent_order_id');
-}
+    // Inventory relationship
+    public function inventory()
+    {
+        return $this->hasMany(Inventory::class);
+    }
 
-public function childOrders()
-{
-    return $this->hasMany(Order::class, 'parent_order_id');
-}
+    // Orders where this user is the buyer
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'buyer_id');
+    }
+
+    // Orders where this user is the seller
+    public function sales()
+    {
+        return $this->hasMany(Order::class, 'seller_id');
+    }
+
+    // Products sold by this user (if they are a vendor)
+    public function products()
+    {
+        return $this->hasMany(Product::class, 'vendor_id');
+    }
 }
 
 

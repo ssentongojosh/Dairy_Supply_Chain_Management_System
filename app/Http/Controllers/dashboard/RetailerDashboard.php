@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\Order;
+use App\Models\User;
+use App\Models\Product;
+use App\Models\Inventory;
+use Illuminate\Support\Facades\DB;
 
 class RetailerDashboard extends Controller
 {
@@ -16,57 +21,147 @@ class RetailerDashboard extends Controller
     {
         $user = Auth::user();
 
-        // Dashboard metrics placeholders (replace with real queries)
-        $pendingOrdersCount         = 0;
-        $lowStockProductsCount      = 0;
-        $totalSalesThisMonth        = 0.00;
-        $newOrdersToday             = 0;
-        $totalUniqueProducts        = 0;
-        $outOfStockProductsCount    = 0;
+        // Get current date and month boundaries
+        $today = Carbon::today();
+        $startOfMonth = Carbon::now()->startOfMonth();
+        $endOfMonth = Carbon::now()->endOfMonth();
 
-        // Sample chart data (replace with dynamic data)
-        $salesChartLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        $salesChartData   = [12000, 15000, 13000, 17000];
+        // Dashboard metrics from database
+        $pendingOrdersCount = Order::where('buyer_id', $user->id)
+            ->where('status', 'pending')
+            ->count();
 
-        $ordersChartLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        $ordersChartData   = [50, 60, 55, 80];
+        $newOrdersToday = Order::where('buyer_id', $user->id)
+            ->whereDate('created_at', $today)
+            ->count();
 
-        // Mock recent orders data
-        $recentOrders = collect([
-            (object) ['id' => 1001, 'customer_name' => 'John Doe', 'total_amount' => 250000, 'status' => 'pending', 'created_at' => Carbon::now()->subDays(1)],
-            (object) ['id' => 1002, 'customer_name' => 'Jane Smith', 'total_amount' => 475000, 'status' => 'shipped', 'created_at' => Carbon::now()->subDays(2)],
-            (object) ['id' => 1003, 'customer_name' => 'Acme Corp', 'total_amount' => 1250000, 'status' => 'delivered', 'created_at' => Carbon::now()->subDays(3)],
-        ]);
+        // Get retailer's inventory data
+        $inventory = Inventory::where('user_id', $user->id)->get();
 
-        // Mock products to reorder
-        $productsToReorder = collect([
-            (object)[ 'name' => 'Dairy Milk 1L', 'sku' => 'MILK001', 'current_stock' => 8,  'reorder_point' => 20, 'image_url' => 'assets/img/icons/misc/product-placeholder.png' ],
-            (object)[ 'name' => 'Yogurt Pack',   'sku' => 'YOGT123','current_stock' => 3,  'reorder_point' => 10, 'image_url' => 'assets/img/icons/misc/product-placeholder.png' ],
-            (object)[ 'name' => 'Cheddar Cheese','sku' => 'CHED789','current_stock' => 0,  'reorder_point' => 5,  'image_url' => 'assets/img/icons/misc/product-placeholder.png' ],
-        ]);
+        $totalUniqueProducts = $inventory->count();
 
-        // Mock key suppliers data
-        $keySuppliers = collect([
-            (object)[ 'name' => 'Sunrise Farms', 'contact_person' => 'Alice Johnson', 'logo_url' => 'assets/img/icons/misc/company-placeholder.png', 'total_orders_this_month' => 12 ],
-            (object)[ 'name' => 'Green Valley', 'contact_person' => 'Bob Williams', 'logo_url' => 'assets/img/icons/misc/company-placeholder.png', 'total_orders_this_month' => 8  ],
-            (object)[ 'name' => 'Happy Dairy',   'contact_person' => 'Carol Smith',   'logo_url' => 'assets/img/icons/misc/company-placeholder.png', 'total_orders_this_month' => 15 ],
-        ]);
+        $lowStockProductsCount = $inventory->where('quantity', '>', 0)
+            ->where('quantity', '<=', 10) // Assuming reorder point is 10
+            ->count();
+
+        $outOfStockProductsCount = $inventory->where('quantity', 0)->count();
+
+        // Calculate total sales this month (sum of received orders)
+        $totalSalesThisMonth = Order::where('buyer_id', $user->id)
+            ->where('status', 'received')
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->with('items')
+            ->get()
+            ->sum(function ($order) {
+                return $order->items->sum(function ($item) {
+                    return $item->quantity * $item->price;
+                });
+            });
+
+        // Chart data for the last 4 weeks
+        $salesChartData = [];
+        $ordersChartData = [];
+        $salesChartLabels = [];
+        $ordersChartLabels = [];
+
+        for ($i = 3; $i >= 0; $i--) {
+            $weekStart = Carbon::now()->subWeeks($i)->startOfWeek();
+            $weekEnd = Carbon::now()->subWeeks($i)->endOfWeek();
+
+            $weekLabel = 'Week ' . (4 - $i);
+            $salesChartLabels[] = $weekLabel;
+            $ordersChartLabels[] = $weekLabel;
+
+            // Weekly sales
+            $weeklySales = Order::where('buyer_id', $user->id)
+                ->where('status', 'received')
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
+                ->with('items')
+                ->get()
+                ->sum(function ($order) {
+                    return $order->items->sum(function ($item) {
+                        return $item->quantity * $item->price;
+                    });
+                });
+            $salesChartData[] = $weeklySales;
+
+            // Weekly orders count
+            $weeklyOrders = Order::where('buyer_id', $user->id)
+                ->whereBetween('created_at', [$weekStart, $weekEnd])
+                ->count();
+            $ordersChartData[] = $weeklyOrders;
+        }
+
+        // Get recent orders with seller information
+        $recentOrders = Order::where('buyer_id', $user->id)
+            ->with(['seller', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($order) {
+                $totalAmount = $order->items->sum(function ($item) {
+                    return $item->quantity * $item->price;
+                });
+
+                return (object) [
+                    'id' => $order->id,
+                    'customer_name' => $order->seller ? $order->seller->name : 'Unknown Seller',
+                    'total_amount' => $totalAmount,
+                    'status' => $order->status,
+                    'created_at' => $order->created_at
+                ];
+            });
+
+        // Get products that need reordering (low stock items)
+        $productsToReorder = Inventory::where('user_id', $user->id)
+            ->where('quantity', '>', 0)
+            ->where('quantity', '<=', 10) // Assuming reorder point is 10
+            ->with('product')
+            ->get()
+            ->map(function ($inventory) {
+                return (object) [
+                    'name' => $inventory->product ? $inventory->product->name : 'Unknown Product',
+                    'sku' => $inventory->product ? $inventory->product->sku : 'N/A',
+                    'current_stock' => $inventory->quantity,
+                    'reorder_point' => 10, // You can make this dynamic later
+                    'image_url' => 'assets/img/icons/misc/product-placeholder.png'
+                ];
+            });
+
+        // Get key suppliers (sellers from whom the retailer has ordered most)
+        $keySuppliers = Order::where('buyer_id', $user->id)
+            ->with('seller')
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->select('seller_id', DB::raw('count(*) as order_count'))
+            ->groupBy('seller_id')
+            ->orderBy('order_count', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function ($orderGroup) {
+                $seller = User::find($orderGroup->seller_id);
+                return (object) [
+                    'name' => $seller ? $seller->name : 'Unknown Supplier',
+                    'contact_person' => $seller ? $seller->name : 'Unknown',
+                    'logo_url' => 'assets/img/icons/misc/company-placeholder.png',
+                    'total_orders_this_month' => $orderGroup->order_count
+                ];
+            });
 
         return view('dashboard.retailer', [
-            'user'                       => $user,
-            'pendingOrdersCount'         => $pendingOrdersCount,
-            'lowStockProductsCount'      => $lowStockProductsCount,
-            'totalSalesThisMonth'        => $totalSalesThisMonth,
-            'newOrdersToday'             => $newOrdersToday,
-            'totalUniqueProducts'        => $totalUniqueProducts,
-            'outOfStockProductsCount'    => $outOfStockProductsCount,
-            'recentOrders'               => $recentOrders,
-            'productsToReorder'          => $productsToReorder,
-            'keySuppliers'               => $keySuppliers,
-            'salesChartLabels'           => $salesChartLabels,
-            'salesChartData'             => $salesChartData,
-            'ordersChartLabels'          => $ordersChartLabels,
-            'ordersChartData'            => $ordersChartData,
+            'user' => $user,
+            'pendingOrdersCount' => $pendingOrdersCount,
+            'lowStockProductsCount' => $lowStockProductsCount,
+            'totalSalesThisMonth' => $totalSalesThisMonth,
+            'newOrdersToday' => $newOrdersToday,
+            'totalUniqueProducts' => $totalUniqueProducts,
+            'outOfStockProductsCount' => $outOfStockProductsCount,
+            'recentOrders' => $recentOrders,
+            'productsToReorder' => $productsToReorder,
+            'keySuppliers' => $keySuppliers,
+            'salesChartLabels' => $salesChartLabels,
+            'salesChartData' => $salesChartData,
+            'ordersChartLabels' => $ordersChartLabels,
+            'ordersChartData' => $ordersChartData,
         ]);
     }
 }

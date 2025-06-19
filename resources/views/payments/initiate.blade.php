@@ -1,36 +1,57 @@
-@extends('layouts.app')
+@extends('layouts.contentNavbarLayout')
+
+@section('title', 'Payment - Order #' . $order->id)
 
 @section('content')
 <div class="container">
-    <h2>Process Payment for Order #{{ $order->id }}</h2>
-    
-    <div class="card">
-        <div class="card-body">
-            <p><strong>Total Amount:</strong> UGX {{ number_format($order->total_amount, 2) }}</p>
-            
-            <form action="{{ route('payments.process', $order) }}" method="POST">
-                @csrf
-                
-                <div class="form-group">
-                    <label for="method">Payment Method</label>
-                    <select name="method" id="method" class="form-control" required>
-                        <option value="">Select method</option>
-                        <option value="mpesa">M-Pesa</option>
-                        <option value="bank">Bank Transfer</option>
-                        <option value="cash">Cash on Delivery</option>
-                    </select>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Process Payment for Order #{{ $order->id }}</h5>
                 </div>
-                
-                <div class="form-group">
-                    <label for="amount">Amount</label>
-                    <input type="number" name="amount" id="amount" 
-                           class="form-control" 
-                           value="{{ $order->total_amount }}" 
-                           step="0.01" min="0.01" required>
+                <div class="card-body">
+                    <div class="alert alert-info mb-4">
+                        <h6 class="mb-2">Payment Summary</h6>
+                        <p class="mb-1"><strong>Order to:</strong> {{ $order->seller->name }}</p>
+                        <p class="mb-1"><strong>Total Amount:</strong> ${{ number_format($order->total_amount, 2) }}</p>
+                        @if($order->payment_due_date)
+                            <p class="mb-0"><strong>Due Date:</strong> {{ $order->payment_due_date->format('M d, Y') }}</p>
+                        @endif
+                    </div>
+
+                    <form action="{{ route('retailer.orders.payment.process', $order) }}" method="POST">
+                        @csrf
+
+                        <div class="mb-3">
+                            <label for="payment_method" class="form-label">Payment Method</label>
+                            <select name="payment_method" id="payment_method" class="form-select" required>
+                                <option value="">Select Payment Method</option>
+                                <option value="mpesa">M-Pesa</option>
+                                <option value="bank_transfer">Bank Transfer</option>
+                                <option value="cheque">Cheque</option>
+                                <option value="cash">Cash</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="transaction_id" class="form-label">Transaction ID <small class="text-muted">(Optional)</small></label>
+                            <input type="text" name="transaction_id" id="transaction_id"
+                                   class="form-control"
+                                   placeholder="Enter transaction reference number">
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ri-secure-payment-line me-1"></i>Submit Payment
+                            </button>
+                            <a href="{{ route('retailer.orders.show', $order) }}" class="btn btn-outline-secondary">
+                                <i class="ri-arrow-left-line me-1"></i>Back to Order
+                            </a>
+                        </div>
+                    </form>
                 </div>
-                
-                <button type="submit" class="btn btn-primary">Submit Payment</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>

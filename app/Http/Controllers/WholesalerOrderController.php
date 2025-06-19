@@ -5,88 +5,137 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
+use App\Services\OrderWorkflowService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class WholesalerController extends Controller
+class WholesalerOrderController extends Controller
 {
-    // View incoming orders from retailers
+    // View incoming orders from retailers (used for dashboard)
     public function index()
     {
-        $incomingOrders = Order::where('seller_id', auth()->id())
-                              ->with('buyer', 'items.product')
+        // For the wholesaler dashboard page, we'll show recent orders
+        $incomingOrders = Order::where('seller_id', Auth::id())
+                              ->with(['buyer', 'items.product', 'latestPayment'])
+                              ->orderBy('created_at', 'desc')
+                              ->take(10)
                               ->get();
-        
-        $factories = User::where('role', 'factory')->get();
-        $products = Product::all();
-        
-        return view('wholesaler.dashboard', compact('incomingOrders', 'factories', 'products'));
+
+        return view('wholesaler.order_dashboard', compact('incomingOrders'));
     }
 
-    // Approve retailer order
+    // Manual approval for orders that couldn't be auto-approved
     public function approveOrder(Order $order)
     {
-        if ($order->seller_id !== auth()->id()) {
+        if ($order->seller_id !== Auth::id()) {
             abort(403);
         }
 
-        $order->update(['status' => 'approved']);
-        
-        // Automatically create factory order if needed
-        $this->createFactoryOrder($order);
+        if ($order->status !== 'pending_review') {
+            return redirect()->back()
+                            ->with('error', 'This order cannot be approved.');
+        }
 
-        return redirect()->route('wholesaler.dashboard')
-                        ->with('success', 'Retailer order approved and factory order created!');
+        $workflowService = new OrderWorkflowService();
+
+        // Force approve the order (manual approval)
+        $order->update([
+            'status' => 'approved',
+            'approved_at' => now(),
+            'payment_due_date' => now()->addDays(3),
+        ]);
+
+        return redirect()->back()
+                        ->with('success', 'Order approved successfully! Retailer can now make payment.');
     }
 
-    // Mark retailer order as shipped
+    // Reject order
+    public function rejectOrder(Order $order)
+    {
+        if ($order->seller_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if (!in_array($order->status, ['pending', 'pending_review'])) {
+            return redirect()->back()
+                            ->with('error', 'This order cannot be rejected.');
+        }
+
+        $order->update(['status' => 'rejected']);
+
+        return redirect()->back()
+                        ->with('success', 'Order rejected successfully.');
+    }
+
+    // Mark order as shipped (after payment is verified)
     public function markShipped(Order $order)
     {
-        if ($order->seller_id !== auth()->id() || $order->status !== 'approved') {
+        if ($order->seller_id !== Auth::id()) {
             abort(403);
         }
 
-        $order->update(['status' => 'shipped']);
-
-        return redirect()->route('wholesaler.dashboard')
-                        ->with('success', 'Order marked as shipped.');
-    }
-
-    // Create order to factory
-    public function createFactoryOrder(Order $retailerOrder)
-    {
-        // Find default factory or use logic to select appropriate factory
-        $factory = User::where('role', 'factory')->first();
-        
-        $factoryOrder = Order::create([
-            'buyer_id' => auth()->id(),
-            'seller_id' => $factory->id,
-            'status' => 'pending',
-            'payment_status' => 'unpaid',
-            'parent_order_id' => $retailerOrder->id // Link to retailer order
-        ]);
-        
-        // Convert retailer order items to factory order items
-        foreach ($retailerOrder->items as $item) {
-            $factoryOrder->items()->create([
-                'product_id' => $item->product_id,
-                'quantity' => $item->quantity * 2 // Example: order 2x from factory for 1x retailer order
-            ]);
+        if ($order->status !== 'processing' || $order->payment_status !== 'paid') {
+            return redirect()->back()
+                            ->with('error', 'Order cannot be shipped until payment is verified.');
         }
-        
-        return $factoryOrder;
+
+        $workflowService = new OrderWorkflowService();
+        if ($workflowService->shipOrder($order)) {
+            return redirect()->back()
+                            ->with('success', 'Order marked as shipped.');
+        }
+
+        return redirect()->back()
+                        ->with('error', 'Failed to ship order.');
     }
-    
-    // View factory orders
-    public function factoryOrders()
+
+    // Show order history page for wholesaler
+    public function orderHistory(Request $request)
     {
-        $factoryOrders = Order::where('buyer_id', auth()->id())
-                             ->whereHas('seller', function($q) {
-                                 $q->where('role', 'factory');
-                             })
-                             ->with('seller', 'items.product')
-                             ->get();
-        
-        return view('wholesaler.factory_orders', compact('factoryOrders'));
+        $query = Order::where('seller_id', Auth::id())
+                     ->with(['buyer', 'items.product']);
+
+        // Apply filters if provided
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        if ($request->filled('search')) {
+            $query->whereHas('buyer', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate(15);
+
+        // Calculate total amount for each order
+        $orders->transform(function ($order) {
+            $order->total_amount = $order->items->sum(function ($item) {
+                return $item->quantity * $item->unit_price;
+            });
+            return $order;
+        });
+
+        return view('wholesaler.order_history', compact('orders'));
+    }
+
+    // Show order details for wholesaler
+    public function showOrder(Order $order)
+    {
+        if ($order->seller_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $order->load(['items.product', 'buyer', 'latestPayment']);
+        return view('wholesaler.order_show', compact('order'));
     }
 }
 

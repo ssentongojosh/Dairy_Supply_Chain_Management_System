@@ -20,6 +20,18 @@
       "slug": "app-chat"
     },
     {
+      "url": "/app/order",
+      "name": "Orders",
+      "icon": "menu-icon tf-icons ri-shopping-cart-2-line",
+      "slug": "app-order"
+    },
+    {
+      "url": "/app/inventory",
+      "name": "Inventory",
+      "icon": "menu-icon tf-icons ri-archive-line",
+      "slug": "app-inventory"
+    },
+    {
       "menuHeader": "Apps & Pages"
     },
     {

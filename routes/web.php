@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\layouts\WithoutMenu;
@@ -45,6 +46,14 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
+use App\Http\Controllers\RetailerOrderController;
+use App\Http\Controllers\WholesalerOrderController;
+use App\Http\Controllers\SupplierOrderController;
+use App\Http\Controllers\RetailInventoryController;
+use App\Http\Controllers\WholesalerInventoryController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\InventoryController;
 
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
@@ -71,6 +80,12 @@ Route::get('/app/chat', [ChatController::class, 'index'])->name('app-chat')->mid
 Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send')->middleware('auth');
 Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages')->middleware('auth');
 
+// Order routes
+Route::get('/app/order', [OrderController::class, 'index'])->name('app-order')->middleware('auth');
+
+// Inventory routes
+Route::get('/app/inventory', [InventoryController::class, 'index'])->name('app-inventory')->middleware('auth');
+
 // Dashboard routes with role middleware
 Route::get('/analytics', [Analytics::class, 'index'])
   ->name('dashboard.analytics')
@@ -80,9 +95,7 @@ Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
   ->name('retailer.dashboard')
   ->middleware(['auth', 'role:retailer']);
 
-Route::get('/wholesaler/dashboard', [WholesalerDashboard::class, 'index'])
-  ->name('wholesaler.dashboard')
-  ->middleware(['auth', 'role:wholesaler']);
+// Wholesaler dashboard is defined in the prefix group below
 
 // Other role dashboard routes
 Route::get('/farmer/dashboard', function() {
@@ -188,9 +201,6 @@ Route::get('/form/layouts-horizontal', [HorizontalForm::class, 'index'])->name('
 // Table routes
 Route::get('/tables/basic', [TablesBasic::class, 'index'])->name('tables-basic');
 
-
-
-
 // Add these routes to your web.php file
 Route::middleware(['auth'])->group(function () {
     Route::get('/verification/upload', [DocumentVerificationController::class, 'showUploadForm'])
@@ -211,8 +221,6 @@ Route::get('/users/{user}', function (User $user) {
     return view('content.dashboard.user-view', compact('user'));
 })->name('users.show')->middleware('auth');
 
-use App\Http\Controllers\SupplierOrderController;
-
 Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
 
@@ -231,38 +239,78 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::middleware(['auth', 'order.paid'])->group(function () {
-    Route::post('/orders/{order}/approve', [SupplierController::class, 'approveOrder']);
-    Route::post('/orders/{order}/ship', [SupplierController::class, 'markShipped']);
+    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder']);
+    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped']);
 });
 
 Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(function () {
-    // Retailer orders
-    Route::get('/dashboard', [WholesalerController::class, 'index'])->name('wholesaler.dashboard');
-    Route::post('/orders/{order}/approve', [WholesalerController::class, 'approveOrder'])->name('wholesaler.orders.approve');
-    Route::post('/orders/{order}/ship', [WholesalerController::class, 'markShipped'])->name('wholesaler.orders.ship');
-    
-    // Factory orders
-    Route::get('/factory-orders', [WholesalerController::class, 'factoryOrders'])->name('wholesaler.factory.orders');
-    Route::post('/factory-orders', [WholesalerController::class, 'storeFactoryOrder'])->name('wholesaler.factory.orders.store');
+    // Dashboard - using the dedicated dashboard controller
+    Route::get('/dashboard', [WholesalerDashboard::class, 'index'])->name('wholesaler.dashboard');
+
+    // Order management
+    Route::get('/orders', [WholesalerOrderController::class, 'orderHistory'])->name('wholesaler.orders');
+    Route::get('/orders/{order}', [WholesalerOrderController::class, 'showOrder'])->name('wholesaler.orders.show');
+    Route::post('/orders/{order}/approve', [WholesalerOrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
+    Route::post('/orders/{order}/reject', [WholesalerOrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');
+    Route::post('/orders/{order}/ship', [WholesalerOrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
+
+    // Inventory management
+    Route::get('/inventory', [WholesalerInventoryController::class, 'index'])->name('wholesaler.inventory');
+    Route::post('/inventory', [WholesalerInventoryController::class, 'store'])->name('wholesaler.inventory.store');
+    Route::patch('/inventory/{inventory}', [WholesalerInventoryController::class, 'updateQuantity'])->name('wholesaler.inventory.update');
+    Route::patch('/inventory/{inventory}/threshold', [WholesalerInventoryController::class, 'updateThreshold'])->name('wholesaler.inventory.threshold');
+    Route::delete('/inventory/{inventory}', [WholesalerInventoryController::class, 'destroy'])->name('wholesaler.inventory.destroy');
+    Route::get('/inventory/products', [WholesalerInventoryController::class, 'getAvailableProducts'])->name('wholesaler.inventory.products');
 });
 Route::prefix('factory')->middleware(['auth', 'role:factory'])->group(function () {
     // Wholesaler orders
     Route::get('/dashboard', [FactoryController::class, 'index'])->name('factory.dashboard');
     Route::post('/orders/{order}/approve', [FactoryController::class, 'approveOrder'])->name('factory.orders.approve');
     Route::post('/orders/{order}/ship', [FactoryController::class, 'markShipped'])->name('factory.orders.ship');
-    
+
     // Supplier orders
     Route::get('/supplier-orders', [FactoryController::class, 'supplierOrders'])->name('factory.supplier.orders');
     Route::post('/supplier-orders', [FactoryController::class, 'storeSupplierOrder'])->name('factory.supplier.orders.store');
 });
 
-//retailer orders
+// Retailer routes
 Route::prefix('retailer')->middleware(['auth', 'role:retailer'])->group(function () {
-    Route::get('/dashboard', [RetailerController::class, 'index'])->name('retailer.dashboard');
-    Route::post('/orders', [RetailerController::class, 'storeOrder'])->name('retailer.orders.store');
-    Route::get('/orders/{order}', [RetailerController::class, 'showOrder'])->name('retailer.orders.show');
-    Route::post('/orders/{order}/receive', [RetailerController::class, 'markReceived'])->name('retailer.orders.receive');
+    // Dashboard is defined outside this group
+
+    // Order management
+    Route::get('/orders', [RetailerOrderController::class, 'orderHistory'])->name('retailer.orders');
+    Route::post('/orders', [RetailerOrderController::class, 'storeOrder'])->name('retailer.orders.store');
+    Route::get('/orders/{order}', [RetailerOrderController::class, 'showOrder'])->name('retailer.orders.show');
+    Route::post('/orders/{order}/received', [RetailerOrderController::class, 'markReceived'])->name('retailer.orders.received');
+    Route::patch('/order/{order}/cancel', [RetailerOrderController::class, 'cancelOrder'])->name('retailer.orders.cancel');
+
+    // Payment routes
+    Route::get('/orders/{order}/payment', [RetailerOrderController::class, 'showPaymentForm'])->name('retailer.orders.payment');
+    Route::post('/orders/{order}/payment', [RetailerOrderController::class, 'processPayment'])->name('retailer.orders.payment.process');
+
+    // Inventory routes
+    Route::get('/inventory', [RetailInventoryController::class, 'index'])->name('retailer.inventory');
+    Route::post('/inventory', [RetailInventoryController::class, 'store'])->name('retailer.inventory.store');
+    Route::patch('/inventory/{inventory}', [RetailInventoryController::class, 'updateQuantity'])->name('retailer.inventory.update');
+    Route::delete('/inventory/{inventory}', [RetailInventoryController::class, 'destroy'])->name('retailer.inventory.destroy');
+    Route::get('/inventory/products', [RetailInventoryController::class, 'getAvailableProducts'])->name('retailer.inventory.products');
+
+    // Threshold management routes
+    Route::patch('/inventory/{inventory}/threshold', [RetailInventoryController::class, 'updateThreshold'])->name('retailer.inventory.threshold');
+    Route::post('/inventory/bulk-threshold', [RetailInventoryController::class, 'bulkUpdateThreshold'])->name('retailer.inventory.bulk-threshold');
+
+    // Auto-reorder routes
+    Route::post('/inventory/{inventory}/reorder', [RetailInventoryController::class, 'createReorder'])->name('retailer.inventory.reorder');
+    Route::post('/inventory/auto-reorder', [RetailInventoryController::class, 'autoReorder'])->name('retailer.inventory.auto-reorder');
 });
+
+//retailer orders
+// Route::prefix('retailer')->middleware(['auth', 'role:retailer'])->group(function () {
+//     Route::get('/dashboard', [RetailerOrderController::class, 'index'])->name('retailer.dashboard');
+//     Route::post('/orders', [RetailerOrderController::class, 'storeOrder'])->name('retailer.orders.store');
+//     Route::get('/orders/{order}', [RetailerOrderController::class, 'showOrder'])->name('retailer.orders.show');
+//     Route::post('/orders/{order}/receive', [RetailerOrderController::class, 'markReceived'])->name('retailer.orders.receive');
+// });
 
 // For all roles
 Route::middleware('auth')->group(function () {

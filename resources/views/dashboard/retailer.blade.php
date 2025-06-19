@@ -21,6 +21,7 @@
                             </p>
                             <a href="{{ url('/retailer/orders') }}" class="btn btn-sm btn-outline-primary">View Orders</a>
                             <a href="{{ url('/retailer/inventory') }}" class="btn btn-sm btn-outline-warning ms-2">Manage Inventory</a>
+
                         </div>
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">
