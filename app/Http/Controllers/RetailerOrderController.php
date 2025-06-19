@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Payment;
 use App\Models\Inventory;
+use App\Models\KeySupplier;
 use App\Services\OrderWorkflowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -204,5 +205,49 @@ class RetailerOrderController extends Controller
         $order->update(['status' => 'cancelled']);
 
         return response()->json(['success' => true, 'message' => 'Order cancelled successfully']);
+    }
+
+    /**
+     * Display a list of all wholesalers for retailers to browse.
+     */
+    public function vendors()
+    {
+        // Fetch all users with wholesaler role
+        $wholesalers = \App\Models\User::where('role', \App\Enums\Role::WHOLESALER->value)
+                          ->orderBy('name')
+                          ->get();
+
+        return view('retailer.vendors', compact('wholesalers'));
+    }
+
+    /**
+     * Add a wholesaler as a key supplier for the authenticated retailer.
+     */
+    public function addKeySupplier(User $wholesaler)
+    {
+        $retailerId = Auth::id();
+        // Create key supplier record if not exists
+        KeySupplier::firstOrCreate([
+            'retailer_id' => $retailerId,
+            'wholesaler_id' => $wholesaler->id,
+        ]);
+
+        return redirect()->back()->with('success', 'Key supplier added successfully.');
+    }
+
+    /**
+     * Display products for a given wholesaler to a retailer.
+     */
+    public function viewVendorProducts(User $wholesaler)
+    {
+        // Fetch active products supplied by this wholesaler along with inventory info
+        $products = Product::where('supplier_id', $wholesaler->id)
+                        ->where('is_active', true)
+                        ->with(['inventory' => function($q) use ($wholesaler) {
+                            $q->where('user_id', $wholesaler->id);
+                        }])
+                        ->get();
+
+        return view('retailer.vendor_products', compact('wholesaler', 'products'));
     }
 }

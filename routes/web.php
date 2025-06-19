@@ -59,6 +59,7 @@ use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\dashboard\UserController;
 use App\Models\User;
+use App\Http\Controllers\RetailerSupplierController;
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -302,6 +303,19 @@ Route::prefix('retailer')->middleware(['auth', 'role:retailer'])->group(function
     // Auto-reorder routes
     Route::post('/inventory/{inventory}/reorder', [RetailInventoryController::class, 'createReorder'])->name('retailer.inventory.reorder');
     Route::post('/inventory/auto-reorder', [RetailInventoryController::class, 'autoReorder'])->name('retailer.inventory.auto-reorder');
+
+    // Suppliers listing
+    Route::get('/suppliers', [RetailerSupplierController::class, 'index'])->name('retailer.suppliers');
+
+    // Retailer vendor browse
+    Route::get('/vendors', [RetailerOrderController::class, 'vendors'])
+         ->name('retailer.vendors');
+
+    // Vendor actions for retailer
+    Route::post('/vendors/{wholesaler}/key', [RetailerOrderController::class, 'addKeySupplier'])
+         ->name('retailer.vendors.addKey');
+    Route::get('/vendors/{wholesaler}/products', [RetailerOrderController::class, 'viewVendorProducts'])
+         ->name('retailer.vendors.products');
 });
 
 //retailer orders
@@ -318,4 +332,18 @@ Route::middleware('auth')->group(function () {
          ->name('payments.verify.form');
     Route::post('/orders/{order}/verify', [PaymentController::class, 'verifyPayment'])
          ->name('payments.verify');
+});
+
+// Marketplace routes (browse products and sellers)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/marketplace', [MarketplaceController::class, 'index'])
+         ->name('marketplace.index');
+    Route::get('/marketplace/product/{product}', [MarketplaceController::class, 'showProduct'])
+         ->name('marketplace.product');
+    Route::get('/marketplace/add-product', [MarketplaceController::class, 'showAddForm'])
+         ->name('marketplace.add-product');
+    Route::post('/marketplace/add-product', [MarketplaceController::class, 'addToInventory'])
+         ->name('marketplace.add-to-inventory');
+    Route::post('/marketplace/create-product', [MarketplaceController::class, 'createProduct'])
+         ->name('marketplace.create-product');
 });
