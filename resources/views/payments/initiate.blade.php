@@ -20,7 +20,7 @@
                         @endif
                     </div>
 
-                    <form action="{{ route('retailer.orders.payment.process', $order) }}" method="POST">
+                    <form action="{{ route('payments.process', $order) }}" method="POST">
                         @csrf
 
                         <div class="mb-3">

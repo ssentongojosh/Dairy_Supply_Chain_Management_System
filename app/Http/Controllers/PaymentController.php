@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Payment;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -33,28 +34,30 @@ class PaymentController extends Controller
 
     public function processPayment(Request $request, Order $order)
     {
-        $validated = $request->validate([
-            'method' => 'required|in:mpesa,bank,cash',
-            'amount' => 'required|numeric|min:0.01',
-        ]);
-
-        // Create payment record
-        $payment = Payment::create([
-            'order_id' => $order->id,
-            'amount' => $validated['amount'],
-            'method' => $validated['method'],
-            'status' => 'pending',
-        ]);
-
-        // Process payment based on method
-        switch ($validated['method']) {
-            case 'mpesa':
-                return $this->processMpesaPayment($payment);
-            case 'bank':
-                return $this->processBankPayment($payment);
-            case 'cash':
-                return $this->processCashPayment($payment);
+        // Only the buyer of an approved order can pay
+        if ($order->buyer_id !== auth()->id() || $order->status !== 'approved') {
+            abort(403);
         }
+
+        $validated = $request->validate([
+            'payment_method' => 'required|string',
+            'transaction_id' => 'nullable|string',
+        ]);
+
+        // Create a pending payment
+        $payment = Payment::create([
+            'order_id'       => $order->id,
+            'amount'         => $order->total_amount,
+            'method'         => $validated['payment_method'],
+            'transaction_id' => $validated['transaction_id'] ?? null,
+            'status'         => 'pending',
+        ]);
+
+        // Mark order as awaiting verification
+        $order->update(['payment_status' => 'pending_verification']);
+
+        return redirect()->route('retailer.orders.show', $order)
+                         ->with('success', 'Payment submitted! Awaiting verification.');
     }
 
     protected function processMpesaPayment(Payment $payment)

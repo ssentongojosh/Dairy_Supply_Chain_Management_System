@@ -130,7 +130,7 @@
                     @endif
 
                     @if($order->status === 'approved' && $order->payment_status === 'unpaid')
-                        <a href="{{ route('retailer.orders.payment', $order) }}" class="btn btn-success me-2">
+                        <a href="{{ route('payments.initiate', $order) }}" class="btn btn-success me-2">
                             <i class="ri-secure-payment-line me-1"></i>Make Payment
                         </a>
                         <small class="text-muted d-block mt-2">

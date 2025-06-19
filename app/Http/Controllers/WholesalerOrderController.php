@@ -31,18 +31,17 @@ class WholesalerOrderController extends Controller
             abort(403);
         }
 
-        if ($order->status !== 'pending_review') {
+        // Allow approval for orders that are pending or pending_review
+        if (!in_array($order->status, ['pending', 'pending_review'])) {
             return redirect()->back()
-                            ->with('error', 'This order cannot be approved.');
+                             ->with('error', 'This order cannot be approved.');
         }
-
-        $workflowService = new OrderWorkflowService();
 
         // Force approve the order (manual approval)
         $order->update([
             'status' => 'approved',
             'approved_at' => now(),
-            'payment_due_date' => now()->addDays(3),
+            'payment_due_date' => now()->addDays(3), // 3 days to pay
         ]);
 
         return redirect()->back()

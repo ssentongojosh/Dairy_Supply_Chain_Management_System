@@ -85,7 +85,7 @@
                             <tr>
                                 <td><strong>Role:</strong></td>
                                 <td>
-                                    <span class="badge bg-label-primary">{{ ucfirst($order->buyer->role) }}</span>
+                                    <span class="badge bg-label-primary">{{ $order->buyer->role->label() }}</span>
                                 </td>
                             </tr>
                         </table>

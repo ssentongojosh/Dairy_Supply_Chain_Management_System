@@ -54,6 +54,7 @@ use App\Http\Controllers\WholesalerInventoryController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\PaymentController;
 
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
@@ -233,9 +234,9 @@ Route::prefix('supplier')->name('supplier.')->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     // Payment routes
-    Route::get('/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])
+    Route::get('/orders/{order}/pay', [\App\Http\Controllers\PaymentController::class, 'initiatePayment'])
         ->name('payments.initiate');
-    Route::post('/orders/{order}/pay', [PaymentController::class, 'processPayment'])
+    Route::post('/orders/{order}/pay', [\App\Http\Controllers\PaymentController::class, 'processPayment'])
         ->name('payments.process');
 });
 
