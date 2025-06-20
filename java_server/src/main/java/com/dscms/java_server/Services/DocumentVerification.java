@@ -44,7 +44,7 @@ public class DocumentVerification {
     }
 
     //Method to load pdf from memory
-    public static  PDDocument loadpdf(MultipartFile file){
+    public static  File loadpdf(MultipartFile file){
         try {
             //Store a temporary file
             File tempFile = File.createTempFile("file",".pdf");
@@ -53,7 +53,7 @@ public class DocumentVerification {
             file.transferTo(tempFile);
 
             //Load the pdf
-            return PDDocument.load(tempFile);
+            return tempFile;
 
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -75,6 +75,8 @@ public class DocumentVerification {
 
             //Store the image in the file
             ImageIO.write(image,"png",img);
+
+            doc.close();
 
             return img;
 
@@ -154,12 +156,12 @@ public class DocumentVerification {
     }
 
     //Method to extract text from the pdf
-    public  String extractText(MultipartFile file){
+    public  String extractText(File file){
 
         StringBuilder extractedText = new StringBuilder();
 
         try{
-            PDDocument document = loadpdf(file);
+            PDDocument document = PDDocument.load(file);
 
             for (int i=0; i<document.getNumberOfPages(); i++){
 

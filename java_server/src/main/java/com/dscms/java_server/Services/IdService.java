@@ -1,10 +1,9 @@
 package com.dscms.java_server.Services;
 
-import org.apache.coyote.Response;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.util.regex.Pattern;
 
 @Service
@@ -16,24 +15,34 @@ public class IdService {
     }
 
     public boolean isVerified (MultipartFile nationalId) {
+        System.out.println("\nVerifying National ID...\n");
 
-        String extractedText = documentVerification.extractText(nationalId);
+        //load the pdf from memory
+        File file = DocumentVerification.loadpdf(nationalId);
 
+        //Extract the text from the pdf
+        String extractedText = documentVerification.extractText(file);
+
+        //Clean the text got from the pdf
         String text =  extractedText.replaceAll("\\s+", " ")  // Replace multiple spaces with single space
                                     .replaceAll("[^\\w\\s./-]", "")  // Remove special characters except common ones
                                     .trim()
                                     .toUpperCase();
 
-        //Verification logic based on the extracted text
+        //Check if the text generated contains a NIN
+        final Pattern NIN = Pattern.compile(".*\\b(C[M|F])[A-Z0-9]{12}\\b.*");
 
-        return true;
+        if (NIN.matcher(text).matches()){
 
-        //Pattern pattern = Pattern.compile("cupcake?", Pattern.CASE_INSENSITIVE);
+          System.out.println("National ID verified successfully!\n");
 
-       /*if(pattern.matcher(text).find()){//text.toLowerCase().contains("cupcake")(this can also be used instead of using the pattern)
-           return ResponseEntity.ok("File processed successfully");
-       }else
-           return ResponseEntity.internalServerError().body("Invalid file");*/
+          return true;
+        }else {
+          System.out.println("National ID verification failed!\n");
+          return false;
+        }
+
+
     }
 
 }
