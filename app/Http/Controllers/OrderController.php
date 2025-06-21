@@ -34,6 +34,14 @@ class OrderController extends Controller
                 // Redirect wholesalers to their order history route
                 return redirect()->route('wholesaler.orders');
 
+            case 'farmer':
+                // Redirect farmers to their order history route
+                return redirect()->route('farmer.orders');
+
+            case 'plant_manager':
+                // Redirect plant managers to their order dashboard
+                return redirect()->route('plant_manager.orders.dashboard');
+
             case 'factory':
                 // TODO: Create factory order controller
                 return redirect()->route('dashboard')->with('info', 'Factory order management coming soon!');

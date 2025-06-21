@@ -94,8 +94,12 @@ class LoginBasic extends Controller
             case 'wholesaler':
                 Log::info('Wholesaler role detected, redirecting to wholesaler.dashboard');
                 return redirect()->route('wholesaler.dashboard');
-            // case 'farmer':
-            //     return redirect()->route('farmer.dashboard');
+            case 'farmer':
+                Log::info('Farmer role detected, redirecting to farmer.dashboard');
+                return redirect()->route('farmer.dashboard');
+            case 'plant_manager':
+                Log::info('Plant manager role detected, redirecting to plant_manager.dashboard');
+                return redirect()->route('plant_manager.dashboard');
             default:
                 Log::info('Default role or unknown role, redirecting to home', ['role' => $roleValue]);
                 return redirect()->route('home');

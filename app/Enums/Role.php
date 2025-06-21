@@ -9,6 +9,7 @@ enum Role: string
     case RETAILER = 'retailer';
     case WHOLESALER = 'wholesaler';
     case FARMER = 'farmer';
+    case PLANT_MANAGER = 'plant_manager';
     case DRIVER = 'driver';
     case WAREHOUSE_MANAGER = 'warehouse_manager';
     case EXECUTIVE = 'executive';
@@ -23,6 +24,7 @@ enum Role: string
             self::RETAILER => 'Retailer',
             self::WHOLESALER => 'Wholesaler',
             self::FARMER => 'Dairy Farmer',
+            self::PLANT_MANAGER => 'Plant Manager',
             self::DRIVER => 'Delivery Driver',
             self::WAREHOUSE_MANAGER => 'Warehouse Manager',
             self::EXECUTIVE => 'Executive',
