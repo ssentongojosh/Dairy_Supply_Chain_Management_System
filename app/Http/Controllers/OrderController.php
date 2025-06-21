@@ -47,8 +47,8 @@ class OrderController extends Controller
                 return redirect()->route('dashboard')->with('info', 'Factory order management coming soon!');
 
             case 'supplier':
-                // TODO: Create supplier order controller
-                return redirect()->route('dashboard')->with('info', 'Supplier order management coming soon!');
+                // Redirect suppliers to their order dashboard
+                return redirect()->route('supplier.orders');
 
             case 'admin':
                 // TODO: Create admin order overview

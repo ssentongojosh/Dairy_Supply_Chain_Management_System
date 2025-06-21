@@ -12,7 +12,9 @@ class Inventory extends Model
         'product_id',
         'quantity',
         'reorder_point',
+        'threshold',
         'unit_cost',
+        'unit_price',
         'selling_price',
         'location',
         'last_restocked_at',
@@ -22,7 +24,9 @@ class Inventory extends Model
     protected $casts = [
         'quantity' => 'integer',
         'reorder_point' => 'integer',
+        'threshold' => 'integer',
         'unit_cost' => 'decimal:2',
+        'unit_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
         'last_restocked_at' => 'date'
     ];

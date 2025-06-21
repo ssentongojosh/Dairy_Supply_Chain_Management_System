@@ -14,7 +14,9 @@ class Product extends Model
         'price',
         'cost',
         'category',
+        'unit',
         'supplier_id', // Using supplier_id as per the migration
+        'image',
         'image_url',
         'is_active'
     ];

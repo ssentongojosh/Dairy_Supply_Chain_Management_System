@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
       RoleUserSeeder::class,
       FarmerSeeder::class,
       PlantManagerSeeder::class,
+      SupplierSeeder::class,
       // Other seeders...
     ]);
   }
