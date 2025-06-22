@@ -56,68 +56,21 @@ php artisan db:seed
 
 # Or seed specific user types
 php artisan db:seed --class=AdminUserSeeder
-php artisan db:seed --class=SupplierSeeder
-php artisan db:seed --class=FarmerSeeder
-php artisan db:seed --class=RetailerSeeder
 ```
 
-## Default Login Credentials
+## Using Tinker
+```bash
+php artisan tinker $user = new App\Models\User();
+$user->name = 'Your Name'; $user->email = 'your@email.com';
+$user->password = Hash::make('your_password');
+$user->role = 'admin'; $user->save();
+```
 
-### Admin Users
-- **Email**: admin@dscms.com
-- **Password**: admin123
+> after that you can log in with the default admin credentials shown below
 
-### Supplier Users
-- **AgriSupply Co.**
-  - Email: supplier@agrisupply.com
-  - Password: password123
-
-- **FarmTech Solutions**
-  - Email: contact@farmtech.ph
-  - Password: password123
-
-- **GreenHarvest Supplies**
-  - Email: info@greenharvest.com
-  - Password: password123
-
-- **Dairy Equipment Plus**
-  - Email: sales@dairyequipment.ph
-  - Password: password123
-
-- **ProFeed Nutrition**
-  - Email: orders@profeed.com
-  - Password: password123
-
-### Test Users (Various Roles)
-- **Farmer**: farmer@test.com / password
-- **Retailer**: retailer@test.com / password
-- **Wholesaler**: wholesaler@test.com / password
-- **Plant Manager**: manager@test.com / password
-
-## Role-Specific Features
-
-### Suppliers
-- **Dashboard**: Order statistics, inventory overview, revenue tracking
-- **Order Management**: View, approve, reject, and ship orders
-- **Inventory Management**: Add products, manage stock levels, set thresholds
-- **Bulk Operations**: inventory management
-
-### Farmers
-- **Production Tracking**: Milk production records and quality metrics
-- **Inventory**: Manage raw materials (milk)
-- **Order Fulfillment**: Process orders from wholesalers and retailers
-
-### Retailers
-- **Point of Sale**: Manage retail transactions
-- **Inventory**: Track stock levels with auto-reorder capabilities
-- **Supplier Management**: Browse and order from multiple suppliers
-- **Payment Processing**: Handle various payment methods
-
-### Wholesalers
-- **Bulk Distribution**: Manage large-scale orders and distribution
-- **Multi-tier Ordering**: Source from factories, sell to retailers
-- **Logistics**: Coordinate deliveries and shipments
-
+Default admin credentials:
+- Email: admin@dscms.com
+- Password: admin123 
 
 ## Technology Stack
 
