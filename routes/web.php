@@ -216,10 +216,7 @@ Route::get('/users/{user}', function (User $user) {
     return view('content.dashboard.user-view', compact('user'));
 })->name('users.show')->middleware('auth');
 
-<<<<<<< HEAD
 
-// Shared Authenticated Routes
-=======
 Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
 
@@ -229,10 +226,10 @@ Route::prefix('supplier')->name('supplier.')->group(function () {
 });
 
 
->>>>>>> parent of c8838a8 (Add order history and order details pages for suppliers)
+
 Route::middleware(['auth'])->group(function () {
-    
-    // Universal Payment Routes 
+
+    // Universal Payment Routes
     Route::get('/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])
         ->name('payments.initiate');
 
