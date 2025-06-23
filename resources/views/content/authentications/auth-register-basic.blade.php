@@ -89,17 +89,11 @@
 
             <div class="mb-5">
               <label class="form-label">Register as</label>
-              <select class="form-select @error('role') is-invalid @enderror" name="role" required>
-                <option value="">Select your role</option>
-                <option value="retailer" {{ old('role') === 'retailer' ? 'selected' : '' }}>Retailer</option>
-                <option value="wholesaler" {{ old('role') === 'wholesaler' ? 'selected' : '' }}>Wholesaler</option>
-                <option value="farmer" {{ old('role') === 'farmer' ? 'selected' : '' }}>Dairy Farmer</option>
-                <option value="supplier" {{ old('role') === 'supplier' ? 'selected' : '' }}>Supplier</option>
-                <option value="plant_manager" {{ old('role') === 'plant_manager' ? 'selected' : '' }}>Plant Manager</option>
+              <select class="form-select" name="role">
+                <option value="retailer">Retailer</option>
+                <option value="wholesaler">Wholesaler</option>
+                <option value="farmer">Dairy Farmer</option>
               </select>
-              @error('role')
-                <div class="invalid-feedback">{{ $message }}</div>
-              @enderror
             </div>
 
             <div class="mb-5 py-2">

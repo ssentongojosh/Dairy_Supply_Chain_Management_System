@@ -7,9 +7,6 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up()
     {
-        if (Schema::hasTable('key_suppliers')) {
-            return;
-        }
         Schema::create('key_suppliers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('retailer_id');

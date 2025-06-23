@@ -56,8 +56,6 @@ use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\dashboard\UserController;
 use App\Models\User;
-use App\Http\Controllers\dashboard\SupplierDashboard;
-use App\Http\Controllers\SupplierInventoryController;
 use App\Http\Controllers\RetailerSupplierController;
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -218,8 +216,20 @@ Route::get('/users/{user}', function (User $user) {
     return view('content.dashboard.user-view', compact('user'));
 })->name('users.show')->middleware('auth');
 
+<<<<<<< HEAD
 
 // Shared Authenticated Routes
+=======
+Route::prefix('supplier')->name('supplier.')->group(function () {
+    Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+
+    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approve'])->name('orders.approve');
+
+    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'ship'])->name('orders.ship');
+});
+
+
+>>>>>>> parent of c8838a8 (Add order history and order details pages for suppliers)
 Route::middleware(['auth'])->group(function () {
     
     // Universal Payment Routes 

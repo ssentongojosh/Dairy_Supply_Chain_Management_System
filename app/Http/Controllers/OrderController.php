@@ -70,10 +70,23 @@ class OrderController extends Controller
             $this->workflow->processNewOrder($order);
             DB::commit();
 
+<<<<<<< HEAD
             return back()->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to place order.');
+=======
+            case 'supplier':
+                // TODO: Create supplier order controller
+                return redirect()->route('dashboard')->with('info', 'Supplier order management coming soon!');
+
+            case 'admin':
+                // TODO: Create admin order overview
+                return redirect()->route('dashboard')->with('info', 'Admin order overview coming soon!');
+
+            default:
+                return redirect()->route('dashboard')->with('error', 'Access denied.');
+>>>>>>> parent of c8838a8 (Add order history and order details pages for suppliers)
         }
     }
 
