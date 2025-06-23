@@ -63,17 +63,13 @@ php artisan db:seed --class=RetailerSeeder
 
 ## Default Login Credentials
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 
 > after that you can log in with the default admin credentials shown below
 
 Default admin credentials:
 - Email: admin@dscms.com
 - Password: admin123 
-=======
-=======
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
+
 ### Admin Users
 - **Email**: admin@dscms.com
 - **Password**: admin123
@@ -100,17 +96,15 @@ Default admin credentials:
   - Password: password123
 
 ### Test Users (Various Roles)
-<<<<<<< HEAD
+
 - **Farmer**: farmer@test.com / password123
 - **Retailer**: retailer@test.com / password123
 - **Wholesaler**: wholesaler@test.com / password123
 - **Plant Manager**: manager@test.com / password123
-=======
 - **Farmer**: farmer@test.com / password
 - **Retailer**: retailer@test.com / password
 - **Wholesaler**: wholesaler@test.com / password
 - **Plant Manager**: manager@test.com / password
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
 
 ## Role-Specific Features
 
@@ -118,19 +112,19 @@ Default admin credentials:
 - **Dashboard**: Order statistics, inventory overview, revenue tracking
 - **Order Management**: View, approve, reject, and ship orders
 - **Inventory Management**: Add products, manage stock levels, set thresholds
-<<<<<<< HEAD
+
 - **Bulk Operations**: CSV import/export for inventory management
 
 ### Farmers
 - **Production Tracking**: Milk production records and quality metrics
 - **Inventory**: Manage raw materials and finished products
-=======
+
 - **Bulk Operations**: inventory management
 
 ### Farmers
 - **Production Tracking**: Milk production records and quality metrics
 - **Inventory**: Manage raw materials (milk)
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
+
 - **Order Fulfillment**: Process orders from wholesalers and retailers
 
 ### Retailers
@@ -141,7 +135,7 @@ Default admin credentials:
 
 ### Wholesalers
 - **Bulk Distribution**: Manage large-scale orders and distribution
-<<<<<<< HEAD
+
 - **Multi-tier Ordering**: Source from farmers/factories, sell to retailers
 - **Logistics**: Coordinate deliveries and shipments
 
@@ -163,19 +157,19 @@ Default admin credentials:
 - `POST /supplier/inventory` - Add new product
 - `PUT /supplier/inventory/{inventory}` - Update inventory item
 - `DELETE /supplier/inventory/{inventory}` - Remove inventory item
->>>>>>> parent of ee001a0 (Update README.md to clarify supplier role description and adjust test user passwords)
-=======
+
+
 > after that you can log in with the default admin credentils shown below
 
 Default admin credentials:
 - Email: admin@dscms.com
 - Password: admin123 
->>>>>>> parent of c8838a8 (Add order history and order details pages for suppliers)
-=======
+
+
 - **Multi-tier Ordering**: Source from factories, sell to retailers
 - **Logistics**: Coordinate deliveries and shipments
 
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
+
 
 ## Technology Stack
 

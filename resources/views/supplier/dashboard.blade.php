@@ -23,9 +23,7 @@
                 <strong>Total:</strong> ${{ number_format($order->total_amount, 2) }}<br>
                 <strong>Placed At:</strong> {{ $order->created_at->format('d M Y, H:i') }}
             </div>
-<<<<<<< HEAD
 
-=======
             <div class="card-body">
                 <div class="d-grid gap-2">
                     <a href="{{ route('supplier.orders') }}" class="btn btn-outline-primary">
@@ -57,7 +55,7 @@
                     <i class="ri-external-link-line me-1"></i>View All
                 </a>
             </div>
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
+
             <div class="card-body">
                 <h5>Items:</h5>
                 <ul>

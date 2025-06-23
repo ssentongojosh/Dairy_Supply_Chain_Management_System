@@ -218,16 +218,16 @@ Route::get('/users/{user}', function (User $user) {
     return view('content.dashboard.user-view', compact('user'));
 })->name('users.show')->middleware('auth');
 
-<<<<<<< HEAD
+
 
 Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
-=======
+
 // Supplier routes group
 Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
     // Dashboard - using the dedicated dashboard controller
     Route::get('/dashboard', [SupplierDashboard::class, 'index'])->name('supplier.dashboard');
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
+
 
     // Order management
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('supplier.orders');
@@ -253,11 +253,10 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
     Route::get('/inventory/stats', [SupplierInventoryController::class, 'getStats'])->name('supplier.inventory.stats');
 });
 
-<<<<<<< HEAD
 
 
-=======
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
+
+
 Route::middleware(['auth'])->group(function () {
 
     // Universal Payment Routes
@@ -386,4 +385,5 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');
     Route::get('/inventory/products', [PlantManagerInventoryController::class, 'getAvailableProducts'])->name('plant_manager.inventory.products');
     Route::post('/inventory/process', [PlantManagerInventoryController::class, 'processProduction'])->name('plant_manager.inventory.process');
+});
 });

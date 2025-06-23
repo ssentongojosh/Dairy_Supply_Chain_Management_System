@@ -59,7 +59,6 @@ class OrderController extends Controller
                 'payment_status' => 'unpaid',
             ]);
 
-<<<<<<< HEAD
             foreach ($validated['items'] as $item) {
                 $order->items()->create([
                     'product_id' => $item['product_id'],
@@ -70,29 +69,14 @@ class OrderController extends Controller
 
             $this->workflow->processNewOrder($order);
             DB::commit();
-=======
-            case 'factory':
-                // TODO: Create factory order controller
-                return redirect()->route('dashboard')->with('info', 'Factory order management coming soon!');
->>>>>>> parent of 1505f91 (Added cards for creating supplier and farmer orders)
 
-<<<<<<< HEAD
+
             return back()->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to place order.');
-=======
-            case 'supplier':
-                // Redirect suppliers to their order dashboard
-                return redirect()->route('supplier.orders');
 
-            case 'admin':
-                // TODO: Create admin order overview
-                return redirect()->route('dashboard')->with('info', 'Admin order overview coming soon!');
 
-            default:
-                return redirect()->route('dashboard')->with('error', 'Access denied.');
->>>>>>> parent of c8838a8 (Add order history and order details pages for suppliers)
         }
     }
 
