@@ -30,7 +30,7 @@ class RegisterBasic extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'confirmed'],
-                'role' => ['required', 'string', 'in:retailer,wholesaler,farmer,supplier,plant_manager,user'],
+                'role' => ['required', 'string', 'in:retailer,wholesaler,farmer,user'],
                 'terms' => ['required', 'accepted'],
             ]);
 
@@ -50,8 +50,8 @@ class RegisterBasic extends Controller
             event(new Registered($user));
             Auth::login($user);
 
-            // Redirect based on role
-            return $this->redirectBasedOnRole($user);
+            // For now, just redirect to home to ensure registration works
+            return redirect()->route('home')->with('success', 'Registration successful!');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Registration failed: ' . $e->getMessage(), [
@@ -67,17 +67,9 @@ class RegisterBasic extends Controller
 
     protected function redirectBasedOnRole($user)
     {
-        $role = $user->role instanceof \App\Enums\Role ? $user->role->value : $user->role;
-
-        return match($role) {
-            'farmer' => redirect()->route('farmer.dashboard')->with('success', 'Welcome to your Farmer Dashboard!'),
-            'retailer' => redirect()->route('retailer.dashboard')->with('success', 'Welcome to your Retailer Dashboard!'),
-            'wholesaler' => redirect()->route('wholesaler.dashboard')->with('success', 'Welcome to your Wholesaler Dashboard!'),
-            'supplier' => redirect()->route('supplier.dashboard')->with('success', 'Welcome to your Supplier Dashboard!'),
-            'plant_manager' => redirect()->route('plant-manager.dashboard')->with('success', 'Welcome to your Plant Manager Dashboard!'),
-            'admin' => redirect()->route('admin.dashboard')->with('success', 'Welcome to the Admin Dashboard!'),
-            default => redirect()->route('home')->with('success', 'Registration successful!')
-        };
+        // We'll use this method later once registration is working
+        // For now, just redirect to home
+        return redirect()->route('home');
     }
 }
 

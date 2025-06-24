@@ -9,13 +9,13 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('national_id_path')->nullable()->after('business_document_path');
-        });
-    }
-
+   /** public function up(): void
+    *{
+     *   Schema::table('users', function (Blueprint $table) {
+      *      $table->string('national_id_path')->nullable()->after('business_document_path');
+       * });
+    *}
+ */
     /**
      * Reverse the migrations.
      */

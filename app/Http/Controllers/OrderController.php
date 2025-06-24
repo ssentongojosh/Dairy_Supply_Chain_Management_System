@@ -113,10 +113,13 @@ class OrderController extends Controller
             $this->workflow->processNewOrder($order);
             DB::commit();
 
+
             return back()->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to place order.');
+
+
         }
     }
 
