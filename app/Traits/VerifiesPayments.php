@@ -41,7 +41,7 @@ trait VerifiesPayments
         $user = auth()->user();
         
         return match($user->role) {
-            'supplier'   => $order->seller_id === $user->id && $order->buyer->role === 'factory',
+            'supplier'   => $order->seller_id === $user->id && $order->buyer->role === 'plantmanager',
             'factory'    => $order->seller_id === $user->id && $order->buyer->role === 'wholesaler',
             'wholesaler' => $order->seller_id === $user->id && $order->buyer->role === 'retailer',
             default      => false,

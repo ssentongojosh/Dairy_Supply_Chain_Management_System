@@ -1,4 +1,4 @@
-@extends('layouts.contentNavbarLayout')
+<!-- @extends('layouts.contentNavbarLayout')
 
 @section('title', 'Your Orders')
 
@@ -97,5 +97,40 @@
             </div>
         </div>
     @endif
+</div>
+@endsection -->
+
+
+@extends('layouts.contentNavbarLayout')
+
+@section('content')
+<div class="container">
+    <h2>wholesaler Orders (As retailer)</h2>
+
+    @forelse($orders as $order)
+        <div class="card mb-3">
+            <div class="card-body">
+                <p><strong>Order #:</strong> {{ $order->id }}</p>
+                <p><strong>From:</strong> {{ $order->buyer->name }} (wholesaler)</p>
+                <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
+                <p><strong>Total:</strong> UGX {{ number_format($order->total_amount, 0) }}</p>
+
+                @if($order->status === 'pending')
+                    <form action="{{ route('orders.updateStatus', $order) }}" method="POST" class="d-inline">
+                        @csrf
+                        @method('PUT')
+                        <input type="hidden" name="status" value="approved">
+                        <button class="btn btn-success btn-sm">Approve</button>
+                    </form>
+                @endif
+
+                <a href="{{ route('payments.verify.form', $order) }}" class="btn btn-outline-primary btn-sm">
+                    Verify Payment
+                </a>
+            </div>
+        </div>
+    @empty
+        <p>No incoming orders from factories.</p>
+    @endforelse
 </div>
 @endsection

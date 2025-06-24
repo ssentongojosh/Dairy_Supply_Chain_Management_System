@@ -1,54 +1,6 @@
 @extends('layouts.contentNavbarLayout')
-@section('title', 'Retailer Orders')
 
-@section('content')
-<div class="container-fluid">
-    <h4 class="fw-bold py-3 mb-4">Retailer Dashboard</h4>
-
-    @if($orders->isEmpty())
-        <div class="alert alert-info">No incoming orders at the moment.</div>
-    @else
-        <div class="card">
-            <h5 class="card-header">Incoming Orders</h5>
-            <div class="table-responsive text-nowrap">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order #</th>
-                            <th>Buyer</th>
-                            <th>Status</th>
-                            <th>Payment</th>
-                            <th>Items</th>
-                            <th>Placed On</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($orders as $order)
-                        <tr>
-                            <td>#{{ $order->id }}</td>
-                            <td>{{ $order->buyer->name }}</td>
-                            <td><span class="badge bg-label-primary">{{ ucfirst($order->status) }}</span></td>
-                            <td><span class="badge bg-label-success">{{ ucfirst($order->payment_status) }}</span></td>
-                            <td>
-                                <ul class="list-unstyled mb-0">
-                                    @foreach($order->items as $item)
-                                        <li>{{ $item->product->name }} x {{ $item->quantity }}</li>
-                                    @endforeach
-                                </ul>
-                            </td>
-                            <td>{{ $order->created_at->format('d M Y') }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    @endif
-</div>
-@endsection
-                       <!-- @extends('layouts.contentNavbarLayout')
-
-@section('title', 'Retailer Dashboard')
+@section('title', 'Wholesaler Dashboard')
 
 @section('content')
 <div class="row">
@@ -127,7 +79,7 @@
                     <h5 class="mb-0">Inventory Overview</h5>
                     <small class="text-muted">Your product inventory status</small>
                 </div>
-                <a href="{{ route('retailer.inventory') }}" class="btn btn-primary">
+                <a href="{{ route('wholesaler.inventory') }}" class="btn btn-primary">
                     <i class="ri-box-3-line me-1"></i> Manage Inventory
                 </a>
             </div>
@@ -197,10 +149,10 @@
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
-                    <a href="{{ route('retailer.orders') }}" class="btn btn-outline-primary">
+                    <a href="{{ route('wholesaler.orders') }}" class="btn btn-outline-primary">
                         <i class="ri-list-check me-2"></i>View Orders
                     </a>
-                    <a href="{{ route('retailer.inventory') }}" class="btn btn-outline-info">
+                    <a href="{{ route('wholesaler.inventory') }}" class="btn btn-outline-info">
                         <i class="ri-box-3-line me-2"></i>Manage Inventory
                     </a>
                     <a href="{{ route('marketplace.index') }}" class="btn btn-outline-success">
@@ -222,7 +174,7 @@
                     <h5 class="mb-0">Recent Orders</h5>
                     <small class="text-muted">Your latest customer orders</small>
                 </div>
-                <a href="{{ route('retailer.orders.history') }}" class="btn btn-outline-primary btn-sm">
+                <a href="{{ route('wholesaler.orders.history') }}" class="btn btn-outline-primary btn-sm">
                     <i class="ri-external-link-line me-1"></i>View All
                 </a>
             </div>
@@ -396,4 +348,4 @@ setInterval(() => {
     location.reload();
 }, 300000);
 </script>
-@endsection -->
+@endsection
