@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\dashboard\Analytics;
 use App\Http\Controllers\layouts\WithoutMenu;
@@ -46,20 +47,17 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
-use App\Http\Controllers\RetailerOrderController;
-use App\Http\Controllers\WholesalerOrderController;
-use App\Http\Controllers\SupplierOrderController;
-use App\Http\Controllers\RetailInventoryController;
-use App\Http\Controllers\WholesalerInventoryController;
-use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\OrderController;
+ Use App\Http\Controllers\PaymentController;
+
 use App\Http\Controllers\InventoryController;
-use App\Http\Controllers\PaymentController;
 
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\dashboard\UserController;
 use App\Models\User;
+use App\Http\Controllers\dashboard\SupplierDashboard;
+use App\Http\Controllers\SupplierInventoryController;
 use App\Http\Controllers\RetailerSupplierController;
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -83,7 +81,7 @@ Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.se
 Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages')->middleware('auth');
 
 // Order routes
-Route::get('/app/order', [OrderController::class, 'index'])->name('app-order')->middleware('auth');
+Route::get('/app/order', [OrderController::class, 'index'])->name('app.order');
 
 // Inventory routes
 Route::get('/app/inventory', [InventoryController::class, 'index'])->name('app-inventory')->middleware('auth');
@@ -100,43 +98,40 @@ Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
 // Wholesaler dashboard is defined in the prefix group below
 
 // Other role dashboard routes
-Route::get('/farmer/dashboard', function() {
-  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::FARMER) {
-    return redirect()->route('home')->with('error', 'Access denied.');
-  }
-  return view('dashboard.farmer');
-})->name('farmer.dashboard');
+Route::get('/farmer/dashboard', [FarmerDashboard::class, 'index'])
+  ->name('farmer.dashboard')
+  ->middleware(['auth', 'role:farmer']);
 
 Route::get('/driver/dashboard', function() {
-  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::DRIVER) {
+  if (!Auth::check() || Auth::user()->role !== \App\Enums\Role::DRIVER) {
     return redirect()->route('home')->with('error', 'Access denied.');
   }
   return view('dashboard.driver');
 })->name('driver.dashboard');
 
 Route::get('/warehouse/dashboard', function() {
-  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::WAREHOUSE_MANAGER) {
+  if (!Auth::check() || Auth::user()->role !== \App\Enums\Role::WAREHOUSE_MANAGER) {
     return redirect()->route('home')->with('error', 'Access denied.');
   }
   return view('dashboard.warehouse');
 })->name('warehouse.dashboard');
 
 Route::get('/executive/dashboard', function() {
-  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::EXECUTIVE) {
+  if (!Auth::check() || Auth::user()->role !== \App\Enums\Role::EXECUTIVE) {
     return redirect()->route('home')->with('error', 'Access denied.');
   }
   return view('dashboard.executive');
 })->name('executive.dashboard');
 
 Route::get('/inspector/dashboard', function() {
-  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::INSPECTOR) {
+  if (!Auth::check() || Auth::user()->role !== \App\Enums\Role::INSPECTOR) {
     return redirect()->route('home')->with('error', 'Access denied.');
   }
   return view('dashboard.inspector');
 })->name('inspector.dashboard');
 
 Route::get('/quality/dashboard', function() {
-  if (!auth()->check() || auth()->user()->role !== \App\Enums\Role::QUALITY_ASSURANCE) {
+  if (!Auth::check() || Auth::user()->role !== \App\Enums\Role::QUALITY_ASSURANCE) {
     return redirect()->route('home')->with('error', 'Access denied.');
   }
   return view('dashboard.quality');
@@ -223,72 +218,75 @@ Route::get('/users/{user}', function (User $user) {
     return view('content.dashboard.user-view', compact('user'));
 })->name('users.show')->middleware('auth');
 
+
+
 Route::prefix('supplier')->name('supplier.')->group(function () {
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
 
-    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approve'])->name('orders.approve');
+// Supplier routes group
+Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
+    // Dashboard - using the dedicated dashboard controller
+    Route::get('/dashboard', [SupplierDashboard::class, 'index'])->name('supplier.dashboard');
 
-    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'ship'])->name('orders.ship');
+
+    // Order management
+    Route::get('/orders', [SupplierOrderController::class, 'index'])->name('supplier.orders');
+    Route::get('/orders/history', [SupplierOrderController::class, 'orderHistory'])->name('supplier.orders.history');
+    Route::get('/orders/{order}', [SupplierOrderController::class, 'showOrder'])->name('supplier.orders.show');
+    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder'])->name('supplier.orders.approve');
+    Route::post('/orders/{order}/reject', [SupplierOrderController::class, 'rejectOrder'])->name('supplier.orders.reject');
+    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped'])->name('supplier.orders.ship');
+
+    // Inventory management
+    Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
+    Route::post('/inventory', [SupplierInventoryController::class, 'store'])->name('supplier.inventory.store');
+    Route::get('/inventory/{inventory}', [SupplierInventoryController::class, 'show'])->name('supplier.inventory.show');
+    Route::put('/inventory/{inventory}', [SupplierInventoryController::class, 'update'])->name('supplier.inventory.update');
+    Route::put('/inventory/{inventory}/update-quantity', [SupplierInventoryController::class, 'updateQuantity'])->name('supplier.inventory.update-quantity');
+    Route::put('/inventory/{inventory}/threshold', [SupplierInventoryController::class, 'updateThreshold'])->name('supplier.inventory.threshold');
+    Route::post('/inventory/{inventory}/adjust', [SupplierInventoryController::class, 'adjustStock'])->name('supplier.inventory.adjust');
+    Route::delete('/inventory/{inventory}', [SupplierInventoryController::class, 'destroy'])->name('supplier.inventory.destroy');
+    Route::get('/inventory/products', [SupplierInventoryController::class, 'getAvailableProducts'])->name('supplier.inventory.products');
+    Route::post('/inventory/bulk-threshold', [SupplierInventoryController::class, 'bulkUpdateThreshold'])->name('supplier.inventory.bulk-threshold');
+    Route::post('/inventory/bulk-import', [SupplierInventoryController::class, 'bulkImport'])->name('supplier.inventory.bulk-import');
+    Route::get('/inventory/template', [SupplierInventoryController::class, 'downloadTemplate'])->name('supplier.inventory.template');
+    Route::get('/inventory/stats', [SupplierInventoryController::class, 'getStats'])->name('supplier.inventory.stats');
 });
+
+
+
 
 
 Route::middleware(['auth'])->group(function () {
-    // Payment routes
-    Route::get('/orders/{order}/pay', [\App\Http\Controllers\PaymentController::class, 'initiatePayment'])
+
+    // Universal Payment Routes
+    Route::get('/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])
         ->name('payments.initiate');
-    Route::post('/orders/{order}/pay', [\App\Http\Controllers\PaymentController::class, 'processPayment'])
+
+    Route::post('/orders/{order}/pay', [PaymentController::class, 'processPayment'])
         ->name('payments.process');
+
+    Route::get('/orders/{order}/verify', [PaymentController::class, 'showVerificationForm'])
+        ->name('payments.verify.form');
+
+    Route::post('/orders/{order}/verify', [PaymentController::class, 'verifyPayment'])
+        ->name('payments.verify.process');
 });
 
-Route::middleware(['auth', 'order.paid'])->group(function () {
-    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder']);
-    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped']);
-});
 
-Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(function () {
-    // Dashboard - using the dedicated dashboard controller
-    Route::get('/dashboard', [WholesalerDashboard::class, 'index'])->name('wholesaler.dashboard');
+//retailer orders
+Route::get('/dashboard', [OrderController::class, 'index'])->name('retailer.dashboard');
+Route::get('/retailer/orders', [OrderController::class, 'outgoingOrders'])->name('retailer.orders');
+Route::post('/retailer/orders', [OrderController::class, 'storeOrder'])->name('retailer.orders.store');
+Route::get('/retailer/orders/{order}', function (\App\Models\Order $order) {
+    return view('retailer.order-show', compact('order'));
+})->middleware('auth')->name('retailer.orders.show');
+Route::patch('/retailer/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('retailer.orders.updateStatus');
+Route::post('/retailer/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('retailer.orders.cancel');
+Route::get('/retailer/orders/{order}/pay', [OrderController::class, 'showPayment'])->name('retailer.orders.payment.show');
+Route::post('/retailer/orders/{order}/pay', [OrderController::class, 'processPayment'])->name('retailer.orders.payment.process');
+Route::post('/retailer/orders/{order}/payment', [RetailerOrderController::class, 'processPayment'])->name('retailer.orders.payment.process');
 
-    // Order management
-    Route::get('/orders', [WholesalerOrderController::class, 'orderHistory'])->name('wholesaler.orders');
-    Route::get('/orders/{order}', [WholesalerOrderController::class, 'showOrder'])->name('wholesaler.orders.show');
-    Route::post('/orders/{order}/approve', [WholesalerOrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
-    Route::post('/orders/{order}/reject', [WholesalerOrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');
-    Route::post('/orders/{order}/ship', [WholesalerOrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
-
-    // Inventory management
-    Route::get('/inventory', [WholesalerInventoryController::class, 'index'])->name('wholesaler.inventory');
-    Route::post('/inventory', [WholesalerInventoryController::class, 'store'])->name('wholesaler.inventory.store');
-    Route::patch('/inventory/{inventory}', [WholesalerInventoryController::class, 'updateQuantity'])->name('wholesaler.inventory.update');
-    Route::patch('/inventory/{inventory}/threshold', [WholesalerInventoryController::class, 'updateThreshold'])->name('wholesaler.inventory.threshold');
-    Route::delete('/inventory/{inventory}', [WholesalerInventoryController::class, 'destroy'])->name('wholesaler.inventory.destroy');
-    Route::get('/inventory/products', [WholesalerInventoryController::class, 'getAvailableProducts'])->name('wholesaler.inventory.products');
-});
-Route::prefix('factory')->middleware(['auth', 'role:factory'])->group(function () {
-    // Wholesaler orders
-    Route::get('/dashboard', [FactoryController::class, 'index'])->name('factory.dashboard');
-    Route::post('/orders/{order}/approve', [FactoryController::class, 'approveOrder'])->name('factory.orders.approve');
-    Route::post('/orders/{order}/ship', [FactoryController::class, 'markShipped'])->name('factory.orders.ship');
-
-    // Supplier orders
-    Route::get('/supplier-orders', [FactoryController::class, 'supplierOrders'])->name('factory.supplier.orders');
-    Route::post('/supplier-orders', [FactoryController::class, 'storeSupplierOrder'])->name('factory.supplier.orders.store');
-});
-
-// Retailer routes
-Route::prefix('retailer')->middleware(['auth', 'role:retailer'])->group(function () {
-    // Dashboard is defined outside this group
-
-    // Order management
-    Route::get('/orders', [RetailerOrderController::class, 'orderHistory'])->name('retailer.orders');
-    Route::post('/orders', [RetailerOrderController::class, 'storeOrder'])->name('retailer.orders.store');
-    Route::get('/orders/{order}', [RetailerOrderController::class, 'showOrder'])->name('retailer.orders.show');
-    Route::post('/orders/{order}/received', [RetailerOrderController::class, 'markReceived'])->name('retailer.orders.received');
-    Route::patch('/order/{order}/cancel', [RetailerOrderController::class, 'cancelOrder'])->name('retailer.orders.cancel');
-
-    // Payment routes
-    Route::get('/orders/{order}/payment', [RetailerOrderController::class, 'showPaymentForm'])->name('retailer.orders.payment');
-    Route::post('/orders/{order}/payment', [RetailerOrderController::class, 'processPayment'])->name('retailer.orders.payment.process');
 
     // Inventory routes
     Route::get('/inventory', [RetailInventoryController::class, 'index'])->name('retailer.inventory');
@@ -317,15 +315,8 @@ Route::prefix('retailer')->middleware(['auth', 'role:retailer'])->group(function
          ->name('retailer.vendors.addKey');
     Route::get('/vendors/{wholesaler}/products', [RetailerOrderController::class, 'viewVendorProducts'])
          ->name('retailer.vendors.products');
-});
 
-//retailer orders
-// Route::prefix('retailer')->middleware(['auth', 'role:retailer'])->group(function () {
-//     Route::get('/dashboard', [RetailerOrderController::class, 'index'])->name('retailer.dashboard');
-//     Route::post('/orders', [RetailerOrderController::class, 'storeOrder'])->name('retailer.orders.store');
-//     Route::get('/orders/{order}', [RetailerOrderController::class, 'showOrder'])->name('retailer.orders.show');
-//     Route::post('/orders/{order}/receive', [RetailerOrderController::class, 'markReceived'])->name('retailer.orders.receive');
-// });
+
 
 // For all roles
 Route::middleware('auth')->group(function () {
@@ -347,4 +338,52 @@ Route::middleware(['auth'])->group(function () {
          ->name('marketplace.add-to-inventory');
     Route::post('/marketplace/create-product', [MarketplaceController::class, 'createProduct'])
          ->name('marketplace.create-product');
+});
+
+// Farmer routes group
+Route::prefix('farmer')->middleware(['auth', 'role:farmer'])->group(function () {
+    // Dashboard - using the dedicated dashboard controller
+    Route::get('/dashboard', [FarmerDashboard::class, 'index'])->name('farmer.dashboard');
+
+    // Order management
+    Route::get('/orders', [FarmerOrderController::class, 'orderHistory'])->name('farmer.orders');
+    Route::get('/orders/dashboard', [FarmerOrderController::class, 'index'])->name('farmer.order.dashboard');
+    Route::get('/orders/{order}', [FarmerOrderController::class, 'showOrder'])->name('farmer.orders.show');
+    Route::post('/orders/{order}/approve', [FarmerOrderController::class, 'approveOrder'])->name('farmer.orders.approve');
+    Route::post('/orders/{order}/reject', [FarmerOrderController::class, 'rejectOrder'])->name('farmer.orders.reject');
+    Route::post('/orders/{order}/ship', [FarmerOrderController::class, 'markShipped'])->name('farmer.orders.ship');
+
+    // Inventory management
+    Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
+    Route::post('/inventory', [FarmerInventoryController::class, 'store'])->name('farmer.inventory.store');
+    Route::put('/inventory/{inventory}/update-quantity', [FarmerInventoryController::class, 'updateQuantity'])->name('farmer.inventory.update-quantity');
+    Route::put('/inventory/{inventory}/threshold', [FarmerInventoryController::class, 'updateThreshold'])->name('farmer.inventory.threshold');
+    Route::delete('/inventory/{inventory}', [FarmerInventoryController::class, 'destroy'])->name('farmer.inventory.destroy');
+    Route::get('/inventory/products', [FarmerInventoryController::class, 'getAvailableProducts'])->name('farmer.inventory.products');
+    Route::get('/inventory/products', [FarmerInventoryController::class, 'getAvailableProducts'])->name('farmer.inventory.products');
+});
+
+// Plant Manager routes group
+Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
+    // Dashboard - using the dedicated dashboard controller
+    Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
+
+    // Order management
+    Route::get('/orders', [PlantManagerOrderController::class, 'index'])->name('plant_manager.orders.dashboard');
+    Route::get('/orders/history', [PlantManagerOrderController::class, 'orderHistory'])->name('plant_manager.orders.history');
+    Route::get('/orders/{order}', [PlantManagerOrderController::class, 'showOrder'])->name('plant_manager.orders.show');
+    Route::post('/orders/{order}/approve', [PlantManagerOrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
+    Route::post('/orders/{order}/reject', [PlantManagerOrderController::class, 'rejectOrder'])->name('plant_manager.orders.reject');
+    Route::post('/orders/{order}/ship', [PlantManagerOrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
+    Route::post('/orders/{order}/start-production', [PlantManagerOrderController::class, 'startProduction'])->name('plant_manager.orders.start-production');
+
+    // Inventory management
+    Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
+    Route::post('/inventory', [PlantManagerInventoryController::class, 'store'])->name('plant_manager.inventory.store');
+    Route::put('/inventory/{inventory}/update-quantity', [PlantManagerInventoryController::class, 'updateQuantity'])->name('plant_manager.inventory.update-quantity');
+    Route::put('/inventory/{inventory}/threshold', [PlantManagerInventoryController::class, 'updateThreshold'])->name('plant_manager.inventory.threshold');
+    Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');
+    Route::get('/inventory/products', [PlantManagerInventoryController::class, 'getAvailableProducts'])->name('plant_manager.inventory.products');
+    Route::post('/inventory/process', [PlantManagerInventoryController::class, 'processProduction'])->name('plant_manager.inventory.process');
+});
 });

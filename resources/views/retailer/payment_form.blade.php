@@ -105,7 +105,7 @@ document.getElementById('payment_method').addEventListener('change', function() 
                     <p class="mb-2">1. Go to M-Pesa menu on your phone</p>
                     <p class="mb-2">2. Select "Lipa na M-Pesa" → "Buy Goods and Services"</p>
                     <p class="mb-2">3. Enter Till Number: <strong>123456</strong></p>
-                    <p class="mb-2">4. Enter Amount: <strong>KES {{ number_format($order->total_amount, 2) }}</strong></p>
+                    <p class="mb-2">4. Enter Amount: <strong>UGX {{ number_format($order->total_amount, 2) }}</strong></p>
                     <p class="mb-0">5. Enter the M-Pesa confirmation code in the Transaction ID field above</p>
                 `;
                 break;
@@ -115,7 +115,7 @@ document.getElementById('payment_method').addEventListener('change', function() 
                     <p class="mb-2">Bank: ABC Bank</p>
                     <p class="mb-2">Account Name: {{ $order->seller->name }}</p>
                     <p class="mb-2">Account Number: 1234567890</p>
-                    <p class="mb-2">Amount: <strong>KES {{ number_format($order->total_amount, 2) }}</strong></p>
+                    <p class="mb-2">Amount: <strong>UGX {{ number_format($order->total_amount, 2) }}</strong></p>
                     <p class="mb-0">Reference: Order #{{ $order->id }}</p>
                 `;
                 break;
@@ -123,14 +123,14 @@ document.getElementById('payment_method').addEventListener('change', function() 
                 instructions = `
                     <h6><i class="ri-file-text-line me-2"></i>Cheque Payment Instructions</h6>
                     <p class="mb-2">Make cheque payable to: <strong>{{ $order->seller->name }}</strong></p>
-                    <p class="mb-2">Amount: <strong>KES {{ number_format($order->total_amount, 2) }}</strong></p>
+                    <p class="mb-2">Amount: <strong>UGX {{ number_format($order->total_amount, 2) }}</strong></p>
                     <p class="mb-0">Write "Order #{{ $order->id }}" on the back of the cheque</p>
                 `;
                 break;
             case 'cash':
                 instructions = `
                     <h6><i class="ri-money-dollar-circle-line me-2"></i>Cash Payment Instructions</h6>
-                    <p class="mb-2">Amount: <strong>KES {{ number_format($order->total_amount, 2) }}</strong></p>
+                    <p class="mb-2">Amount: <strong>UGX {{ number_format($order->total_amount, 2) }}</strong></p>
                     <p class="mb-0">Please arrange with {{ $order->seller->name }} for cash collection</p>
                 `;
                 break;
@@ -154,7 +154,7 @@ document.getElementById('paymentForm').addEventListener('submit', function(e) {
     }
 
     // Show confirmation
-    if (!confirm(`Are you sure you want to submit payment of KES {{ number_format($order->total_amount, 2) }} via ${method}?`)) {
+    if (!confirm(`Are you sure you want to submit payment of UGX {{ number_format($order->total_amount, 2) }} via ${method}?`)) {
         e.preventDefault();
     }
 });

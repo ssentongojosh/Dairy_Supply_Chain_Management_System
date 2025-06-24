@@ -9,19 +9,18 @@ use App\Services\OrderWorkflowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class WholesalerOrderController extends Controller
+class FarmerOrderController extends Controller
 {
-    // View incoming orders from retailers (used for dashboard)
+    // View incoming orders from wholesalers and factories
     public function index()
     {
-        // For the wholesaler dashboard page, we'll show recent orders
         $incomingOrders = Order::where('seller_id', Auth::id())
                               ->with(['buyer', 'items.product', 'latestPayment'])
                               ->orderBy('created_at', 'desc')
                               ->take(10)
                               ->get();
 
-        return view('wholesaler.order_dashboard', compact('incomingOrders'));
+        return view('farmer.order_dashboard', compact('incomingOrders'));
     }
 
     // Manual approval for orders that couldn't be auto-approved
@@ -34,10 +33,9 @@ class WholesalerOrderController extends Controller
         // Allow approval for orders that are pending or pending_review
         if (!in_array($order->status, ['pending', 'pending_review'])) {
             return redirect()->back()
-                             ->with('error', 'This order cannot be approved.');
+                            ->with('error', 'Order cannot be approved at this stage.');
         }
 
-        // Force approve the order (manual approval)
         $order->update([
             'status' => 'approved',
             'approved_at' => now(),
@@ -45,7 +43,7 @@ class WholesalerOrderController extends Controller
         ]);
 
         return redirect()->back()
-                        ->with('success', 'Order approved successfully! Retailer can now make payment.');
+                        ->with('success', 'Order approved successfully!');
     }
 
     // Reject order
@@ -57,16 +55,16 @@ class WholesalerOrderController extends Controller
 
         if (!in_array($order->status, ['pending', 'pending_review'])) {
             return redirect()->back()
-                            ->with('error', 'This order cannot be rejected.');
+                            ->with('error', 'Order cannot be rejected at this stage.');
         }
 
         $order->update(['status' => 'rejected']);
 
         return redirect()->back()
-                        ->with('success', 'Order rejected successfully.');
+                        ->with('success', 'Order rejected.');
     }
 
-    // Mark order as shipped (after payment is verified)
+    // Mark order as shipped
     public function markShipped(Order $order)
     {
         if ($order->seller_id !== Auth::id()) {
@@ -88,7 +86,7 @@ class WholesalerOrderController extends Controller
                         ->with('error', 'Failed to ship order.');
     }
 
-    // Show order history page for wholesaler
+    // Show order history page for farmer
     public function orderHistory(Request $request)
     {
         $query = Order::where('seller_id', Auth::id())
@@ -123,10 +121,10 @@ class WholesalerOrderController extends Controller
             return $order;
         });
 
-        return view('wholesaler.order_history', compact('orders'));
+        return view('farmer.order_history', compact('orders'));
     }
 
-    // Show order details for wholesaler
+    // Show order details for farmer
     public function showOrder(Order $order)
     {
         if ($order->seller_id !== Auth::id()) {
@@ -134,7 +132,6 @@ class WholesalerOrderController extends Controller
         }
 
         $order->load(['items.product', 'buyer', 'latestPayment']);
-        return view('wholesaler.order_show', compact('order'));
+        return view('farmer.order_show', compact('order'));
     }
 }
-

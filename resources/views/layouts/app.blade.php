@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@yield('title', 'Factory Dashboard')</title>
+    <title>@yield('title', 'Dashboard')</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
@@ -12,8 +12,18 @@
         <div class="container">
             <a class="navbar-brand" href="{{ url('/') }}">MyApp</a>
             <div class="collapse navbar-collapse">
+                @php
+                    // Get user role string (supporting backed enums or string role)
+                    $role = auth()->user()->role instanceof \BackedEnum ? auth()->user()->role->value : auth()->user()->role;
+                    $dashboardRoute = $role . '.dashboard';
+                @endphp
+
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item"><a href="{{ route('factory.dashboard') }}" class="nav-link">Dashboard</a></li>
+                    @if (Route::has($dashboardRoute))
+                        <li class="nav-item">
+                            <a href="{{ route($dashboardRoute) }}" class="nav-link">Dashboard</a>
+                        </li>
+                    @endif
                     <li class="nav-item">
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf

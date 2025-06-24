@@ -34,13 +34,21 @@ class InventoryController extends Controller
                 // Redirect wholesalers to their inventory page
                 return redirect()->route('wholesaler.inventory');
 
+            case 'farmer':
+                // Redirect farmers to their inventory page
+                return redirect()->route('farmer.inventory');
+
+            case 'plant_manager':
+                // Redirect plant managers to their inventory page
+                return redirect()->route('plant_manager.inventory');
+
             case 'factory':
                 // TODO: Create factory inventory controller
                 return redirect()->route('dashboard')->with('info', 'Factory inventory management coming soon!');
 
             case 'supplier':
-                // TODO: Create supplier inventory controller
-                return redirect()->route('dashboard')->with('info', 'Supplier inventory management coming soon!');
+                // Redirect suppliers to their inventory page
+                return redirect()->route('supplier.inventory');
 
             case 'admin':
                 // TODO: Create admin inventory overview
