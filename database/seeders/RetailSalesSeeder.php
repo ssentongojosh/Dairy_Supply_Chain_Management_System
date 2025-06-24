@@ -14,7 +14,8 @@ class RetailSalesSeeder extends Seeder
      */
     public function run()
 {
-    $csv = Reader::createFromPath(database_path('seeders/data/retail_sales.csv'), 'r');
+    $csv = Reader::createFromPath(database_path('seeders/Dataset/retail_sales.csv'), 'r');
+
     $csv->setHeaderOffset(0);
 
     foreach ($csv->getRecords() as $record) {
@@ -27,7 +28,7 @@ class RetailSalesSeeder extends Seeder
             'quantity' => $record['quantity'],
             'price' => $record['price'],
             'payment_method' => $record['payment_method'],
-            'invoice_date' => $record['invoice_date'],
+            'invoice_date' => date('Y-m-d', strtotime($record['invoice_date'])),
             'shopping_mall' => $record['shopping_mall'],
             'created_at' => now(),
             'updated_at' => now(),

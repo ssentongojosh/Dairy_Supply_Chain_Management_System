@@ -14,7 +14,8 @@ class CustomerSegmentationSeeder extends Seeder
      */
     public function run()
 {
-    $csv = Reader::createFromPath(database_path('seeders/data/customer_segmentation.csv'), 'r');
+    $csv = Reader::createFromPath(database_path('seeders/Dataset/customer_segmentation_data.csv'), 'r');
+
     $csv->setHeaderOffset(0);
 
     foreach ($csv->getRecords() as $record) {
