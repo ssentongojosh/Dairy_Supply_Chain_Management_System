@@ -14,15 +14,17 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) 
         {
             $table->id();
-            $table->unsignedBigInteger('product_id');
-            $table->integer('quantity');
-            $table->string('location',15);
-            $table->string('goods_type',10);
-            $table->integer('store_id');
-            $table->integer('batch_id');
-            $table->float('storage_condition');
-            $table->date('expiry_date');
-            $table->enum('status',['available', 'reserved', 'expired', 'out_of_stock'])->default('available');
+            $table->string('name');
+            $table->unsignedBigInteger('product_id')->nullable();
+            $table->unsignedInteger('quantity');
+            $table->string('unit');
+            $table->string('location',15)->nullable();
+            $table->string('goods_type',10)->nullable();
+            $table->integer('store_id')->nullable();
+            $table->integer('batch_id')->nullable();
+            $table->float('storage_condition')->nullable();
+            $table->date('expiry_date')->nullable();
+            //$table->enum('status',['available', 'reserved', 'expired', 'out_of_stock'])->default('available');
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('product')->onDelete('cascade');

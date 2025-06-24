@@ -8,34 +8,34 @@ use Illuminate\Http\Request;
 class InventoryController extends Controller
 {
     //showing availabity in inventory
-       public function index()
+    public function index()
     {
         $inventory = Inventory::all();
-        return response()->json($inventory);
+        return view('inventory.index', compact('inventory'));
     }
 
-    //add new inventory
-     public function store(Request $request)
+    //creating a new inventory item
+    public function create()
     {
-        $validated = $request->validate([
-            'product_id' => 'required|exists:products,id',
-            'delivery_id' => 'required|integer',
-            'quantity' => 'required|integer',
-            'location' => 'required|string|max:15',
-            'goods_type' => 'required|string|max:10',
-            'store_id' => 'required|integer',
-            'batch_id' => 'required|integer',
-            'storage_condition' => 'required|numeric',
-            'expiry_date' => 'required|date',
-            'status' => 'in:available,reserved,expired,out_of_stock'
+        return view('/inventory.create');
+    }
+    
+    //add new inventory
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'name' => 'required|string|max:15',
+            'quantity' => 'required|integer|min:1',
+            'unit' => 'string|max:5',
+            //'status' => 'in:available,reserved,expired,out_of_stock',
         ]);
 
-        $inventory = Inventory::create($validated);
-        return response()->json($inventory, 201);
+        Inventory::create($data);
+        return redirect()->route('inventory.create')->with('message', 'Inventory item created successfully!');
     }
 
     //show one inventory item
-      public function show($id)
+    public function show($id)
     {
         $inventory = Inventory::findOrFail($id);
         return response()->json($inventory);
@@ -47,12 +47,20 @@ class InventoryController extends Controller
         $inventory = Inventory::findOrFail($id);
 
         $validated = $request->validate([
-            'quantity' => 'nullable|integer',
-            'status' => 'nullable|in:available,reserved,expired,out_of_stock',
+            'name' => 'required|string|max:15',
+            'quantity' => 'required|integer|min:1',
+            'unit' => 'required|string|max:10',
+            //'status' => 'required|in:available,limited,reserved,out_of_stock',
         ]);
 
-        $inventory->update($validated);
-        return response()->json($inventory);
+        $inventory->update([
+            'name'=>$request->name,
+            'quantity'=>$request->quantity,
+            'unit'=>$request->unit,
+            //'status'=>$request->status,
+        ]);
+
+        return redirect()->route('inventory.search', ['search' => $inventory->name])->with('message','Item updated successfully');
     }
 
     //delete an inventory
@@ -62,5 +70,16 @@ class InventoryController extends Controller
         $inventory->delete();
         return response()->json(['message' => 'Inventory item deleted']);
     }
-    
+
+    //search for an inventory
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $item = Inventory::where('name','like','%' .$search. '%')->first();
+        if(!$item){
+            return redirect()->route('inventory.index')->with('message','No matching item found');
+        }
+        return view('inventory.details', compact('item'));
+    }
+
 }

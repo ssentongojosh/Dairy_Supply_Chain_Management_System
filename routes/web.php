@@ -48,7 +48,9 @@ use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
-// Root route - Welcome page
+use App\Http\Controllers\InventoryController;
+
+// index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Authentication routes
@@ -196,13 +198,18 @@ Route::middleware(['auth'])->group(function () {
         ->name('verification.pending');
 
 
-//route for product
-Route::resource('products', \App\Http\Controllers\ProductController::class);
-
-//route for order
-Route::resource('orders', \App\Http\Controllers\OrderController::class);
 
 //route for inventory
 Route::resource('inventories', \App\Http\Controllers\InventoryController::class);
+Route::get('/inventory', [InventoryController::class, 'index']);
 
+//route to create a new inventory item
+Route::get('/inventory', [InventoryController::class, 'index'])->name('inventory.index');
+Route::get('/inventory/create', [InventoryController::class, 'create'])->name('inventory.create');
+Route::post('/inventory', [InventoryController::class, 'store'])->name('inventory.store');
+
+//route for search
+Route::get('/inventory/search',[InventoryController::class, 'search'])->name('inventory.search');
+Route::get('/inventory/{id}/edit',[InventoryController::class, 'edit'])->name('inventory.edit');
+Route::put('/inventory/{id}',[InventoryController::class, 'update'])->name('inventory.update');
 });
