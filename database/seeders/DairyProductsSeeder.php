@@ -14,7 +14,8 @@ class DairyProductsSeeder extends Seeder
      */
     public function run()
 {
-    $csv = Reader::createFromPath(database_path('seeders/data/dairy_products.csv'), 'r');
+    $csv = Reader::createFromPath(database_path('seeders/Dataset/dairy_products.csv'), 'r');
+
     $csv->setHeaderOffset(0);
 
     foreach ($csv->getRecords() as $record) {

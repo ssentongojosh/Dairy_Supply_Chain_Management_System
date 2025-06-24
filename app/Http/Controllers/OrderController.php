@@ -3,18 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-<<<<<<< HEAD
+
 use App\Models\Product;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
-
-class OrderController extends Controller
-{
-    //
-=======
-use App\Models\Inventory;
 use App\Services\OrderWorkflowService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -79,10 +72,13 @@ class OrderController extends Controller
             $this->workflow->processNewOrder($order);
             DB::commit();
 
+
             return back()->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to place order.');
+
+
         }
     }
 
@@ -195,5 +191,5 @@ class OrderController extends Controller
 
         return view($user->role->value . '.orders', compact('orders'));
     }
->>>>>>> f42db67193092da0e3fbd0c6ab57d9a182c6436a
+
 }

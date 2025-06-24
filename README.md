@@ -56,21 +56,120 @@ php artisan db:seed
 
 # Or seed specific user types
 php artisan db:seed --class=AdminUserSeeder
+php artisan db:seed --class=SupplierSeeder
+php artisan db:seed --class=FarmerSeeder
+php artisan db:seed --class=RetailerSeeder
 ```
 
-## Using Tinker
-```bash
-php artisan tinker $user = new App\Models\User();
-$user->name = 'Your Name'; $user->email = 'your@email.com';
-$user->password = Hash::make('your_password');
-$user->role = 'admin'; $user->save();
-```
+## Default Login Credentials
+
 
 > after that you can log in with the default admin credentials shown below
 
 Default admin credentials:
 - Email: admin@dscms.com
 - Password: admin123 
+
+### Admin Users
+- **Email**: admin@dscms.com
+- **Password**: admin123
+
+### Supplier Users
+- **AgriSupply Co.**
+  - Email: supplier@agrisupply.com
+  - Password: password123
+
+- **FarmTech Solutions**
+  - Email: contact@farmtech.ph
+  - Password: password123
+
+- **GreenHarvest Supplies**
+  - Email: info@greenharvest.com
+  - Password: password123
+
+- **Dairy Equipment Plus**
+  - Email: sales@dairyequipment.ph
+  - Password: password123
+
+- **ProFeed Nutrition**
+  - Email: orders@profeed.com
+  - Password: password123
+
+### Test Users (Various Roles)
+
+- **Farmer**: farmer@test.com / password123
+- **Retailer**: retailer@test.com / password123
+- **Wholesaler**: wholesaler@test.com / password123
+- **Plant Manager**: manager@test.com / password123
+- **Farmer**: farmer@test.com / password
+- **Retailer**: retailer@test.com / password
+- **Wholesaler**: wholesaler@test.com / password
+- **Plant Manager**: manager@test.com / password
+
+## Role-Specific Features
+
+### Suppliers
+- **Dashboard**: Order statistics, inventory overview, revenue tracking
+- **Order Management**: View, approve, reject, and ship orders
+- **Inventory Management**: Add products, manage stock levels, set thresholds
+
+- **Bulk Operations**: CSV import/export for inventory management
+
+### Farmers
+- **Production Tracking**: Milk production records and quality metrics
+- **Inventory**: Manage raw materials and finished products
+
+- **Bulk Operations**: inventory management
+
+### Farmers
+- **Production Tracking**: Milk production records and quality metrics
+- **Inventory**: Manage raw materials (milk)
+
+- **Order Fulfillment**: Process orders from wholesalers and retailers
+
+### Retailers
+- **Point of Sale**: Manage retail transactions
+- **Inventory**: Track stock levels with auto-reorder capabilities
+- **Supplier Management**: Browse and order from multiple suppliers
+- **Payment Processing**: Handle various payment methods
+
+### Wholesalers
+- **Bulk Distribution**: Manage large-scale orders and distribution
+
+- **Multi-tier Ordering**: Source from farmers/factories, sell to retailers
+- **Logistics**: Coordinate deliveries and shipments
+
+## API Endpoints
+
+### Authentication
+- `POST /login` - User authentication
+- `POST /register` - New user registration
+- `POST /logout` - User logout
+
+### Orders
+- `GET /supplier/orders` - Supplier order dashboard
+- `POST /supplier/orders/{order}/approve` - Approve order
+- `POST /supplier/orders/{order}/reject` - Reject order
+- `POST /supplier/orders/{order}/ship` - Mark order as shipped
+
+### Inventory
+- `GET /supplier/inventory` - Inventory management
+- `POST /supplier/inventory` - Add new product
+- `PUT /supplier/inventory/{inventory}` - Update inventory item
+- `DELETE /supplier/inventory/{inventory}` - Remove inventory item
+
+
+> after that you can log in with the default admin credentils shown below
+
+Default admin credentials:
+- Email: admin@dscms.com
+- Password: admin123 
+
+
+- **Multi-tier Ordering**: Source from factories, sell to retailers
+- **Logistics**: Coordinate deliveries and shipments
+
+
 
 ## Technology Stack
 

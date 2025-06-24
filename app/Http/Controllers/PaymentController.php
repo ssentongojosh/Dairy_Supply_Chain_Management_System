@@ -172,7 +172,7 @@ protected function getRoleDashboardRoute(): string
         'retailer'   => 'retailer.dashboard',
         'wholesaler' => 'wholesaler.orders.show',
         'factory'    => 'factory.orders.show',
-        'supplier'   => 'supplier.order.show',
+        'supplier'   => 'supplier.orders.show',
         default      => 'home'
     };
 }

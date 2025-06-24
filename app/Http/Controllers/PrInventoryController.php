@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Inventory;
 
-class InventoryController extends Controller
+class PrInventoryController extends Controller
 {
     /**
      * Route users to appropriate inventory view based on their role

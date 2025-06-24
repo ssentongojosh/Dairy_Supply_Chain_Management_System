@@ -11,15 +11,36 @@ class Inventory extends Model
         'name',
         'product_id',
         'quantity',
+        'reorder_point',
+        'unit_cost',
+        'selling_price',
         'unit',
         'location',
-        'goods_type',
-        'store_id',
-        'batch_id',
-        'storage_condition',
-        'expiry_date',
-        //'status',
+        'last_restocked_at',
+        'auto_order_quantity'
     ];
+
+    protected $casts = [
+        'quantity' => 'integer',
+        'reorder_point' => 'integer',
+        'unit_cost' => 'decimal:2',
+        'selling_price' => 'decimal:2',
+        'last_restocked_at' => 'date'
+    ];
+
+    // Relationships
+    public function user()
+    {
+    return $this->belongsTo(User::class);
+    }
+    //[
+       // 'goods_type',
+       // 'store_id',
+     //   'batch_id',
+        //'storage_condition',
+      //  'expiry_date',
+        //'status',
+    //];
 
     public function getAutoStatusAttribute():string
     {
