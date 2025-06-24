@@ -551,12 +551,12 @@
         <!-- Chat Header -->
         <div class="chat-header">
           <div class="chat-header-info">
-            <div class="chat-header-avatar bg-primary online" id="chatHeaderAvatar">
-              DS
+            <div class="chat-header-avatar bg-secondary offline" id="chatHeaderAvatar">
+              <i class="ri-user-line"></i>
             </div>
             <div class="chat-header-details">
-              <h6 id="chatHeaderName">DSCMS Support</h6>
-              <small id="chatHeaderStatus">Online</small>
+              <h6 id="chatHeaderName">Select a Contact</h6>
+              <small id="chatHeaderStatus">Choose someone to start chatting</small>
             </div>
           </div>
 
@@ -564,13 +564,13 @@
             <button class="chat-header-action" title="Search">
               <i class="ri-search-line"></i>
             </button>
-            <button class="chat-header-action" title="Video Call">
+            <button class="chat-header-action" title="Video Call" disabled>
               <i class="ri-vidicon-line"></i>
             </button>
-            <button class="chat-header-action" title="Phone Call">
+            <button class="chat-header-action" title="Phone Call" disabled>
               <i class="ri-phone-line"></i>
             </button>
-            <button class="chat-header-action" title="More Options">
+            <button class="chat-header-action" title="More Options" disabled>
               <i class="ri-more-2-line"></i>
             </button>
           </div>
@@ -581,7 +581,7 @@
           <div class="chat-welcome">
             <i class="ri-message-3-line chat-welcome-icon"></i>
             <h5>Welcome to DSCMS Chat!</h5>
-            <p>Start a conversation with the DSCMS Support team.</p>
+            <p>Select a contact from the sidebar to start a conversation.</p>
           </div>
         </div>
 
@@ -644,8 +644,53 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // State variables
     let messages = [];
-    let currentContact = 'support';
-    let currentContactName = 'DSCMS Support';
+    let currentContact = null;
+    let currentContactName = null;
+
+    // Auto-select first contact if available
+    if (contactItems.length > 0) {
+        const firstContact = contactItems[0];
+        selectContact(firstContact.dataset.id, firstContact.dataset.name, firstContact);
+    }
+
+    // Initialize input state based on whether a contact is selected
+    setInputState(true);
+
+    // Function to select a contact
+    function selectContact(contactId, contactName, contactElement = null) {
+        // Update current contact
+        currentContact = contactId;
+        currentContactName = contactName;
+
+        // Remove active class from all contacts
+        contactItems.forEach(contact => contact.classList.remove('active'));
+
+        // Add active class to clicked contact
+        if (contactElement) {
+            contactElement.classList.add('active');
+        } else {
+            // Find the contact element by ID if not provided
+            const foundContact = Array.from(contactItems).find(item => item.dataset.id === contactId);
+            if (foundContact) {
+                foundContact.classList.add('active');
+            }
+        }
+
+        // Update header
+        const contactStatus = contactElement?.dataset.status || 'Offline';
+        updateChatHeader(contactName, contactStatus);
+
+        // Load messages for this contact
+        loadContactMessages(contactId);
+
+        // Enable input now that we have a contact selected
+        setInputState(true);
+
+        // Close sidebar on mobile
+        if (window.innerWidth <= 991 && chatSidebar) {
+            chatSidebar.classList.remove('show');
+        }
+    }
 
     // Contact search functionality
     if (searchInput) {
@@ -765,31 +810,12 @@ document.addEventListener('DOMContentLoaded', function() {
     // Contact switching
     contactItems.forEach(item => {
         item.addEventListener('click', function() {
-            // Remove active class from all contacts
-            contactItems.forEach(contact => contact.classList.remove('active'));
-
-            // Add active class to clicked contact
-            this.classList.add('active');
-
             // Get contact data
             const contactId = this.dataset.id;
             const contactName = this.dataset.name;
-            const contactStatus = this.dataset.status || 'Online';
 
-            // Update current contact
-            currentContact = contactId;
-            currentContactName = contactName;
-
-            // Update header
-            updateChatHeader(contactName, contactStatus);
-
-            // Load messages for this contact
-            loadContactMessages(contactId);
-
-            // Close sidebar on mobile
-            if (window.innerWidth <= 991 && chatSidebar) {
-                chatSidebar.classList.remove('show');
-            }
+            // Use the selectContact function
+            selectContact(contactId, contactName, this);
 
             // Remove unread badge
             const badge = this.querySelector('.unread-badge');
@@ -844,23 +870,13 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             // Show welcome message if no messages
-            if (contactId === 'support') {
-                chatMessages.innerHTML = `
-                    <div class="chat-welcome">
-                        <i class="ri-customer-service-2-line chat-welcome-icon"></i>
-                        <h5>DSCMS Support</h5>
-                        <p>Hi! I'm here to help you with any questions about the DSCMS platform.</p>
-                    </div>
-                `;
-            } else {
-                chatMessages.innerHTML = `
-                    <div class="chat-welcome">
-                        <i class="ri-message-3-line chat-welcome-icon"></i>
-                        <h5>${currentContactName}</h5>
-                        <p>Start a conversation with ${currentContactName}.</p>
-                    </div>
-                `;
-            }
+            chatMessages.innerHTML = `
+                <div class="chat-welcome">
+                    <i class="ri-message-3-line chat-welcome-icon"></i>
+                    <h5>${currentContactName}</h5>
+                    <p>Start a conversation with ${currentContactName}.</p>
+                </div>
+            `;
         })
         .catch(error => {
             console.error('Error loading messages:', error);
@@ -900,13 +916,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function sendMessage() {
         const message = messageInput.value.trim();
-        if (!message) return;
+        if (!message || !currentContact) return;
 
         // Disable input while sending
         setInputState(false);
 
         // Get the currently selected contact ID
-        const recipientId = currentContact !== 'support' ? currentContact : null;
+        const recipientId = currentContact;
 
         fetch('{{ route('chat.send') }}', {
             method: 'POST',
@@ -981,10 +997,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function setInputState(enabled) {
-        if (messageInput) messageInput.disabled = !enabled;
-        if (sendButton) sendButton.disabled = !enabled;
+        // Only enable if both enabled is true AND a contact is selected
+        const shouldEnable = enabled && currentContact !== null;
 
-        if (enabled && messageInput) {
+        if (messageInput) {
+            messageInput.disabled = !shouldEnable;
+            messageInput.placeholder = currentContact === null ?
+                'Select a contact to start chatting...' :
+                'Type your message...';
+        }
+        if (sendButton) sendButton.disabled = !shouldEnable;
+
+        if (shouldEnable && messageInput) {
             messageInput.focus();
         }
     }

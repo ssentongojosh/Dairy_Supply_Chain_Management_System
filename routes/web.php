@@ -48,7 +48,7 @@ use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
 use App\Http\Controllers\OrderController;
- Use App\Http\Controllers\PaymentController;
+Use App\Http\Controllers\PaymentController;
 
 use App\Http\Controllers\InventoryController;
 
@@ -59,6 +59,7 @@ use App\Models\User;
 use App\Http\Controllers\dashboard\SupplierDashboard;
 use App\Http\Controllers\SupplierInventoryController;
 use App\Http\Controllers\RetailerSupplierController;
+use App\Http\Controllers\dashboard\FarmerDashboard;
 // Root route - Welcome page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -79,6 +80,7 @@ Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard'
 Route::get('/app/chat', [ChatController::class, 'index'])->name('app-chat')->middleware('auth');
 Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send')->middleware('auth');
 Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages')->middleware('auth');
+Route::post('/messages/mark-as-read', [ChatController::class, 'markMessageAsRead'])->name('messages.mark-read')->middleware('auth');
 
 // Order routes
 Route::get('/app/order', [OrderController::class, 'index'])->name('app.order');
@@ -96,6 +98,9 @@ Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
   ->middleware(['auth', 'role:retailer']);
 
 // Wholesaler dashboard is defined in the prefix group below
+Route::get('/wholesaler/dashboard', [WholesalerDashboard::class, 'index'])
+  ->name('wholesaler.dashboard')
+  ->middleware(['auth', 'role:wholesaler']);
 
 // Other role dashboard routes
 Route::get('/farmer/dashboard', [FarmerDashboard::class, 'index'])
