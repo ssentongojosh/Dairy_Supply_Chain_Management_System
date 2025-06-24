@@ -51,6 +51,19 @@ class Analytics extends Controller
             return redirect()->route('home')->with('error', 'You do not have permission to access this page.');
         }
 
-        return view('content.dashboard.dashboards-analytics');
+        // Fetch users and dashboard statistics
+        $users = User::paginate(10);
+        $totalUsers = User::count();
+        $verifiedUsers = User::whereNotNull('email_verified_at')->count();
+        $duplicateUsers = User::select('email')->groupBy('email')->havingRaw('COUNT(*) > 1')->count();
+        $pendingVerification = User::whereNull('email_verified_at')->count();
+
+        return view('content.dashboard.dashboards-analytics', compact(
+            'users',
+            'totalUsers',
+            'verifiedUsers',
+            'duplicateUsers',
+            'pendingVerification'
+        ));
     }
 }

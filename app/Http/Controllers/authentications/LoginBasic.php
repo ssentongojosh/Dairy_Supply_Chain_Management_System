@@ -86,14 +86,23 @@ class LoginBasic extends Controller
         Log::info('Redirecting based on role value', ['role_value' => $roleValue]);
         switch ($roleValue) {
             case 'admin':
-            case 'retailer': // Assuming retailer also goes to analytics for now
-                Log::info('Role is admin or retailer, redirecting to dashboard.analytics');
+                Log::info('Admin role detected, redirecting to dashboard.analytics');
                 return redirect()->route('dashboard.analytics');
-            // Add other roles if they have different dashboards
-            // case 'wholesaler':
-            //     return redirect()->route('wholesaler.dashboard');
-            // case 'farmer':
-            //     return redirect()->route('farmer.dashboard');
+            case 'retailer':
+                Log::info('Retailer role detected, redirecting to retailer.dashboard');
+                return redirect()->route('retailer.dashboard');
+            case 'wholesaler':
+                Log::info('Wholesaler role detected, redirecting to wholesaler.dashboard');
+                return redirect()->route('wholesaler.dashboard');
+            case 'farmer':
+                Log::info('Farmer role detected, redirecting to farmer.dashboard');
+                return redirect()->route('farmer.dashboard');
+            case 'plant_manager':
+                Log::info('Plant manager role detected, redirecting to plant_manager.dashboard');
+                return redirect()->route('plant_manager.dashboard');
+            case 'supplier':
+                Log::info('Supplier role detected, redirecting to supplier.dashboard');
+                return redirect()->route('supplier.dashboard');
             default:
                 Log::info('Default role or unknown role, redirecting to home', ['role' => $roleValue]);
                 return redirect()->route('home');

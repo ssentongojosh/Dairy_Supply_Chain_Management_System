@@ -42,22 +42,43 @@
           @csrf
 
           <div class="mb-4">
-            <label for="business_document_input" class="form-label">Business Document (PDF)</label>
-            {{-- Drag and Drop Zone --}}
-            <div id="dropZone" class="mt-1 p-4 border border-dashed rounded-3 text-center cursor-pointer">
-              <i class="ri-upload-cloud-2-line ri-3x text-muted"></i>
+            <label for="national_id_input" class="form-label">National ID (PDF)</label>
+            {{-- Drag and Drop Zone for National ID --}}
+            <div id="nationalIdDropZone" class="mt-1 p-4 border border-dashed rounded-3 text-center cursor-pointer">
+              <i class="ri-id-card-line ri-3x text-muted"></i>
               <p class="mt-2 mb-0">
-                <span class="fw-semibold text-primary">Click to upload</span> or drag and drop PDF here
+                <span class="fw-semibold text-primary">Click to upload</span> or drag and drop National ID PDF here
               </p>
               <p class="text-muted small mb-0">Maximum file size: 10MB</p>
-              <p id="fileNameDisplay" class="mt-2 text-muted small"></p>
+              <p id="nationalIdFileDisplay" class="mt-2 text-muted small"></p>
             </div>
             {{-- Hidden actual file input --}}
-            <input type="file" class="d-none" id="business_document_input" name="business_document" accept=".pdf" required>
+            <input type="file" class="d-none" id="national_id_input" name="national_id" accept=".pdf" required>
             <div class="form-text mt-1">
-              Upload a PDF containing business registration, license, or other relevant business documents.
+              Upload a PDF of your National ID or other valid identification document.
             </div>
-            @error('business_document')
+            @error('national_id')
+                <div class="invalid-feedback d-block">{{ $message }}</div>
+            @enderror
+          </div>
+
+          <div class="mb-4">
+            <label for="ursb_certificate_input" class="form-label">URSB Certificate (PDF)</label>
+            {{-- Drag and Drop Zone for URSB Certificate --}}
+            <div id="ursbCertificateDropZone" class="mt-1 p-4 border border-dashed rounded-3 text-center cursor-pointer">
+              <i class="ri-file-certificate-line ri-3x text-muted"></i>
+              <p class="mt-2 mb-0">
+                <span class="fw-semibold text-primary">Click to upload</span> or drag and drop URSB Certificate PDF here
+              </p>
+              <p class="text-muted small mb-0">Maximum file size: 10MB</p>
+              <p id="ursbCertificateFileDisplay" class="mt-2 text-muted small"></p>
+            </div>
+            {{-- Hidden actual file input --}}
+            <input type="file" class="d-none" id="ursb_certificate_input" name="ursb_certificate" accept=".pdf" required>
+            <div class="form-text mt-1">
+              Upload a PDF of your URSB (Uganda Registration Services Bureau) Certificate or business registration document.
+            </div>
+            @error('ursb_certificate')
                 <div class="invalid-feedback d-block">{{ $message }}</div>
             @enderror
           </div>
@@ -86,7 +107,8 @@
 
 @push('page-styles')
 <style>
-  #dropZone.dragover {
+  #nationalIdDropZone.dragover,
+  #ursbCertificateDropZone.dragover {
     border-color: var(--bs-primary);
     background-color: rgba(var(--bs-primary-rgb), 0.05);
   }

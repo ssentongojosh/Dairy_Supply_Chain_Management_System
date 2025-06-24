@@ -322,7 +322,7 @@
                     <div class="dropdown-divider"></div>
                   </li>
                   <li>
-                    <a class="dropdown-item waves-effect" href="javascript:void(0);">
+                    <a class="dropdown-item waves-effect" href="{{url('pages/account-settings-account')}}">
                       <i class="icon-base ri ri-user-3-line icon-22px me-2"></i>
                       <span class="align-middle">My Profile</span>
                     </a>

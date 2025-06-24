@@ -2,10 +2,15 @@
 
 namespace App\Models;
 
+<<<<<<< HEAD
+=======
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+>>>>>>> f42db67193092da0e3fbd0c6ab57d9a182c6436a
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
+<<<<<<< HEAD
     //
     protected $primaryKey = 'product_id';
 
@@ -33,3 +38,51 @@ class Product extends Model
 }
 
 }
+=======
+    use HasFactory;    protected $fillable = [
+        'name',
+        'sku',
+        'description',
+        'price',
+        'cost',
+        'category',
+        'unit',
+        'supplier_id', // Using supplier_id as per the migration
+        'image',
+        'image_url',
+        'is_active'
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'cost' => 'decimal:2',
+        'is_active' => 'boolean'
+    ];    // Relationships
+    public function supplier()
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
+
+    // Alias for backward compatibility
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
+
+    // Alias for backward compatibility
+    public function vendor()
+    {
+        return $this->belongsTo(User::class, 'supplier_id');
+    }
+
+    public function inventory()
+    {
+        return $this->hasMany(Inventory::class);
+    }
+
+    public function orderItems()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+}
+>>>>>>> f42db67193092da0e3fbd0c6ab57d9a182c6436a

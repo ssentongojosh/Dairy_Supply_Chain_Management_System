@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Enums\Role;
 use App\Models\User; // Import User model
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 
 class DocumentVerificationController extends Controller
 {
@@ -57,18 +58,50 @@ class DocumentVerificationController extends Controller
         if (!$user) return redirect()->route('login')->withErrors(['session_error' => 'Your session is invalid. Please log in again.']);
 
         $request->validate([
-            'business_document' => ['required', 'file', 'mimes:pdf', 'max:10240'],
+            'national_id' => ['required', 'file', 'mimes:pdf', 'max:10240'],
+            'ursb_certificate' => ['required', 'file', 'mimes:pdf', 'max:10240'],
             'business_description' => 'required|string|max:1000'
         ]);
 
-        $path = $request->file('business_document')->store('business-documents/' . $user->id, 'private');
+        // Store both files
+        $nationalIdPath = $request->file('national_id')->store('business-documents/' . $user->id . '/national-id', 'private');
+        $ursbCertificatePath = $request->file('ursb_certificate')->store('business-documents/' . $user->id . '/ursb-certificate', 'private');
 
-        $user->update([
-            'business_document_path' => $path,
-        ]);
+        // Save paths to user record
+        $user->business_document_path = $ursbCertificatePath; // For backward compatibility
+        $user->national_id_path = $nationalIdPath; // New field - you may need to add this to your users table
+        $user->save();
+
+        // Call Java verification microservice
+        $javaUrl = env('JAVA_SERVER_URL', 'http://localhost:8080');
+        $nationalIdContents = Storage::disk('private')->get($nationalIdPath);
+        $ursbCertificateContents = Storage::disk('private')->get($ursbCertificatePath);
+
+        $response = Http::timeout(120)
+            ->attach('nationalId', $nationalIdContents, basename($nationalIdPath))
+            ->attach('ursbCertificate', $ursbCertificateContents, basename($ursbCertificatePath))
+            ->post($javaUrl . '/verification', [
+                'user_id' => $user->id,
+            ]);
+
+        if ($response->ok()) {
+            $responseBody = $response->body();
+            if (strpos($responseBody, "Verified successfully") !== false) {
+                $user->verified = true;
+                $user->verification_notes = "Document verified successfully via Java server.";
+                $user->save();
+            } else {
+                $user->verified = false;
+                $user->verification_notes = "Verification failed. Please submit a valid document.";
+                $user->save();
+            }
+        } else {
+            return redirect()->route('verification.pending')
+                ->with('error', 'Document processing failed on Java server.');
+        }
 
         return redirect()->route('verification.pending')
-            ->with('success', 'Document uploaded successfully! Your account is pending verification.');
+            ->with('success', 'Document uploaded and verification initiated.');
     }
 
     public function pendingVerification()
@@ -96,15 +129,16 @@ class DocumentVerificationController extends Controller
             Log::error('User role in redirectToDashboard is not valid.', ['user_id' => $user->id, 'role_data' => $userRole]);
             return redirect()->route('home')->with('error', 'Invalid user role.');
         }
-        
+
         switch ($roleValue) {
             case 'admin':
-            case 'retailer': // Assuming retailer also goes to analytics
                 return redirect()->route('dashboard.analytics');
-            // case 'wholesaler':
-            //     return redirect()->route('wholesaler.dashboard');
-            // case 'farmer':
-            //     return redirect()->route('farmer.dashboard');
+            case 'retailer': // Assuming retailer also goes to analytics
+                return redirect()->route('retailer.dashboard');
+            case 'wholesaler':
+                return redirect()->route('wholesaler.dashboard');
+            case 'farmer':
+                return redirect()->route('farmer.dashboard');
             default:
                 return redirect()->route('home');
         }
