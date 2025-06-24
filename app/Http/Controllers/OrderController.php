@@ -21,21 +21,64 @@ class OrderController extends Controller
     /**
      * View all incoming orders for authenticated user based on role
      */
-    public function index()
-    {
-        $user = Auth::user();
-        $role = $user->role->value; // assuming enum Role
+ public function index()
+{
+    $user = Auth::user();
+    $role = $user->role->value; // assuming enum Role
 
-        $orders = Order::where('seller_id', $user->id)
-            ->when($role === 'wholesaler', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'retailer')))
-            ->when($role === 'factory', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'wholesaler')))
-            ->when($role === 'supplier', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'factory')))
-            ->when($role === 'farmer', fn($q) => $q->whereHas('items.product', fn($q) => $q->where('category', 'milk')))
-            ->with(['buyer', 'items.product'])
-            ->get();
+    $orders = Order::where('seller_id', $user->id)
+        ->when($role === 'wholesaler', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'retailer')))
+        ->when($role === 'plantmanager', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'wholesaler')))
+        ->when($role === 'supplier', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'plantmanager
+        ')))
+        ->when($role === 'farmer', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'supplier')))
+        ->with(['buyer', 'items.product'])
+        ->get();
 
-        return view("{$role}.dashboard", compact('orders'));
-    }
+    // Prepare recent orders for supplier (limit 5, ordered by creation date desc)
+    $recentOrders = Order::where('seller_id', $user->id)
+        ->with(['buyer', 'items.product'])
+        ->orderBy('created_at', 'desc')
+        ->limit(5)
+        ->get();
+
+        $topProducts = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->join('products', 'order_items.product_id', '=', 'products.id')
+        ->where('orders.seller_id', $user->id)
+        ->select(
+            'products.id',
+            'products.name',
+            DB::raw('SUM(order_items.quantity) as total_sold'),
+            DB::raw('SUM(order_items.quantity * order_items.unit_price) as total_revenue')
+        )
+        ->groupBy('products.id', 'products.name')
+        ->orderByDesc('total_sold')
+        ->limit(5)
+        ->get();
+
+        
+
+    // Example: Calculate monthly revenue for the last 6 months
+    $monthlyRevenue = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->where('orders.seller_id', $user->id)
+        ->selectRaw('DATE_FORMAT(orders.created_at, "%Y-%m") as month, SUM(order_items.quantity * order_items.unit_price) as revenue')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->limit(6)
+        ->get();
+
+   $lowStockThreshold = 5;  
+
+    $lowStockItems = Inventory::where('user_id', $user->id)
+        ->where('quantity', '<=', $lowStockThreshold)
+        ->get();
+
+    return view("{$role}.dashboard", compact('orders', 'recentOrders', 'topProducts', 'monthlyRevenue', 'lowStockItems'));
+    
+}
+
 
     /**
      * Store new order from buyer to seller

@@ -130,12 +130,12 @@
                         </div>
                     </div>
                 </div>
+@if(isset($lowStockItems) && $lowStockItems->count() > 0)
+    <div class="alert alert-warning">
+        <h6 class="alert-heading">Low Stock Alert!</h6>
+        <p class="mb-0">You have {{ $lowStockItems->count() }} items running low on stock.</p>
+    </div>
 
-                @if($lowStockItems->count() > 0)
-                    <div class="alert alert-warning">
-                        <h6 class="alert-heading">Low Stock Alert!</h6>
-                        <p class="mb-0">You have {{ $lowStockItems->count() }} items running low on stock.</p>
-                    </div>
                 @endif
             </div>
         </div>
@@ -300,7 +300,7 @@
 <script>
 // Revenue Chart
 const ctx = document.getElementById('revenueChart').getContext('2d');
-const monthlyData = @json($monthlyRevenue);
+//const monthlyData = @json($monthlyRevenue);
 
 new Chart(ctx, {
     type: 'line',
