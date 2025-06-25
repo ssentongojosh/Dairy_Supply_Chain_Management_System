@@ -297,9 +297,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('payments.verify.process');
 });
 
-
-//retailer orders
-Route::get('/dashboard', [OrderController::class, 'index'])->name('retailer.dashboard');
+//retailer orders - CORRECTED SECTION
+Route::get('/retailer/dashboard', [OrderController::class, 'index'])->name('retailer.dashboard'); // Fixed: was '/dashboard'
 Route::get('/retailer/orders', [OrderController::class, 'outgoingOrders'])->name('retailer.orders');
 Route::post('/retailer/orders', [OrderController::class, 'storeOrder'])->name('retailer.orders.store');
 Route::get('/retailer/orders/{order}', function (\App\Models\Order $order) {
@@ -312,32 +311,32 @@ Route::post('/retailer/orders/{order}/pay', [OrderController::class, 'processPay
 Route::post('/retailer/orders/{order}/payment', [RetailerOrderController::class, 'processPayment'])->name('retailer.orders.payment.process');
 
 
-    // Inventory routes
-    Route::get('/inventory', [RetailInventoryController::class, 'index'])->name('retailer.inventory');
-    Route::post('/inventory', [RetailInventoryController::class, 'store'])->name('retailer.inventory.store');
-    Route::patch('/inventory/{inventory}', [RetailInventoryController::class, 'updateQuantity'])->name('retailer.inventory.update');
-    Route::delete('/inventory/{inventory}', [RetailInventoryController::class, 'destroy'])->name('retailer.inventory.destroy');
-    Route::get('/inventory/products', [RetailInventoryController::class, 'getAvailableProducts'])->name('retailer.inventory.products');
+// Inventory routes
+Route::get('/inventory', [RetailInventoryController::class, 'index'])->name('retailer.inventory');
+Route::post('/inventory', [RetailInventoryController::class, 'store'])->name('retailer.inventory.store');
+Route::patch('/inventory/{inventory}', [RetailInventoryController::class, 'updateQuantity'])->name('retailer.inventory.update');
+Route::delete('/inventory/{inventory}', [RetailInventoryController::class, 'destroy'])->name('retailer.inventory.destroy');
+Route::get('/inventory/products', [RetailInventoryController::class, 'getAvailableProducts'])->name('retailer.inventory.products');
 
-    // Threshold management routes
-    Route::patch('/inventory/{inventory}/threshold', [RetailInventoryController::class, 'updateThreshold'])->name('retailer.inventory.threshold');
-    Route::post('/inventory/bulk-threshold', [RetailInventoryController::class, 'bulkUpdateThreshold'])->name('retailer.inventory.bulk-threshold');
+// Threshold management routes
+Route::patch('/inventory/{inventory}/threshold', [RetailInventoryController::class, 'updateThreshold'])->name('retailer.inventory.threshold');
+Route::post('/inventory/bulk-threshold', [RetailInventoryController::class, 'bulkUpdateThreshold'])->name('retailer.inventory.bulk-threshold');
 
-    // Auto-reorder routes
-    Route::post('/inventory/{inventory}/reorder', [RetailInventoryController::class, 'createReorder'])->name('retailer.inventory.reorder');
-    Route::post('/inventory/auto-reorder', [RetailInventoryController::class, 'autoReorder'])->name('retailer.inventory.auto-reorder');
+// Auto-reorder routes
+Route::post('/inventory/{inventory}/reorder', [RetailInventoryController::class, 'createReorder'])->name('retailer.inventory.reorder');
+Route::post('/inventory/auto-reorder', [RetailInventoryController::class, 'autoReorder'])->name('retailer.inventory.auto-reorder');
 
-    // Suppliers listing
-    Route::get('/suppliers', [RetailerSupplierController::class, 'index'])->name('retailer.suppliers');
+// Suppliers listing
+Route::get('/suppliers', [RetailerSupplierController::class, 'index'])->name('retailer.suppliers');
 
-    // Retailer vendor browse
-    Route::get('/vendors', [RetailerOrderController::class, 'vendors'])
+// Retailer vendor browse
+Route::get('/vendors', [RetailerOrderController::class, 'vendors'])
          ->name('retailer.vendors');
 
-    // Vendor actions for retailer
-    Route::post('/vendors/{wholesaler}/key', [RetailerOrderController::class, 'addKeySupplier'])
+// Vendor actions for retailer
+Route::post('/vendors/{wholesaler}/key', [RetailerOrderController::class, 'addKeySupplier'])
          ->name('retailer.vendors.addKey');
-    Route::get('/vendors/{wholesaler}/products', [RetailerOrderController::class, 'viewVendorProducts'])
+Route::get('/vendors/{wholesaler}/products', [RetailerOrderController::class, 'viewVendorProducts'])
          ->name('retailer.vendors.products');
 
 
