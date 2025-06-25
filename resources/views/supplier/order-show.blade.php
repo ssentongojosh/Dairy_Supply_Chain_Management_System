@@ -45,7 +45,7 @@
         <p class="fw-bold">Total: UGX {{ number_format($order->total_amount) }}</p>
     </div>
 
-    <!-- Actions (plantmanager Role) -->
+    <!-- Actions (Supplier Role) -->
     <div class="mb-4">
         <h5>Actions</h5>
 
@@ -78,7 +78,7 @@
             @endif
         @endif
 
-        <a href="{{ route('plantmanager.orders') }}" class="btn btn-secondary">Back to Orders</a>
+        <a href="{{ route('supplier.orders') }}" class="btn btn-secondary">Back to Orders</a>
     </div>
 </div>
 @endsection

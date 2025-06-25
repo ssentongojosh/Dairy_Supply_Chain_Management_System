@@ -1,129 +1,351 @@
 @extends('layouts.contentNavbarLayout')
 
-@section('title', 'Farmer Dashboard')
+@section('title', 'farmer Dashboard')
 
 @section('content')
 <div class="row">
-    <div class="col-12">
+    <!-- Statistics Cards -->
+    <div class="col-12 mb-4">
+        <div class="row">
+            <!-- Order Statistics -->
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar flex-shrink-0 bg-label-primary me-3">
+                                <i class="ri-shopping-cart-line fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">{{ $orderStats['total_orders'] ?? 0 }}</h5>
+                                <small class="text-muted">Total Orders</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar flex-shrink-0 bg-label-warning me-3">
+                                <i class="ri-time-line fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">{{ $orderStats['pending_orders'] ?? 0 }}</h5>
+                                <small class="text-muted">Pending Orders</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar flex-shrink-0 bg-label-success me-3">
+                                <i class="ri-check-line fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">{{ $orderStats['completed_orders'] ?? 0 }}</h5>
+                                <small class="text-muted">Completed Orders</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar flex-shrink-0 bg-label-info me-3">
+                                <i class="ri-money-dollar-circle-line fs-3"></i>
+                            </div>
+                            <div>
+                                <h5 class="card-title mb-0">UGX {{ number_format($orderStats['total_revenue'] ?? 0, 0) }}</h5>
+                                <small class="text-muted">Total Revenue</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Overview -->
+    <div class="col-md-8 mb-4">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="card-title mb-0">Incoming Orders from Buyers</h5>
-                <span class="badge bg-info">{{ $recentOrders->count() }} Recent Orders</span>
+                <div>
+                    <h5 class="mb-0">Inventory Overview</h5>
+                    <small class="text-muted">Your product inventory status</small>
+                </div>
+                <a href="{{ route('farmer.inventory') }}" class="btn btn-primary">
+                    <i class="ri-box-3-line me-1"></i> Manage Inventory
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-3 col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar avatar-sm me-2 bg-label-primary">
+                                <i class="ri-droplet-line"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ $inventoryStats['total_products'] ?? 0 }}</h6>
+                                <small class="text-muted">Products</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar avatar-sm me-2 bg-label-warning">
+                                <i class="ri-alert-line"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ $inventoryStats['low_stock_items'] ?? 0 }}</h6>
+                                <small class="text-muted">Low Stock</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar avatar-sm me-2 bg-label-danger">
+                                <i class="ri-close-circle-line"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">{{ $inventoryStats['out_of_stock'] ?? 0 }}</h6>
+                                <small class="text-muted">Out of Stock</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar avatar-sm me-2 bg-label-success">
+                                <i class="ri-money-dollar-circle-line"></i>
+                            </div>
+                            <div>
+                                <h6 class="mb-0">UGX {{ number_format($inventoryStats['total_value'] ?? 0, 0) }}</h6>
+                                <small class="text-muted">Total Value</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+@if(isset($lowStockItems) && $lowStockItems->count() > 0)
+    <div class="alert alert-warning">
+        <h6 class="alert-heading">Low Stock Alert!</h6>
+        <p class="mb-0">You have {{ $lowStockItems->count() }} items running low on stock.</p>
+    </div>
+
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ route('farmer.orders.history') }}" class="btn btn-outline-primary">
+                        <i class="ri-list-check me-2"></i>View Orders
+                    </a>
+                    <a href="{{ route('farmer.inventory') }}" class="btn btn-outline-info">
+                        <i class="ri-box-3-line me-2"></i>Manage Inventory
+                    </a>
+                    <a href="{{ route('marketplace.index') }}" class="btn btn-outline-success">
+                        <i class="ri-store-line me-2"></i>Browse Marketplace
+                    </a>
+                    <a href="{{ route('app-chat') }}" class="btn btn-outline-secondary">
+                        <i class="ri-chat-3-line me-2"></i>Customer Support
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Orders -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0">Recent Orders</h5>
+                    <small class="text-muted">Your latest customer orders</small>
+                </div>
+                <a href="{{ route('farmer.orders.history') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="ri-external-link-line me-1"></i>View All
+                </a>
             </div>
             <div class="card-body">
                 @if($recentOrders->count() > 0)
-                    <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Order #</th>
-                                    <th>Buyer</th>
-                                    <th>Items</th>
-                                    <th>Total Amount</th>
-                                    <th>Status</th>
-                                    <th>Date</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($recentOrders as $order)
-                                    <tr>
-                                        <td>
-                                            <span class="fw-medium">#{{ $order->id }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="fw-medium">{{ $order->customer_name }}</span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light text-dark">2 items</span>
-                                        </td>
-                                        <td>
-                                            <span class="fw-medium">UGX {{ number_format($order->total_amount) }}</span>
-                                        </td>
-                                        <td>
-                                            @switch($order->status)
-                                                @case('pending')
-                                                    <span class="badge bg-warning">Pending</span>
-                                                    @break
-                                                @case('approved')
-                                                    <span class="badge bg-success">Approved</span>
-                                                    @break
-                                                @case('shipped')
-                                                    <span class="badge bg-primary">Shipped</span>
-                                                    @break
-                                                @case('delivered')
-                                                    <span class="badge bg-info">Delivered</span>
-                                                    @break
-                                                @default
-                                                    <span class="badge bg-secondary">{{ ucfirst($order->status) }}</span>
-                                            @endswitch
-                                        </td>
-                                        <td>
-                                            <small>{{ $order->created_at->format('M d, Y') }}</small>
-                                        </td>
-                                        <td>
-                                            <div class="dropdown">
-                                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                                    Actions
-                                                </button>
-                                                <ul class="dropdown-menu">
-                                                    <li><a class="dropdown-item" href="{{ route('farmer.orders.show', $order) }}">View Details</a></li>
-                                                    @if($order->status === 'pending')
-                                                        <li>
-                                                            <form action="{{ route('farmer.orders.approve', $order) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button class="dropdown-item text-success" type="submit">
-                                                                    <i class="ri-check-line me-2"></i>Approve Order
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                        <li>
-                                                            <form action="{{ route('farmer.orders.reject', $order) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button class="dropdown-item text-danger" type="submit">
-                                                                    <i class="ri-close-line me-2"></i>Reject Order
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    @endif
-                                                    @if($order->status === 'processing')
-                                                        <li>
-                                                            <form action="{{ route('farmer.orders.ship', $order) }}" method="POST" class="d-inline">
-                                                                @csrf
-                                                                <button class="dropdown-item text-primary" type="submit">
-                                                                    <i class="ri-truck-line me-2"></i>Mark as Shipped
-                                                                </button>
-                                                            </form>
-                                                        </li>
-                                                    @endif
-                                                </ul>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="mt-3">
-                        <a href="{{ route('farmer.orders') }}" class="btn btn-outline-primary">
-                            View Order History
-                        </a>
+                    <div class="list-group list-group-flush">
+                        @foreach($recentOrders as $order)
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <h6 class="mb-0">Order #{{ $order->id }}</h6>
+                                    <small class="text-muted">{{ $order->buyer->name ?? 'Unknown Customer' }}</small>
+                                </div>
+                                <div class="text-end">
+                                    @php
+                                        $statusColors = [
+                                            'pending' => 'warning',
+                                            'approved' => 'info',
+                                            'processing' => 'primary',
+                                            'shipped' => 'success',
+                                            'delivered' => 'success',
+                                            'rejected' => 'danger'
+                                        ];
+                                    @endphp
+                                    <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
+                                        {{ ucfirst($order->status) }}
+                                    </span>
+                                    <small class="text-muted d-block">UGX {{ number_format($order->total_amount, 0) }}</small>
+                                </div>
+                            </div>
+                        @endforeach
                     </div>
                 @else
-                    <div class="text-center py-5">
-                        <i class="ri-shopping-cart-line ri-48px text-muted mb-3"></i>
-                        <h5 class="text-muted">No Orders Found</h5>
-                        <p class="text-muted">
-                            You haven't received any orders from buyers yet.
-                        </p>
-                        <a href="{{ route('farmer.orders') }}" class="btn btn-outline-primary">
-                            View Order History
-                        </a>
+                    <div class="text-center py-3">
+                        <i class="ri-inbox-line fs-1 text-muted"></i>
+                        <p class="text-muted mb-0">No recent orders</p>
                     </div>
                 @endif
             </div>
         </div>
     </div>
+
+    <!-- Top Products -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Top Selling Products</h5>
+                <small class="text-muted">This month's best performers</small>
+            </div>
+            <div class="card-body">
+                @if($topProducts->count() > 0)
+                    <div class="list-group list-group-flush">
+                        @foreach($topProducts as $product)
+                            <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                <div>
+                                    <h6 class="mb-0">{{ $product->name }}</h6>
+                                    <small class="text-muted">{{ $product->total_sold }} units sold</small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="fw-bold">UGX {{ number_format($product->total_revenue, 0) }}</span>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="text-center py-3">
+                        <i class="ri-bar-chart-line fs-1 text-muted"></i>
+                        <p class="text-muted mb-0">No sales data this month</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Insights -->
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Customer Insights</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Total Customers</span>
+                            <span class="fw-bold">{{ $customerStats['total_customers'] ?? 0 }}</span>
+                        </div>
+                    </div>
+                    <div class="col-12 mb-3">
+                        <div class="d-flex justify-content-between">
+                            <span>Repeat Customers</span>
+                            <span class="fw-bold text-success">{{ $customerStats['repeat_customers'] ?? 0 }}</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between">
+                            <span>New This Month</span>
+                            <span class="fw-bold text-primary">{{ $customerStats['new_customers_this_month'] ?? 0 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Revenue Chart -->
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Revenue Trend</h5>
+                <small class="text-muted">Last 6 months</small>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="100"></canvas>
+            </div>
+        </div>
+    </div>
 </div>
+
+@endsection
+
+@section('page-script')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Revenue Chart
+const ctx = document.getElementById('revenueChart').getContext('2d');
+//const monthlyData = @json($monthlyRevenue);
+
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: monthlyData.map(item => item.month),
+        datasets: [{
+            label: 'Revenue (UGX)',
+            data: monthlyData.map(item => item.revenue),
+            borderColor: '#696cff',
+            backgroundColor: 'rgba(105, 108, 255, 0.1)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return 'UGX ' + value.toLocaleString();
+                    }
+                }
+            }
+        },
+        plugins: {
+            legend: {
+                display: false
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return 'Revenue: UGX ' + context.parsed.y.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Auto-refresh dashboard every 5 minutes
+setInterval(() => {
+    location.reload();
+}, 300000);
+</script>
 @endsection
