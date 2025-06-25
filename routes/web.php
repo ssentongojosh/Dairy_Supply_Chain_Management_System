@@ -71,6 +71,7 @@ use App\Http\Controllers\SupplierInventoryController;
 use App\Http\Controllers\RetailerSupplierController;
 // Root route - Welcome page
 use App\Http\Controllers\PrInventoryController;
+use App\Http\Controllers\RawMaterialInventoryController;
 
 // index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -221,9 +222,9 @@ Route::middleware(['auth'])->group(function () {
         ->name('verification.pending');
 
 
-
+//products inventory
 //route for inventory
-Route::resource('inventories', \App\Http\Controllers\PrInventoryController::class);
+Route::resource('inventoriess', \App\Http\Controllers\PrInventoryController::class);
 Route::get('/inventory', [PrInventoryController::class, 'index']);
 
 //route to create a new inventory item
@@ -235,6 +236,28 @@ Route::post('/inventory', [PrInventoryController::class, 'store'])->name('invent
 Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
 Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
 Route::put('/inventory/{id}',[PrInventoryController::class, 'update'])->name('inventory.update');
+
+
+//delete inventory
+Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
+ 
+//raw materials inventory
+//route for inventory
+Route::resource('raw_materials', \App\Http\Controllers\RawMaterialInventoryController::class);
+Route::get('raw-material', [RawMaterialInventoryController::class, 'index']);
+
+//route to create a new inventory item
+Route::get('/raw-material', [RawMaterialInventoryController::class, 'index'])->name('raw-material.index');
+Route::get('/raw-material/create', [RawMaterialInventoryController::class, 'create'])->name('raw-material.create');
+Route::post('/raw-material', [RawMaterialInventoryController::class, 'store'])->name('raw-material.store');
+
+//route for search
+Route::get('/raw-material/search',[RawMaterialInventoryController::class, 'search'])->name('raw-material.search');
+Route::get('/raw-material/{id}/edit',[RawMaterialInventoryController::class, 'edit'])->name('raw-material.edit');
+Route::put('/raw-material/{id}',[RawMaterialInventoryController::class, 'update'])->name('raw-material.update');
+
+//delete item
+Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
 });
 
 // User CRUD routes for admin

@@ -32,7 +32,7 @@
 @endif 
 
 <table>
-<form id="editForm" action="{{ route('inventory.update', $item->id ) }}" method="POST">
+<form id="editForm" action="{{ route('raw-inventory.update', $item->id ) }}" method="POST">
     @csrf
     @method('PUT')
 
@@ -84,7 +84,7 @@
     
 </div><br>
 
-<button type="button" style="margin-left:200px;"><a href="{{ route('inventory.index') }}">Back</a></button>
+<button type="button" style="margin-left:200px;"><a href="{{ route('raw-inventory.index') }}">Back</a></button>
 
 <script>
     document.getElementById('editButton').addEventListener('click', function(){
