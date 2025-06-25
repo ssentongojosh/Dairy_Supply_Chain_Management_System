@@ -37,6 +37,59 @@
 
     </head>
 @section('content')
+
+ @if(session('newItem'))
+    <style>
+
+        .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 300px;
+      text-align: left;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      color: red;
+    }
+
+    <div class="modal-overlay" id="popupModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="document.getElementById('popupModal').style.display='none'">×</span>
+
+      <h3>✅ Product Added!</h3>
+      <p><strong>Name:</strong> {{ session('newItem')->name }}</p>
+      <p><strong>Quantity:</strong> {{ session('newItem')->quantity }}</p>
+      <p><strong>Unit:</strong> {{ session('newItem')->unit }}</p>
+    </div>
+  </div>
+
+  <script>
+    setTimeout(() => {
+      document.getElementById('popupModal').style.display = 'none';
+    }, 4000);
+
+    </style>
+    
+@endif 
     <body>
         <h1>Products Inventory</h1>
 
@@ -45,10 +98,7 @@
             <button type="submit">Search</button>
         </form>
 
-        <div style="text-align:right;"><p><button type="button" onclick="toggleForm()">Add single Item</button>        |         
-        <a href="{{ url('/inventory/create') }}">
-        <button>➕ Add Many Items</button>
-        </a></p></div>
+        <div style="text-align:right;"><button type="button" onclick="toggleForm()">➕ Add Item</button>               
 
         <form id ="createForm" action="{{ route ('inventory.store') }}" method="POST" class="inline-form">
             @csrf

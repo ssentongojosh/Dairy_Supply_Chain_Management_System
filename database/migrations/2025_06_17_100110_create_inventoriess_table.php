@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('inventories', function (Blueprint $table) 
+        Schema::create('inventoriess', function (Blueprint $table) 
         {
             $table->id();
             $table->string('name');
@@ -24,7 +24,6 @@ return new class extends Migration
             $table->integer('batch_id')->nullable();
             $table->float('storage_condition')->nullable();
             $table->date('expiry_date')->nullable();
-            //$table->enum('status',['available', 'reserved', 'expired', 'out_of_stock'])->default('available');
             $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('product')->onDelete('cascade');
@@ -37,6 +36,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('inventories');
+        Schema::dropIfExists('inventoriess');
     }
 };
