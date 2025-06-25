@@ -2,43 +2,42 @@
 
 namespace App\Models;
 
-<<<<<<< HEAD
-=======
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
->>>>>>> f42db67193092da0e3fbd0c6ab57d9a182c6436a
+
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-<<<<<<< HEAD
-    //
-    protected $primaryKey = 'product_id';
+// <<<<<<< HEAD
+//     //
+//     protected $primaryKey = 'product_id';
 
-    protected $fillable = [
-        'name',
-        'quantity',
-        'unit_price',
-        'manufacture_date',
-        'expiry_date',
-    ];
+//     protected $fillable = [
+//         'name',
+//         'quantity',
+//         'unit_price',
+//         'manufacture_date',
+//         'expiry_date',
+//     ];
 
-    protected $dates = [
-        'manufacture_date',
-        'expiry_date',
-    ];
+//     protected $dates = [
+//         'manufacture_date',
+//         'expiry_date',
+//     ];
 
-    public function inventories()
-{
-    return $this->hasMany(Inventory::class);
-}
+//     public function inventories()
+// {
+//     return $this->hasMany(Inventory::class);
+// }
 
-    public function orders()
-{
-    return $this->hasMany(Order::class);
-}
+//     public function orders()
+// {
+//     return $this->hasMany(Order::class);
+// }
 
-}
-=======
+// }
+// =======
     use HasFactory;    protected $fillable = [
         'name',
         'sku',
@@ -83,4 +82,4 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 }
->>>>>>> f42db67193092da0e3fbd0c6ab57d9a182c6436a
+

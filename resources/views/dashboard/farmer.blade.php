@@ -15,13 +15,13 @@
                                 You have <span class="fw-bold">{{ $pendingOrdersCount }}</span> pending orders from factories and wholesalers.
                                 Keep up the great dairy production!
                             </p>
-                            <a href="{{ route('farmer.orders') }}" class="btn btn-sm btn-outline-primary">View Orders</a>
+                            {{-- <a href="{{ route('farmer.orders') }}" class="btn btn-sm btn-outline-primary">View Orders</a> --}}
                         </div>
                     </div>
                     <div class="col-sm-5 text-center text-sm-left">
                         <div class="card-body pb-0 px-0 px-md-4">
-                            <img src="{{ asset('assets/img/illustrations/dairy-farm-illustration.png') }}" 
-                                 height="140" alt="Farmer Dashboard" 
+                            <img src="{{ asset('assets/img/illustrations/dairy-farm-illustration.png') }}"
+                                 height="140" alt="Farmer Dashboard"
                                  data-app-dark-img="illustrations/dairy-farm-illustration-dark.png"
                                  data-app-light-img="illustrations/dairy-farm-illustration.png">
                         </div>
@@ -171,7 +171,7 @@
                                             <td>{{ $order->items->count() }} item(s)</td>
                                             <td>UGX {{ number_format($order->total_amount ?? 0) }}</td>
                                             <td>
-                                                <span class="badge 
+                                                <span class="badge
                                                     @if($order->status === 'pending') bg-label-warning
                                                     @elseif($order->status === 'approved') bg-label-success
                                                     @elseif($order->status === 'shipped') bg-label-info
@@ -183,7 +183,7 @@
                                             </td>
                                             <td>{{ $order->created_at->format('M d, Y') }}</td>
                                             <td>
-                                                <a href="{{ route('farmer.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
+                                                {{-- <a href="{{ route('farmer.orders.show', $order) }}" class="btn btn-sm btn-outline-primary"> --}}
                                                     <i class="bx bx-show"></i> View
                                                 </a>
                                             </td>
@@ -281,7 +281,7 @@
                             </div>
                         @endforeach
                         <div class="mt-3">
-                            <a href="{{ route('farmer.orders') }}" class="btn btn-sm btn-outline-primary w-100">
+                            {{-- <a href="{{ route('farmer.orders') }}" class="btn btn-sm btn-outline-primary w-100"> --}}
                                 <i class="bx bx-list-ul me-1"></i> View All Orders
                             </a>
                         </div>

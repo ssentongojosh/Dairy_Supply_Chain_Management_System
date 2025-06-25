@@ -57,8 +57,12 @@ use App\Http\Controllers\PlantManagerInventoryController;
 use App\Http\Controllers\MarketplaceController;
 
 use App\Http\Controllers\OrderController;
- Use App\Http\Controllers\PaymentController;
- 
+Use App\Http\Controllers\PaymentController;
+
+
+use App\Http\Controllers\SupplierOrderController;
+
+
 
 use App\Http\Controllers\InventoryController;
 
@@ -69,6 +73,8 @@ use App\Models\User;
 use App\Http\Controllers\dashboard\SupplierDashboard;
 use App\Http\Controllers\SupplierInventoryController;
 use App\Http\Controllers\RetailerSupplierController;
+use App\Http\Controllers\dashboard\FarmerDashboard;
+use App\Http\Controllers\dashboard\PlantManagerDashboard;
 // Root route - Welcome page
 use App\Http\Controllers\PrInventoryController;
 use App\Http\Controllers\RawMaterialInventoryController;
@@ -93,6 +99,7 @@ Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard'
 Route::get('/app/chat', [ChatController::class, 'index'])->name('app-chat')->middleware('auth');
 Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send')->middleware('auth');
 Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat.messages')->middleware('auth');
+Route::post('/messages/mark-as-read', [ChatController::class, 'markMessageAsRead'])->name('messages.mark-read')->middleware('auth');
 
 // Order routes
 Route::get('/app/order', [OrderController::class, 'index'])->name('app.order');
@@ -110,6 +117,9 @@ Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
   ->middleware(['auth', 'role:retailer']);
 
 // Wholesaler dashboard is defined in the prefix group below
+Route::get('/wholesaler/dashboard', [WholesalerDashboard::class, 'index'])
+  ->name('wholesaler.dashboard')
+  ->middleware(['auth', 'role:wholesaler']);
 
 // Other role dashboard routes
 Route::get('/farmer/dashboard', [FarmerDashboard::class, 'index'])
@@ -271,40 +281,34 @@ Route::get('/users/{user}', function (User $user) {
 })->name('users.show')->middleware('auth');
 
 
-
-Route::prefix('supplier')->name('supplier.')->group(function () {
-    Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
-
-// Supplier routes group
-Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
+// Supplier routes group - CORRECTED VERSION
+Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->name('supplier.')->group(function () {
     // Dashboard - using the dedicated dashboard controller
-    Route::get('/dashboard', [SupplierDashboard::class, 'index'])->name('supplier.dashboard');
-
+    Route::get('/dashboard', [SupplierDashboard::class, 'index'])->name('dashboard');
 
     // Order management
-    Route::get('/orders', [SupplierOrderController::class, 'index'])->name('supplier.orders');
-    Route::get('/orders/history', [SupplierOrderController::class, 'orderHistory'])->name('supplier.orders.history');
-    Route::get('/orders/{order}', [SupplierOrderController::class, 'showOrder'])->name('supplier.orders.show');
-    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder'])->name('supplier.orders.approve');
-    Route::post('/orders/{order}/reject', [SupplierOrderController::class, 'rejectOrder'])->name('supplier.orders.reject');
-    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped'])->name('supplier.orders.ship');
+    Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/history', [SupplierOrderController::class, 'orderHistory'])->name('orders.history');
+    Route::get('/orders/{order}', [SupplierOrderController::class, 'showOrder'])->name('orders.show');
+    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder'])->name('orders.approve');
+    Route::post('/orders/{order}/reject', [SupplierOrderController::class, 'rejectOrder'])->name('orders.reject');
+    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped'])->name('orders.ship');
 
     // Inventory management
-    Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
-    Route::post('/inventory', [SupplierInventoryController::class, 'store'])->name('supplier.inventory.store');
-    Route::get('/inventory/{inventory}', [SupplierInventoryController::class, 'show'])->name('supplier.inventory.show');
-    Route::put('/inventory/{inventory}', [SupplierInventoryController::class, 'update'])->name('supplier.inventory.update');
-    Route::put('/inventory/{inventory}/update-quantity', [SupplierInventoryController::class, 'updateQuantity'])->name('supplier.inventory.update-quantity');
-    Route::put('/inventory/{inventory}/threshold', [SupplierInventoryController::class, 'updateThreshold'])->name('supplier.inventory.threshold');
-    Route::post('/inventory/{inventory}/adjust', [SupplierInventoryController::class, 'adjustStock'])->name('supplier.inventory.adjust');
-    Route::delete('/inventory/{inventory}', [SupplierInventoryController::class, 'destroy'])->name('supplier.inventory.destroy');
-    Route::get('/inventory/products', [SupplierInventoryController::class, 'getAvailableProducts'])->name('supplier.inventory.products');
-    Route::post('/inventory/bulk-threshold', [SupplierInventoryController::class, 'bulkUpdateThreshold'])->name('supplier.inventory.bulk-threshold');
-    Route::post('/inventory/bulk-import', [SupplierInventoryController::class, 'bulkImport'])->name('supplier.inventory.bulk-import');
-    Route::get('/inventory/template', [SupplierInventoryController::class, 'downloadTemplate'])->name('supplier.inventory.template');
-    Route::get('/inventory/stats', [SupplierInventoryController::class, 'getStats'])->name('supplier.inventory.stats');
+    Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('inventory');
+    Route::post('/inventory', [SupplierInventoryController::class, 'store'])->name('inventory.store');
+    Route::get('/inventory/{inventory}', [SupplierInventoryController::class, 'show'])->name('inventory.show');
+    Route::put('/inventory/{inventory}', [SupplierInventoryController::class, 'update'])->name('inventory.update');
+    Route::put('/inventory/{inventory}/update-quantity', [SupplierInventoryController::class, 'updateQuantity'])->name('inventory.update-quantity');
+    Route::put('/inventory/{inventory}/threshold', [SupplierInventoryController::class, 'updateThreshold'])->name('inventory.threshold');
+    Route::post('/inventory/{inventory}/adjust', [SupplierInventoryController::class, 'adjustStock'])->name('inventory.adjust');
+    Route::delete('/inventory/{inventory}', [SupplierInventoryController::class, 'destroy'])->name('inventory.destroy');
+    Route::get('/inventory/products', [SupplierInventoryController::class, 'getAvailableProducts'])->name('inventory.products');
+    Route::post('/inventory/bulk-threshold', [SupplierInventoryController::class, 'bulkUpdateThreshold'])->name('inventory.bulk-threshold');
+    Route::post('/inventory/bulk-import', [SupplierInventoryController::class, 'bulkImport'])->name('inventory.bulk-import');
+    Route::get('/inventory/template', [SupplierInventoryController::class, 'downloadTemplate'])->name('inventory.template');
+    Route::get('/inventory/stats', [SupplierInventoryController::class, 'getStats'])->name('inventory.stats');
 });
-
 
 
 
@@ -325,9 +329,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('payments.verify.process');
 });
 
-
-//retailer orders
-Route::get('/retailer/dashboard', [OrderController::class, 'index'])->name('retailer.dashboard');
+//retailer orders - CORRECTED SECTION
+Route::get('/retailer/dashboard', [OrderController::class, 'index'])->name('retailer.dashboard'); // Fixed: was '/dashboard'
 Route::get('/retailer/orders', [OrderController::class, 'outgoingOrders'])->name('retailer.orders');
 Route::post('/retailer/orders', [OrderController::class, 'storeOrder'])->name('retailer.orders.store');
 Route::get('/retailer/orders/{order}', function (\App\Models\Order $order) {
@@ -341,32 +344,32 @@ Route::post('/retailer/orders/{order}/payment', [OrderController::class, 'proces
 Route::get('/retailer/orders/history', [OrderController::class, 'orderHistory'])->name('retailer.orders.history');
 
 
-    // Inventory routes
-    Route::get('/inventory', [RetailInventoryController::class, 'index'])->name('retailer.inventory');
-    Route::post('/inventory', [RetailInventoryController::class, 'store'])->name('retailer.inventory.store');
-    Route::patch('/inventory/{inventory}', [RetailInventoryController::class, 'updateQuantity'])->name('retailer.inventory.update');
-    Route::delete('/inventory/{inventory}', [RetailInventoryController::class, 'destroy'])->name('retailer.inventory.destroy');
-    Route::get('/inventory/products', [RetailInventoryController::class, 'getAvailableProducts'])->name('retailer.inventory.products');
+// Inventory routes
+Route::get('/inventory', [RetailInventoryController::class, 'index'])->name('retailer.inventory');
+Route::post('/inventory', [RetailInventoryController::class, 'store'])->name('retailer.inventory.store');
+Route::patch('/inventory/{inventory}', [RetailInventoryController::class, 'updateQuantity'])->name('retailer.inventory.update');
+Route::delete('/inventory/{inventory}', [RetailInventoryController::class, 'destroy'])->name('retailer.inventory.destroy');
+Route::get('/inventory/products', [RetailInventoryController::class, 'getAvailableProducts'])->name('retailer.inventory.products');
 
-    // Threshold management routes
-    Route::patch('/inventory/{inventory}/threshold', [RetailInventoryController::class, 'updateThreshold'])->name('retailer.inventory.threshold');
-    Route::post('/inventory/bulk-threshold', [RetailInventoryController::class, 'bulkUpdateThreshold'])->name('retailer.inventory.bulk-threshold');
+// Threshold management routes
+Route::patch('/inventory/{inventory}/threshold', [RetailInventoryController::class, 'updateThreshold'])->name('retailer.inventory.threshold');
+Route::post('/inventory/bulk-threshold', [RetailInventoryController::class, 'bulkUpdateThreshold'])->name('retailer.inventory.bulk-threshold');
 
-    // Auto-reorder routes
-    Route::post('/inventory/{inventory}/reorder', [RetailInventoryController::class, 'createReorder'])->name('retailer.inventory.reorder');
-    Route::post('/inventory/auto-reorder', [RetailInventoryController::class, 'autoReorder'])->name('retailer.inventory.auto-reorder');
+// Auto-reorder routes
+Route::post('/inventory/{inventory}/reorder', [RetailInventoryController::class, 'createReorder'])->name('retailer.inventory.reorder');
+Route::post('/inventory/auto-reorder', [RetailInventoryController::class, 'autoReorder'])->name('retailer.inventory.auto-reorder');
 
-    // Suppliers listing
-    Route::get('/suppliers', [RetailerSupplierController::class, 'index'])->name('retailer.suppliers');
+// Suppliers listing
+Route::get('/suppliers', [RetailerSupplierController::class, 'index'])->name('retailer.suppliers');
 
-    // Retailer vendor browse
-    Route::get('/vendors', [RetailerController::class, 'vendors'])
+// Retailer vendor browse
+Route::get('/vendors', [RetailerOrderController::class, 'vendors'])
          ->name('retailer.vendors');
 
-    // Vendor actions for retailer
-    Route::post('/vendors/{wholesaler}/key', [RetailerController::class, 'addKeySupplier'])
+// Vendor actions for retailer
+Route::post('/vendors/{wholesaler}/key', [RetailerOrderController::class, 'addKeySupplier'])
          ->name('retailer.vendors.addKey');
-    Route::get('/vendors/{wholesaler}/products', [RetailerController::class, 'viewVendorProducts'])
+Route::get('/vendors/{wholesaler}/products', [RetailerOrderController::class, 'viewVendorProducts'])
          ->name('retailer.vendors.products');
 
 
@@ -474,4 +477,4 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/inventory/products', [PlantManagerInventoryController::class, 'getAvailableProducts'])->name('plant_manager.inventory.products');
     Route::post('/inventory/process', [PlantManagerInventoryController::class, 'processProduction'])->name('plant_manager.inventory.process');
 });
-});
+
