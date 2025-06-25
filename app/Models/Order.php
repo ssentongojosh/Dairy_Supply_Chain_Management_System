@@ -1,4 +1,27 @@
 <?php
+<<<<<<< HEAD
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Order extends Model
+{
+    //
+    protected $fillable = [
+        'product_id',
+        'quantity',
+        'order_date',
+        'delivery_date',
+        'price',
+    ];
+
+      public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+    
+=======
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
@@ -102,4 +125,5 @@ class Order extends Model
         return in_array($this->status, ['approved', 'processing']) &&
                $this->payment_status === 'unpaid';
     }
+>>>>>>> f42db67193092da0e3fbd0c6ab57d9a182c6436a
 }

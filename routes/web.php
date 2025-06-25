@@ -50,6 +50,11 @@ use App\Http\Controllers\dashboard\WholesalerDashboard;
 use App\Http\Controllers\OrderController;
 Use App\Http\Controllers\PaymentController;
 
+
+use App\Http\Controllers\SupplierOrderController;
+
+
+
 use App\Http\Controllers\InventoryController;
 
 use App\Http\Controllers\DocumentVerificationController;
@@ -62,6 +67,9 @@ use App\Http\Controllers\RetailerSupplierController;
 use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\dashboard\PlantManagerDashboard;
 // Root route - Welcome page
+use App\Http\Controllers\PrInventoryController;
+
+// index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Authentication routes
@@ -212,6 +220,22 @@ Route::middleware(['auth'])->group(function () {
         ->name('verification.upload.submit');
     Route::get('/verification/pending', [DocumentVerificationController::class, 'pendingVerification'])
         ->name('verification.pending');
+
+
+
+//route for inventory
+Route::resource('inventories', \App\Http\Controllers\PrInventoryController::class);
+Route::get('/inventory', [PrInventoryController::class, 'index']);
+
+//route to create a new inventory item
+Route::get('/inventory', [PrInventoryController::class, 'index'])->name('inventory.index');
+Route::get('/inventory/create', [PrInventoryController::class, 'create'])->name('inventory.create');
+Route::post('/inventory', [PrInventoryController::class, 'store'])->name('inventory.store');
+
+//route for search
+Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
+Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
+Route::put('/inventory/{id}',[PrInventoryController::class, 'update'])->name('inventory.update');
 });
 
 // User CRUD routes for admin

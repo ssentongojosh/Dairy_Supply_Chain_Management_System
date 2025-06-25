@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Inventory;
 
-class InventoryController extends Controller
+class PrInventoryController extends Controller
 {
     /**
      * Route users to appropriate inventory view based on their role
@@ -58,5 +59,6 @@ class InventoryController extends Controller
                 return redirect()->route('dashboard')->with('error', 'Access denied.');
         }
     }
-}
 
+
+}

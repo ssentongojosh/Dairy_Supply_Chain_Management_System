@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Inventory extends Model
 {
-    use HasFactory;    protected $fillable = [
-        'user_id',
+    //
+    protected $fillable = [
+        'name',
         'product_id',
         'quantity',
         'reorder_point',
         'unit_cost',
         'selling_price',
+        'unit',
         'location',
         'last_restocked_at',
         'auto_order_quantity'
@@ -30,22 +31,43 @@ class Inventory extends Model
     // Relationships
     public function user()
     {
-        return $this->belongsTo(User::class);
+    return $this->belongsTo(User::class);
+    }
+    //[
+       // 'goods_type',
+       // 'store_id',
+     //   'batch_id',
+        //'storage_condition',
+      //  'expiry_date',
+        //'status',
+    //];
+
+    public function getAutoStatusAttribute():string
+    {
+        if($this->quantity >= 25){
+            return 'available';
+        }
+        elseif($this->quantity >= 10){
+            return 'limited';
+        }
+        else{
+            return 'out of stock';
+        }
+    }
+
+    //public function getIsReservedAttribute(): bool
+    //{
+    //    return $this->orders()->where('shipped', false)->exists();
+    //}
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 
     public function product()
     {
-        return $this->belongsTo(Product::class);
+      return $this->belongsTo(Product::class);
     }
 
-    // Accessors
-    public function getIsLowStockAttribute()
-    {
-        return $this->quantity <= $this->reorder_point;
-    }
-
-    public function getIsOutOfStockAttribute()
-    {
-        return $this->quantity === 0;
-    }
 }
