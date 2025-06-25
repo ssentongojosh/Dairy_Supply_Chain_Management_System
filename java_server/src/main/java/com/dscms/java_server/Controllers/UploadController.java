@@ -28,7 +28,7 @@ public class UploadController {
       if(idService.isVerified(request.getNationalId()) && ursbCertificateService.isVerified(request.getUrsbCertificate())){
         return  ResponseEntity.ok("Verified successfully");
       }else
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verification failed! Please upload a file of a compatible type and the contents on must be clear");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verification failed");
 
     }
 

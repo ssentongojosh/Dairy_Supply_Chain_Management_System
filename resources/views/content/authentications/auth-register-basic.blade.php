@@ -93,6 +93,7 @@
                 <option value="retailer">Retailer</option>
                 <option value="wholesaler">Wholesaler</option>
                 <option value="farmer">Dairy Farmer</option>
+                <option value="supplier">supplier</option>
               </select>
             </div>
 

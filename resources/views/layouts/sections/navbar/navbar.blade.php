@@ -196,19 +196,24 @@
               <!-- Quick links -->
 
               <!-- Notification -->
-              <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
+              <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1" >
                 <a class="nav-link dropdown-toggle hide-arrow btn btn-icon btn-text-secondary rounded-pill waves-effect" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                   <span class="position-relative">
                     <i class="icon-base ri ri-notification-2-line icon-22px"></i>
-                    <span class="badge rounded-pill bg-danger badge-dot badge-notifications border"></span>
+                    @if($unreadMessagesCount > 0)
+                    <span class="badge rounded-pill bg-danger badge-dot badge-notifications border" style="width: 8px; height: 8px; display: inline-block; border-radius: 50%; position: absolute; top: -2px; right: -2px; background-color: #dc3545; padding: 0; min-width: 8px;"></span>
+                    @endif
+
                   </span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end p-0">
+                <ul class="dropdown-menu dropdown-menu-end p-0" style="max-height: 300px; overflow-y: auto;">
                   <li class="dropdown-menu-header border-bottom">
                     <div class="dropdown-header d-flex align-items-center py-3">
-                      <h6 class="mb-0 me-auto">Notifications</h6>
+                      <h6 class="mb-0 me-auto">Messages</h6>
                       <div class="d-flex align-items-center h6 mb-0">
-                        <span class="badge bg-label-primary rounded-pill me-2">3 New</span>
+                        @if($unreadMessagesCount > 0)
+                          <span class="badge bg-label-primary rounded-pill me-2">{{ $unreadMessagesCount }} New</span>
+                        @endif
                         <a href="javascript:void(0)" class="dropdown-notifications-all p-2" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read">
                           <i class="icon-base ri ri-mail-open-line text-heading"></i>
                         </a>
@@ -217,72 +222,51 @@
                   </li>
                   <li class="dropdown-notifications-list scrollable-container">
                     <ul class="list-group list-group-flush">
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item waves-effect">
-                        <div class="d-flex">
-                          <div class="flex-shrink-0 me-3">
-                            <div class="avatar">
-                              <span class="avatar-initial rounded-circle bg-label-success">
-                                <i class="icon-base ri ri-check-line"></i>
-                              </span>
+                      @if($unreadMessages->count() > 0)
+                        @foreach($unreadMessages as $message)
+                          <li class="list-group-item list-group-item-action dropdown-notifications-item waves-effect"
+                              style="cursor: pointer;"
+                              onclick="openChatWithUser({{ $message->sender_id }}, {{ $message->id }})">
+                            <div class="d-flex">
+                              <div class="flex-shrink-0 me-3">
+                                <div class="avatar">
+                                  <span class="avatar-initial rounded-circle bg-label-info">
+                                    <i class="icon-base ri ri-message-3-line"></i>
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="flex-grow-1">
+                                <h6 class="small mb-50">New message from {{ $message->sender->name ?? 'Unknown' }}</h6>
+                                <small class="mb-1 d-block text-body">{{ Str::limit($message->message, 50) }}</small>
+                                <small class="text-body-secondary">{{ $message->created_at->diffForHumans() }}</small>
+                              </div>
+                              <div class="flex-shrink-0 dropdown-notifications-actions">
+                                <span class="badge badge-dot bg-primary"></span>
+                              </div>
+                            </div>
+                          </li>
+                        @endforeach
+                      @else
+                        <li class="list-group-item dropdown-notifications-item">
+                          <div class="d-flex justify-content-center align-items-center py-4">
+                            <div class="text-center">
+                              <div class="avatar mx-auto mb-2">
+                                <span class="avatar-initial rounded-circle bg-label-secondary">
+                                  <i class="icon-base ri ri-message-3-line"></i>
+                                </span>
+                              </div>
+                              <h6 class="mb-1">No new messages</h6>
+                              <small class="text-body-secondary">You're all caught up!</small>
                             </div>
                           </div>
-                          <div class="flex-grow-1">
-                            <h6 class="small mb-50">Welcome to DSCMS! 🎉</h6>
-                            <small class="mb-1 d-block text-body">Your account has been successfully created</small>
-                            <small class="text-body-secondary">Just now</small>
-                          </div>
-                          <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read"> <span class="badge badge-dot"></span></a>
-                            <a href="javascript:void(0)" class="dropdown-notifications-archive"> <span class="icon-base ri ri-close-line"></span></a>
-                          </div>
-                        </div>
-                      </li>
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item waves-effect">
-                        <div class="d-flex">
-                          <div class="flex-shrink-0 me-3">
-                            <div class="avatar">
-                              <span class="avatar-initial rounded-circle bg-label-info">
-                                <i class="icon-base ri ri-message-3-line"></i>
-                              </span>
-                            </div>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="small mb-50">New message received 💬</h6>
-                            <small class="mb-1 d-block text-body">You have a new message in chat</small>
-                            <small class="text-body-secondary">5 min ago</small>
-                          </div>
-                          <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read"> <span class="badge badge-dot"></span></a>
-                            <a href="javascript:void(0)" class="dropdown-notifications-archive"> <span class="icon-base ri ri-close-line"></span></a>
-                          </div>
-                        </div>
-                      </li>
-                      <li class="list-group-item list-group-item-action dropdown-notifications-item marked-as-read waves-effect">
-                        <div class="d-flex">
-                          <div class="flex-shrink-0 me-3">
-                            <div class="avatar">
-                              <span class="avatar-initial rounded-circle bg-label-warning">
-                                <i class="icon-base ri ri-settings-4-line"></i>
-                              </span>
-                            </div>
-                          </div>
-                          <div class="flex-grow-1">
-                            <h6 class="small mb-50">System maintenance scheduled</h6>
-                            <small class="mb-1 d-block text-body">Maintenance window: Tonight 2-4 AM</small>
-                            <small class="text-body-secondary">1 hour ago</small>
-                          </div>
-                          <div class="flex-shrink-0 dropdown-notifications-actions">
-                            <a href="javascript:void(0)" class="dropdown-notifications-read"> <span class="badge badge-dot"></span></a>
-                            <a href="javascript:void(0)" class="dropdown-notifications-archive"> <span class="icon-base ri ri-close-line"></span></a>
-                          </div>
-                        </div>
-                      </li>
+                        </li>
+                      @endif
                     </ul>
                   </li>
                   <li class="border-top">
                     <div class="d-grid p-4">
-                      <a class="btn btn-primary btn-sm d-flex h-px-34 waves-effect waves-light" href="javascript:void(0);">
-                        <small class="align-middle">View all notifications</small>
+                      <a class="btn btn-primary btn-sm d-flex h-px-34 waves-effect waves-light" href="{{ url('/app/chat') }}">
+                        <small class="align-middle">View all messages</small>
                       </a>
                     </div>
                   </li>
@@ -377,6 +361,34 @@
 
 <!-- Navbar Search Functionality -->
 <script>
+// Function to open chat with specific user and message
+function openChatWithUser(senderId, messageId) {
+    // First mark the message as read
+    fetch('/messages/mark-as-read', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            message_id: messageId
+        })
+    }).then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Redirect to chat with query parameters to open specific conversation
+            window.location.href = `/app/chat?user=${senderId}&message=${messageId}`;
+        } else {
+            // Fallback: just go to chat
+            window.location.href = '/app/chat';
+        }
+    }).catch(error => {
+        console.error('Error marking message as read:', error);
+        // Fallback: just go to chat
+        window.location.href = '/app/chat';
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('navbarSearch');
     const searchIcon = document.getElementById('searchIcon');
@@ -823,6 +835,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .first\:mt-0:first-child {
     margin-top: 0 !important;
+}
+
+/* Notification message hover effects */
+.dropdown-notifications-item:hover {
+    background-color: var(--bs-gray-50) !important;
+    transform: translateX(2px);
+    transition: all 0.2s ease;
+}
+
+.dropdown-notifications-item {
+    transition: all 0.2s ease;
+    border-radius: 8px;
+    margin: 2px 4px;
 }
 
 @media (max-width: 576px) {
