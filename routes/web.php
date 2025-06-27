@@ -47,18 +47,18 @@ use App\Http\Controllers\form_layouts\HorizontalForm;
 use App\Http\Controllers\tables\Basic as TablesBasic;
 use App\Http\Controllers\dashboard\RetailerDashboard;
 use App\Http\Controllers\dashboard\WholesalerDashboard;
-use App\Http\Controllers\dashboard\FarmerDashboard;
+// use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\RetailInventoryController;
 
 use App\Http\Controllers\SupplierDashboardController;
-use App\Http\Controllers\PlantManagerDashboard;
+// use App\Http\Controllers\PlantManagerDashboard;
 use App\Http\Controllers\PlantManagerOrderController;
 use App\Http\Controllers\PlantManagerInventoryController;
 use App\Http\Controllers\MarketplaceController;
 
 use App\Http\Controllers\OrderController;
 Use App\Http\Controllers\PaymentController;
-
+use App\Http\Controllers\ReportController;
 
 use App\Http\Controllers\SupplierOrderController;
 
@@ -112,7 +112,7 @@ Route::get('/analytics', [Analytics::class, 'index'])
   ->middleware(['auth', 'role:admin']);
 
 Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
-  ->name('retailer.dashboard')
+  ->name('dashboard.retailer')
   ->middleware(['auth', 'role:retailer']);
 
 // Wholesaler dashboard is defined in the prefix group below
@@ -307,7 +307,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 //retailer orders - CORRECTED SECTION
-Route::get('/retailer/dashboard', [OrderController::class, 'index'])->name('retailer.dashboard'); // Fixed: was '/dashboard'
+Route::get('/retailer/dashboard', [OrderController::class, 'index'])->name('dashboard.retailer'); // Fixed: was '/dashboard'
 Route::get('/retailer/orders', [OrderController::class, 'outgoingOrders'])->name('retailer.orders');
 Route::post('/retailer/orders', [OrderController::class, 'storeOrder'])->name('retailer.orders.store');
 Route::get('/retailer/orders/{order}', function (\App\Models\Order $order) {
@@ -372,7 +372,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/marketplace/create-product', [MarketplaceController::class, 'createProduct'])
          ->name('marketplace.create-product');
 });
- 
+
 //supplier order
 Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
     Route::get('/dashboard', [SupplierDashboardController::class, 'index'])->name('supplier.dashboard');
@@ -386,7 +386,7 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
     Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
 });
 
- 
+
 //plantmanager order
 Route::prefix('plantmanager')->middleware(['auth', 'role:plantmanager'])->group(function () {
     Route::get('/dashboard', [plantmanagerDashboardController::class, 'index'])->name('plantmanager.dashboard');
@@ -439,12 +439,12 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('farmer.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('farmer.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('farmer.orders.ship');
-    
+
     Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
 });
 
 
-   
+
     // Inventory management
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
     Route::post('/inventory', [PlantManagerInventoryController::class, 'store'])->name('plant_manager.inventory.store');
@@ -455,3 +455,8 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/inventory/process', [PlantManagerInventoryController::class, 'processProduction'])->name('plant_manager.inventory.process');
 });
 
+
+Route::middleware(['auth'])->group(function () {
+    // Report routes
+   Route::get('/report/settings',[ReportController::class, 'index'])->name('report-settings');
+});
