@@ -1,10 +1,10 @@
 @extends('layouts.contentNavbarLayout')
 
-@section('title', 'Supplier Dashboard')
+@section('title', 'Wholesaler Dashboard')
 
 @section('content')
 <div class="container-fluid">
-    <h4 class="fw-bold py-3 mb-4">Supplier Dashboard</h4>
+    <h4 class="fw-bold py-3 mb-4">Wholesaler Dashboard</h4>
 
     {{-- Incoming Orders from Wholesalers --}}
     <div class="row mb-4">
@@ -94,19 +94,19 @@
         </div>
     </div>
 
-    {{-- Place Order to farmer --}}
+    {{-- Place Order to Factory --}}
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <h5 class="card-header">Place Order to farmer</h5>
+                <h5 class="card-header">Place Order to Factory</h5>
                 <div class="card-body">
-                    <form action="{{ route('supplier.orders.store') }}" method="POST">
+                    <form action="{{ route('wholesaler.orders.store') }}" method="POST">
                         @csrf
                         <div class="mb-3">
-                            <label for="seller_id" class="form-label">Select farmer</label>
+                            <label for="seller_id" class="form-label">Select Factory</label>
                             <select name="seller_id" class="form-select" required>
-                                @foreach($farmers as $farmer)
-                                    <option value="{{ $farmer->id }}">{{ $farmer->name }}</option>
+                                @foreach($factories as $factory)
+                                    <option value="{{ $factory->id }}">{{ $factory->name }}</option>
                                 @endforeach
                             </select>
                         </div>

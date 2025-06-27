@@ -68,5 +68,15 @@ class WholesalerDashboard extends Controller
             'productsToReorder'       => $productsToReorder,
             'keySuppliers'            => $keySuppliers,
         ]);
+
+        $revenueTrend = collect([
+    (object) ['month' => 'Jan', 'revenue' => 1000000],
+    (object) ['month' => 'Feb', 'revenue' => 1250000],
+    (object) ['month' => 'Mar', 'revenue' => 900000],
+    (object) ['month' => 'Apr', 'revenue' => 1400000],
+    (object) ['month' => 'May', 'revenue' => 1300000],
+    (object) ['month' => 'Jun', 'revenue' => 1500000],
+]);
+
     }
 }
