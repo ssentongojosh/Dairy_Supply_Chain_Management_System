@@ -1,7 +1,7 @@
-@extends('layouts.contentNavbarLayout')
-@section('title', 'Retailer Orders')
+{{-- @extends('layouts.contentNavbarLayout')
+@section('title', 'Retailer Orders') --}}
 
-@section('content')
+{{-- @section('content')
 <div class="container-fluid">
     <h4 class="fw-bold py-3 mb-4">Retailer Dashboard</h4>
 
@@ -45,8 +45,8 @@
         </div>
     @endif
 </div>
-@endsection
-                       <!-- @extends('layouts.contentNavbarLayout')
+@endsection --}}
+ @extends('layouts.contentNavbarLayout')
 
 @section('title', 'Retailer Dashboard')
 
@@ -127,7 +127,7 @@
                     <h5 class="mb-0">Inventory Overview</h5>
                     <small class="text-muted">Your product inventory status</small>
                 </div>
-                <a href="{{ route('retailer.inventory') }}" class="btn btn-primary">
+                {{-- <a href="{{ route('retailer.inventory') }}" class="btn btn-primary"> --}}
                     <i class="ri-box-3-line me-1"></i> Manage Inventory
                 </a>
             </div>
@@ -200,10 +200,10 @@
                     <a href="{{ route('retailer.orders') }}" class="btn btn-outline-primary">
                         <i class="ri-list-check me-2"></i>View Orders
                     </a>
-                    <a href="{{ route('retailer.inventory') }}" class="btn btn-outline-info">
+                    {{-- <a href="{{ route('retailer.inventory') }}" class="btn btn-outline-info"> --}}
                         <i class="ri-box-3-line me-2"></i>Manage Inventory
                     </a>
-                    <a href="{{ route('marketplace.index') }}" class="btn btn-outline-success">
+                    {{-- <a href="{{ route('marketplace.index') }}" class="btn btn-outline-success"> --}}
                         <i class="ri-store-line me-2"></i>Browse Marketplace
                     </a>
                     <a href="{{ route('app-chat') }}" class="btn btn-outline-secondary">
@@ -343,7 +343,7 @@
 
 @endsection
 
-@section('page-script')
+{{-- @section('page-script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Revenue Chart
@@ -396,4 +396,4 @@ setInterval(() => {
     location.reload();
 }, 300000);
 </script>
-@endsection -->
+@endsection --> --}}
