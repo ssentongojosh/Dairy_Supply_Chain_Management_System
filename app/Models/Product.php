@@ -9,35 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-// <<<<<<< HEAD
-//     //
-//     protected $primaryKey = 'product_id';
-
-//     protected $fillable = [
-//         'name',
-//         'quantity',
-//         'unit_price',
-//         'manufacture_date',
-//         'expiry_date',
-//     ];
-
-//     protected $dates = [
-//         'manufacture_date',
-//         'expiry_date',
-//     ];
-
-//     public function inventories()
-// {
-//     return $this->hasMany(Inventory::class);
-// }
-
-//     public function orders()
-// {
-//     return $this->hasMany(Order::class);
-// }
-
-// }
-// =======
     use HasFactory;    protected $fillable = [
         'name',
         'sku',
@@ -45,9 +16,10 @@ class Product extends Model
         'price',
         'cost',
         'category',
+        'added_on', //inventory table for updates on final processing
         'supplier_id', // Using supplier_id as per the migration
         'image_url',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [

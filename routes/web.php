@@ -73,11 +73,12 @@ use App\Models\User;
 use App\Http\Controllers\dashboard\SupplierDashboard;
 use App\Http\Controllers\SupplierInventoryController;
 use App\Http\Controllers\RetailerSupplierController;
-use App\Http\Controllers\dashboard\FarmerDashboard;
-use App\Http\Controllers\dashboard\PlantManagerDashboard;
+
+
 // Root route - Welcome page
 use App\Http\Controllers\PrInventoryController;
 use App\Http\Controllers\RawMaterialInventoryController;
+use App\Http\Controllers\ProductInventoryController;
 
 // index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -233,8 +234,15 @@ Route::middleware(['auth'])->group(function () {
 
 
 //products inventory
+Route::get('/products', [ProductInventoryController::class, 'index'])->name('product.index');
+Route::post('/product/store', [ProductInventoryController::class, 'store'])->name('product.store');
+Route::get('/products/{id}', [ProductInventoryController::class, 'show'])->name('product.show');
+Route::resource('products', \App\Http\Controllers\ProductInventoryController::class);
+Route::get('/plant_manager/dashboard', [DashboardController::class, 'index'])->name('plant_manager.dashboard');
+
+
 //route for inventory
-Route::resource('inventoriess', \App\Http\Controllers\PrInventoryController::class);
+Route::resource('inventoriess', \App\Http\Controllers\ProductInventoryController::class);
 Route::get('/inventory', [PrInventoryController::class, 'index']);
 
 //route to create a new inventory item
@@ -245,8 +253,13 @@ Route::post('/inventory', [PrInventoryController::class, 'store'])->name('invent
 //route for search
 Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
 Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
-Route::put('/inventory/{id}',[PrInventoryController::class, 'update'])->name('inventory.update');
+;
 
+//tryout
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('raw_materials', RawMaterialInventoryController::class);
+});
 
 //delete inventory
 Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
@@ -254,10 +267,11 @@ Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->nam
 //raw materials inventory
 //route for inventory
 Route::resource('raw_materials', \App\Http\Controllers\RawMaterialInventoryController::class);
+Route::resource('inventory', RawMaterialInventoryController::class);
 Route::get('raw-material', [RawMaterialInventoryController::class, 'index']);
 
 //route to create a new inventory item
-Route::get('/raw-material', [RawMaterialInventoryController::class, 'index'])->name('raw-material.index');
+Route::get('/plant_manager/dashboard', [RawMaterialInventoryController::class, 'index'])->name('plant_manager.dashboard');
 Route::get('/raw-material/create', [RawMaterialInventoryController::class, 'create'])->name('raw-material.create');
 Route::post('/raw-material', [RawMaterialInventoryController::class, 'store'])->name('raw-material.store');
 
@@ -266,9 +280,14 @@ Route::get('/raw-material/search',[RawMaterialInventoryController::class, 'searc
 Route::get('/raw-material/{id}/edit',[RawMaterialInventoryController::class, 'edit'])->name('raw-material.edit');
 Route::put('/raw-material/{id}',[RawMaterialInventoryController::class, 'update'])->name('raw-material.update');
 
+//update item
+Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])->name('inventory.update');
+
 //delete item
 Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
 });
+
+
 
 // User CRUD routes for admin
 Route::resource('users', UserController::class)
@@ -284,7 +303,7 @@ Route::get('/users/{user}', function (User $user) {
 // Supplier routes group - CORRECTED VERSION
 Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->name('supplier.')->group(function () {
     // Dashboard - using the dedicated dashboard controller
-    Route::get('/dashboard', [SupplierDashboard::class, 'index'])->name('dashboard');
+   // Route::get('/dashboard', [SupplierDashboard::class, 'index'])->name('dashboard');
 
     // Order management
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
@@ -398,7 +417,7 @@ Route::middleware(['auth'])->group(function () {
 
 //supplier order
 Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
-    Route::get('/dashboard', [SupplierDashboardController::class, 'index'])->name('supplier.dashboard');
+   // Route::get('/dashboard', [SupplierDashboardController::class, 'index'])->name('supplier.dashboard');
     Route::get('/orders', [OrderController::class, 'orderHistory'])->name('supplier.orders');
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('supplier.order.dashboard');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('supplier.orders.show');
@@ -412,7 +431,7 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
 
 //plantmanager order
 Route::prefix('plantmanager')->middleware(['auth', 'role:plantmanager'])->group(function () {
-    Route::get('/dashboard', [plantmanagerDashboardController::class, 'index'])->name('plantmanager.dashboard');
+   // Route::get('/dashboard', [PlantManagerDashboardController::class, 'index'])->name('plantmanager.dashboard');
     Route::get('/orders', [OrderController::class, 'orderHistory'])->name('plantmanager.orders');
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plantmanager.order.dashboard');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plantmanager.orders.show');
@@ -420,7 +439,7 @@ Route::prefix('plantmanager')->middleware(['auth', 'role:plantmanager'])->group(
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plantmanager.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plantmanager.orders.ship');
     Route::get('/orders/history', [OrderController::class, 'history'])->name('plantmanager.orders.history');
-    Route::get('/inventory', [plantmanagerInventoryController::class, 'index'])->name('plantmanager.inventory');
+    Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plantmanager.inventory');
 });
 
 
@@ -447,10 +466,10 @@ Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(func
 
 // Plant Manager routes group
 
-    Route::get('/dashboard', [PlantManagerDashboardController::class, 'index'])->name('plant-manager.dashboard');
-Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
+  //  Route::get('/dashboard', [PlantManagerDashboardController::class, 'index'])->name('plant-manager.dashboard');
+//Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
     // Dashboard - using the dedicated dashboard controller
-    Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
+    //Route::get('/dashboard', [PlantManagerDashboardController::class, 'index'])->name('plant_manager.dashboard');
 // Farmer Order Management
 Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders', [OrderController::class, 'index'])->name('farmer.orders.dashboard');
@@ -464,6 +483,17 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('farmer.orders.ship');
 
     Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
+
+    Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])
+    ->middleware('auth') // 🔒 Only logged-in users can access
+    ->name('plant_manager.inventory');
+
+
+    //Manager Controller management part
+
+    //storing product and raw material
+    Route::post('/product/store',[ProductInventoryController::class, 'store'])->name('product.store');
+    Route::post('/raw-materilal/store',[RawMaterialInventoryController::class, 'store'])->name('raw-material.store');
 });
 
 
@@ -476,7 +506,7 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');
     Route::get('/inventory/products', [PlantManagerInventoryController::class, 'getAvailableProducts'])->name('plant_manager.inventory.products');
     Route::post('/inventory/process', [PlantManagerInventoryController::class, 'processProduction'])->name('plant_manager.inventory.process');
-});
+
 
 
 Route::middleware(['auth'])->group(function () {
