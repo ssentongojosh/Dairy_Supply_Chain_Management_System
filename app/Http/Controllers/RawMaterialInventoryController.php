@@ -3,86 +3,104 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\RawMaterial;
+use App\Models\Inventory;
 
 class RawMaterialInventoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Route users to appropriate inventory view based on their role
      */
     public function index()
     {
-        $items = RawMaterial::all();
-        return view('raw-material.index', compact('items'));
+        
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    //creating a new inventory item
     public function create()
     {
-        //
+        return view('/inventory.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
+    //store
     public function store(Request $request)
+{
+    $data = $request->validate([
+        'name' => 'required|string|max:15',
+        'quantity' => 'required|integer|min:1',
+        'expiry' => 'required|date',
+    ]);
+
+    // Save the raw material
+    $newItem = RawMaterial::create($data);
+
+    return redirect()->back()->with('success', 'Item added successfully!');
+}
+
+    
+
+    //show one inventory item
+    public function show($id)
     {
-        $data = $request->validate([
-            'name' => 'required|string|max:15',
-            'quantity' => 'required|integer|min:1',
-            'unit' => 'required|string|max:10',
-        ]);
+        $item = Rawmaterial::findOrFail($id);
+
+         $quantity = $item->quantity;
+
+            if ($quantity <= 150) {
+              $status = 'out of stock';
+              $color = 'red';
+            } elseif ($quantity <= 350) {
+              $status = 'limited';
+              $color = 'orange';
+            } else {
+              $status = 'available';
+              $color = 'green';
+            }
+
+        return view('inventory.details', compact('item', 'status', 'color'));
         
-        //save and store new item
-        $newItem = RawMaterial::create($data);
-
-        //new item exists so can now be stored
-        return redirect()->route('raw-material.index')->with('success', 'Item added successfully!')->with('newItem', $newItem);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    //update inventory
+    public function update(Request $request, $id)
     {
         $item = RawMaterial::findOrFail($id);
 
-        $data = $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:15',
             'quantity' => 'required|integer|min:1',
-            'unit' => 'required|string|max:10',
+            'expiry' => 'required|date',
         ]);
 
-        $item->update($data);
+        $item->update([
+            'name'=>$request->name,
+            'quantity'=>$request->quantity,
+            'expiry'=>$request->expiry,
+        ]);
 
-        return redirect()->route('raw-material.index')->with('success', 'Raw material updated!');
+       // return redirect()->back()->with('message','Item updated successfully');
+       return redirect()->route('plant_manager.dashboard')->with('message', 'Item updated successfully');
+
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
+    //delete an inventory
+    public function destroy($id)
     {
         $item = RawMaterial::findOrFail($id);
         $item->delete();
-
-        return redirect()->route('raw-material.index')->with('success', 'Raw material deleted.');
+        return redirect()->route('inventory.index')->with('success','Inventory item deleted');
     }
-}
+
+    //search for an inventory
+    public function search(Request $request)
+    {
+        $search = $request->input('search');
+        $item = RawMaterial::where('name','like','%' .$search. '%')->first();
+        if(!$item){
+            return redirect()->route('inventory.index')->with('message','No matching item found');
+        }
+        return view('inventory.details', compact('item'));
+    }
+
+};   

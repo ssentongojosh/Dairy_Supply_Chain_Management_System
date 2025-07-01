@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('lab_id');
             $table->unsignedBigInteger('product_id')->nullable();
             $table->unsignedBigInteger('batch_id')->nullable();
-            $table->unsignedBigInteger('inventories_id');
+            $table->unsignedBigInteger('inventoriess_id');
             $table->unsignedBigInteger('delivery_id');
             $table->date('test_date');
             $table->decimal('fat_content', 5, 2);
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->foreign('lab_tech_id')->references('id')->on('lab_tech')->onDelete('cascade');
             $table->foreign('lab_id')->references('id')->on('lab')->onDelete('cascade');
             $table->foreign('batch_id')->references('id')->on('batch')->onDelete('cascade');
-            $table->foreign('inventories_id')->references('id')->on('inventories')->onDelete('cascade');
+            $table->foreign('inventoriess_id')->references('id')->on('inventoriess')->onDelete('cascade');
             $table->foreign('delivery_id')->references('id')->on('delivery')->onDelete('cascade');
         });
     }

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('vendor', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('inventories_id');
+            $table->unsignedBigInteger('inventoriess_id');
             $table->unsignedBigInteger('order_id');
             $table->unsignedBigInteger('store_id');
             $table->unsignedBigInteger('product_id');
@@ -27,7 +27,7 @@ return new class extends Migration
             $table->timestamps();
 
 
-            $table->foreign('inventories_id')->references('id')->on('inventories')->onDelete('cascade');
+            $table->foreign('inventoriess_id')->references('id')->on('inventoriess')->onDelete('cascade');
             $table->foreign('order_id')->references('id')->on('order')->onDelete('cascade');
             $table->foreign('store_id')->references('id')->on('store')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('product')->onDelete('cascade');

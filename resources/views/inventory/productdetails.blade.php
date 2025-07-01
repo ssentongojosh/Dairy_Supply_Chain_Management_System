@@ -25,7 +25,7 @@
 
 @section('content') 
 
-<h2 style="text-align:center; color:blue;">Item Details</h2>
+<h2 style="text-align:center; color:blue;">Products Details</h2>
 <div class="card" style="margin-left:200px;">
 @if(session('message'))
      <div>{{ session('message') }}</div>
@@ -49,21 +49,21 @@
     </tr>
 
     <tr>
-        <td style="text-align:left;"><strong><label>Quantity:</label></strong></td>
+        <td style="text-align:left;"><strong><label>Stock:</label></strong></td>
         <td style="text-align:right;"><span id="viewQuantity">{{ $item->quantity }}</span>
         <input type="number" name="quantity" id="inputQuantity" value="{{ $item->quantity }}" style="display:none;"></td>
         </tr>
 
     <tr>
-        <td style="text-align:left;"><strong><label>Unit:</label></strong></td>
-        <td style="text-align:right;"><span id="viewUnit">{{ $item->unit }}</span>
-        <input type="text" name="unit" id="inputUnit" value="{{ $item->unit }}" style="display:none;"></td>
+        <td style="text-align:left;"><strong><label>Price:</label></strong></td>
+        <td style="text-align:right;"><span id="viewPrice">{{ $item->price }}</span>
+        <input type="number" name="price" id="inputPrice" value="{{ $item->price }}" style="display:none;"></td>
     </tr>
 
      <tr>
-        <td style="text-align:left;"><strong><label>Expiry:</label></strong></td>
-        <td style="text-align:right;"><span id="viewExpiry">{{ $item->expiry }}</span>
-        <input type="date" name="expiry" id="inputExpiry" value="{{ $item->expiry }}" style="display:none;"></td>
+        <td style="text-align:left;"><strong><label>Added on:</label></strong></td>
+        <td style="text-align:right;"><span id="viewAdded">{{ $item->manufacture_date }}</span>
+        <input type="date" name="added" id="inputAdded" value="{{ $item->added }}" style="display:none;"></td>
     </tr>
 
     <tr>
@@ -96,15 +96,15 @@
         document.getElementById('viewId').style.display = 'none';
         document.getElementById('viewName').style.display = 'none';
         document.getElementById('viewQuantity').style.display = 'none';
-        document.getElementById('viewUnit').style.display = 'none';
-        document.getElementById('viewExpiry').style.display = 'none';
+        document.getElementById('viewPrice').style.display = 'none';
+        document.getElementById('viewAdded').style.display = 'none';
 
         //possible to edit
         document.getElementById('inputId').style.display = 'inline';
         document.getElementById('inputName').style.display = 'inline';
         document.getElementById('inputQuantity').style.display = 'inline';
-        document.getElementById('inputUnit').style.display = 'inline';
-        document.getElementById('inputExpiry').style.display = 'inline';
+        document.getElementById('inputPrice').style.display = 'inline';
+        document.getElementById('inputAdded').style.display = 'inline';
 
         //buttons
         document.getElementById('editButton').style.display = 'none';
