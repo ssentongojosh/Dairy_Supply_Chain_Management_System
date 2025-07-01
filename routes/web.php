@@ -506,7 +506,7 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');
     Route::get('/inventory/products', [PlantManagerInventoryController::class, 'getAvailableProducts'])->name('plant_manager.inventory.products');
     Route::post('/inventory/process', [PlantManagerInventoryController::class, 'processProduction'])->name('plant_manager.inventory.process');
-});
+
 
 
 Route::middleware(['auth'])->group(function () {
