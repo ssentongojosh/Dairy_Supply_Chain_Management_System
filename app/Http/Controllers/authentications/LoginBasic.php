@@ -90,7 +90,7 @@ class LoginBasic extends Controller
                 return redirect()->route('dashboard.analytics');
             case 'retailer':
                 Log::info('Retailer role detected, redirecting to retailer.dashboard');
-                return redirect()->route('retailer.dashboard');
+                return redirect()->route('dashboard.retailer');
             case 'wholesaler':
                 Log::info('Wholesaler role detected, redirecting to wholesaler.dashboard');
                 return redirect()->route('wholesaler.dashboard');
