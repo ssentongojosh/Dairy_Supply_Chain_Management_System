@@ -91,13 +91,17 @@ class ReportGeneratorService
             Storage::disk('local')->makeDirectory($reportStorageDir); // Ensure the user's report directory exists
 
             $fileNameBase = (!empty($reportTypesIncludedNames) ? implode('_', $reportTypesIncludedNames) : 'Report') . '_' . str_replace(' ', '_', $reportPeriodName);
-            $attachmentName = "{$fileNameBase}_" . Carbon::now()->format('YmdHis') . ".{$format}";
+
+            // Set proper file extension based on format
+            $fileExtension = ($format === 'excel') ? 'xlsx' : $format;
+            $attachmentName = "{$fileNameBase}_" . Carbon::now()->format('YmdHis') . ".{$fileExtension}";
             $fullFilePath = $reportStorageDir . '/' . $attachmentName;
 
             // --- 3. Generate and Save the File ---
             try {
                 if ($format === 'excel') {
-                    Excel::store(new UserReportsExport($reportData, $reportPeriodName), $fullFilePath, 'local');
+                    // Use specific XLSX writer for better compatibility
+                    Excel::store(new UserReportsExport($reportData, $reportPeriodName), $fullFilePath, 'local', \Maatwebsite\Excel\Excel::XLSX);
                 } elseif ($format === 'pdf') {
                     // Ensure you have 'pdfs.user_report' view created for PDF generation
                     $pdf = Pdf::loadView('pdfs.user_report', compact('reportData', 'reportPeriodName'));
@@ -108,13 +112,25 @@ class ReportGeneratorService
                 }
 
                 if ($reportStatus === 'success') {
-                    $reportFileSize = Storage::disk('local')->size($fullFilePath);
+                    // Verify file was actually created
+                    if (Storage::disk('local')->exists($fullFilePath)) {
+                        $reportFileSize = Storage::disk('local')->size($fullFilePath);
+                    } else {
+                        $reportStatus = 'failed';
+                        $errorMessage = "File was not created successfully at: {$fullFilePath}";
+                        Log::error("File creation verification failed", ['path' => $fullFilePath]);
+                    }
                 }
 
             } catch (\Exception $e) {
                 $reportStatus = 'failed';
-                $errorMessage = "File creation failed: " . $e->getMessage();
-                Log::error($errorMessage);
+                $errorMessage = "File creation failed for {$format}: " . $e->getMessage();
+                Log::error("Report generation error", [
+                    'format' => $format,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'file_path' => $fullFilePath ?? 'unknown'
+                ]);
             }
         } else if ($reportStatus === 'failed') {
             // If data gathering failed, no file path/name

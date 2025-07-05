@@ -1,11 +1,16 @@
-@extends('layouts.contentNavbarLayout')
-@section('content')
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Report: {{ $reportPeriodName ?? 'Generated Report' }}</title>
+</head>
+<body>
     <h1>Report: {{ $reportPeriodName ?? 'Generated Report' }}</h1>
     <p>Generated On: {{ \Carbon\Carbon::now()->format('Y-m-d H:i:s') }}</p>
 
     @if(isset($reportData['sales']) && !empty($reportData['sales']))
         <h2>Sales Report</h2>
-        <table>
+        <table border="1">
             <thead>
                 <tr>
                     <th>Date</th>
@@ -31,7 +36,7 @@
 
     @if(isset($reportData['inventory']) && !empty($reportData['inventory']))
         <h2>Inventory Report</h2>
-        <table>
+        <table border="1">
             <thead>
                 <tr>
                     <th>Item</th>
@@ -51,10 +56,49 @@
         </table>
     @endif
 
-    {{-- You can add more sections for 'suppliers' and 'customers' data here,
-         following the same table structure as above, checking for isset($reportData['suppliers']), etc. --}}
+    @if(isset($reportData['suppliers']) && !empty($reportData['suppliers']))
+        <h2>Supplier Report</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Supplier Name</th>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($reportData['suppliers'] as $supplier)
+                    <tr>
+                        <td>{{ $supplier['name'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['contact'] ?? 'N/A' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
 
-    <p>This report includes data for:
+    @if(isset($reportData['customers']) && !empty($reportData['customers']))
+        <h2>Customer Report</h2>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Total Purchases</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($reportData['customers'] as $customer)
+                    <tr>
+                        <td>{{ $customer['name'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['email'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['total_purchases'] ?? 'N/A' }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    @endif
+
+    <p><strong>Report Summary:</strong> This report includes data for:
         @if(is_array($reportData))
             @foreach(array_keys($reportData) as $type)
                 <strong>{{ ucfirst($type) }}</strong>@if(!$loop->last), @endif
@@ -63,4 +107,5 @@
             No specific data types.
         @endif
     </p>
-@endsection
+</body>
+</html>

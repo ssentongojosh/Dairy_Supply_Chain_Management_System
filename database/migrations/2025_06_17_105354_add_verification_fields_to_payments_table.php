@@ -12,8 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payments', function (Blueprint $table) {
+            if (!Schema::hasColumn('payments', 'verified_by')) {
     $table->foreignId('verified_by')->nullable()->constrained('users');
+            }
+            if (!Schema::hasColumn('payments', 'verification_notes')) {
     $table->text('verification_notes')->nullable();
+            }
 });
     }
 

@@ -3,6 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
+use App\Models\Order;
+use App\Models\Product;
+use App\Models\RawMaterial;
+
 
 class Inventory extends Model
 {
