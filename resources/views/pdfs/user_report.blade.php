@@ -3,8 +3,8 @@
 <head>
     <title>{{ $reportPeriodName ?? 'Generated Report' }}</title>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
+        body {
+            font-family: Arial, sans-serif;
             margin: 20px;
             font-size: 12px;
         }
@@ -14,35 +14,35 @@
             border-bottom: 2px solid #333;
             padding-bottom: 10px;
         }
-        h1 { 
-            color: #333; 
+        h1 {
+            color: #333;
             font-size: 24px;
             margin-bottom: 10px;
         }
-        h2 { 
-            color: #666; 
-            margin-top: 30px; 
+        h2 {
+            color: #666;
+            margin-top: 30px;
             margin-bottom: 15px;
             font-size: 18px;
             border-bottom: 1px solid #ccc;
             padding-bottom: 5px;
         }
-        table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 20px; 
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
         }
-        th, td { 
-            border: 1px solid #ddd; 
-            padding: 8px; 
-            text-align: left; 
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
         }
-        th { 
-            background-color: #f2f2f2; 
+        th {
+            background-color: #f2f2f2;
             font-weight: bold;
         }
-        .page-break { 
-            page-break-before: always; 
+        .page-break {
+            page-break-before: always;
         }
         .footer {
             margin-top: 40px;
@@ -158,7 +158,7 @@
                 @foreach($reportData['suppliers'] as $supplier)
                     <tr>
                         <td>{{ $supplier['name'] ?? 'N/A' }}</td>
-                        <td>{{ $supplier['contact'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['email'] ?? 'N/A' }}</td>
                         <td>{{ $supplier['total_orders'] ?? 'N/A' }}</td>
                     </tr>
                 @endforeach

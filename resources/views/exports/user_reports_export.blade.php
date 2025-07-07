@@ -18,6 +18,9 @@
                     <th>Quantity</th>
                     <th>Price</th>
                     <th>Total</th>
+                    <th>Seller</th>
+                    <th>Buyer</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -28,6 +31,9 @@
                         <td>{{ $sale['quantity'] ?? 'N/A' }}</td>
                         <td>{{ $sale['price'] ?? 'N/A' }}</td>
                         <td>{{ $sale['total'] ?? 'N/A' }}</td>
+                        <td>{{ $sale['seller'] ?? 'N/A' }}</td>
+                        <td>{{ $sale['buyer'] ?? 'N/A' }}</td>
+                        <td>{{ $sale['status'] ?? 'N/A' }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -39,9 +45,17 @@
         <table border="1">
             <thead>
                 <tr>
-                    <th>Item</th>
+                    <th>Product Name</th>
                     <th>Current Stock</th>
+                    <th>Reorder Point</th>
+                    <th>Unit Cost</th>
+                    <th>Selling Price</th>
+                    <th>Unit</th>
+                    <th>Location</th>
+                    <th>Status</th>
+                    <th>Last Restocked</th>
                     <th>Last Updated</th>
+                    <th>Owner</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,7 +63,15 @@
                     <tr>
                         <td>{{ $item['name'] ?? 'N/A' }}</td>
                         <td>{{ $item['stock'] ?? 'N/A' }}</td>
+                        <td>{{ $item['reorder_point'] ?? 'N/A' }}</td>
+                        <td>{{ $item['unit_cost'] ?? 'N/A' }}</td>
+                        <td>{{ $item['selling_price'] ?? 'N/A' }}</td>
+                        <td>{{ $item['unit'] ?? 'N/A' }}</td>
+                        <td>{{ $item['location'] ?? 'N/A' }}</td>
+                        <td>{{ $item['status'] ?? 'N/A' }}</td>
+                        <td>{{ $item['last_restocked'] ?? 'N/A' }}</td>
                         <td>{{ $item['last_updated'] ?? 'N/A' }}</td>
+                        <td>{{ $item['owner'] ?? 'N/A' }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -62,14 +84,26 @@
             <thead>
                 <tr>
                     <th>Supplier Name</th>
-                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Total Orders</th>
+                    <th>Total Revenue</th>
+                    <th>Products Sold</th>
+                    <th>Last Order</th>
+                    <th>Status</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($reportData['suppliers'] as $supplier)
                     <tr>
                         <td>{{ $supplier['name'] ?? 'N/A' }}</td>
-                        <td>{{ $supplier['contact'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['email'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['role'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['total_orders'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['total_revenue'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['products_sold'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['last_order'] ?? 'N/A' }}</td>
+                        <td>{{ $supplier['status'] ?? 'N/A' }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -83,7 +117,13 @@
                 <tr>
                     <th>Customer Name</th>
                     <th>Email</th>
+                    <th>Role</th>
+                    <th>Total Orders</th>
                     <th>Total Purchases</th>
+                    <th>Products Purchased</th>
+                    <th>First Order</th>
+                    <th>Last Order</th>
+                    <th>Customer Status</th>
                 </tr>
             </thead>
             <tbody>
@@ -91,7 +131,13 @@
                     <tr>
                         <td>{{ $customer['name'] ?? 'N/A' }}</td>
                         <td>{{ $customer['email'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['role'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['total_orders'] ?? 'N/A' }}</td>
                         <td>{{ $customer['total_purchases'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['products_purchased'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['first_order'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['last_order'] ?? 'N/A' }}</td>
+                        <td>{{ $customer['customer_status'] ?? 'N/A' }}</td>
                     </tr>
                 @endforeach
             </tbody>

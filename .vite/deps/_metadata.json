@@ -1,0 +1,43 @@
+{
+  "hash": "f37fdbf6",
+  "configHash": "a47f01ea",
+  "lockfileHash": "8e11d4e7",
+  "browserHash": "fb22150b",
+  "optimized": {
+    "jquery/dist/jquery": {
+      "src": "../../node_modules/jquery/dist/jquery.js",
+      "file": "jquery_dist_jquery.js",
+      "fileHash": "6a19de73",
+      "needsInterop": true
+    },
+    "@popperjs/core/dist/umd/popper.min": {
+      "src": "../../node_modules/@popperjs/core/dist/umd/popper.min.js",
+      "file": "@popperjs_core_dist_umd_popper__min.js",
+      "fileHash": "b2280c66",
+      "needsInterop": true
+    },
+    "bootstrap": {
+      "src": "../../node_modules/bootstrap/dist/js/bootstrap.esm.js",
+      "file": "bootstrap.js",
+      "fileHash": "f36c914a",
+      "needsInterop": false
+    },
+    "node-waves/src/js/waves": {
+      "src": "../../node_modules/node-waves/src/js/waves.js",
+      "file": "node-waves_src_js_waves.js",
+      "fileHash": "b9f69932",
+      "needsInterop": true
+    },
+    "perfect-scrollbar/dist/perfect-scrollbar": {
+      "src": "../../node_modules/perfect-scrollbar/dist/perfect-scrollbar.js",
+      "file": "perfect-scrollbar_dist_perfect-scrollbar.js",
+      "fileHash": "18453570",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-HKJ2B2AA": {
+      "file": "chunk-HKJ2B2AA.js"
+    }
+  }
+}

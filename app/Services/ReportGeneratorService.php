@@ -8,6 +8,11 @@ use Barryvdh\DomPDF\Facade\Pdf; // For PDF exports
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Inventory;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 // Import your individual data reporters (these will reside within the service)
 
@@ -52,19 +57,19 @@ class ReportGeneratorService
                         // For simplicity, we'll simulate data or keep it simple.
                         // If you want separate services, make sure they are included.
                         // Example: $reportData['sales'] = (new SalesReporter())->generate($startDate, $endDate);
-                        $reportData['sales'] = $this->getSalesData($startDate, $endDate);
+                        $reportData['sales'] = $this->getSalesData($startDate, $endDate, $userId);
                         $reportTypesIncludedNames[] = 'Sales';
                         break;
                     case 'inventory':
-                        $reportData['inventory'] = $this->getInventoryData();
+                        $reportData['inventory'] = $this->getInventoryData($userId);
                         $reportTypesIncludedNames[] = 'Inventory';
                         break;
                     case 'suppliers':
-                        $reportData['suppliers'] = $this->getSupplierData();
+                        $reportData['suppliers'] = $this->getSupplierData($userId);
                         $reportTypesIncludedNames[] = 'Suppliers';
                         break;
                     case 'customers':
-                        $reportData['customers'] = $this->getCustomerData($startDate, $endDate);
+                        $reportData['customers'] = $this->getCustomerData($startDate, $endDate, $userId);
                         $reportTypesIncludedNames[] = 'Customers';
                         break;
                     default:
@@ -150,47 +155,335 @@ class ReportGeneratorService
         ];
     }
 
-    // --- Private methods for data retrieval (simulated here) ---
-    // In a real app, these might be calls to dedicated repository or service classes
-    private function getSalesData(Carbon $startDate, Carbon $endDate): array
+    // --- Private methods for data retrieval using real database queries ---
+    private function getSalesData(Carbon $startDate, Carbon $endDate, int $userId = null): array
     {
-        // Simulate fetching sales data from your database or API
-        // Example: return Sale::whereBetween('date', [$startDate, $endDate])->get()->toArray();
-        return [
-            ['date' => '2025-06-23', 'product' => 'Laptop', 'quantity' => 1, 'price' => 1200, 'total' => 1200],
-            ['date' => '2025-06-25', 'product' => 'Mouse', 'quantity' => 2, 'price' => 25, 'total' => 50],
-        ];
+        try {
+            // Fetch sales data from orders and order items within the date range
+            $query = DB::table('orders')
+                ->join('order_items', 'orders.id', '=', 'order_items.order_id')
+                ->leftJoin('products', 'order_items.product_id', '=', 'products.id')
+                ->leftJoin('users as sellers', 'orders.seller_id', '=', 'sellers.id')
+                ->leftJoin('users as buyers', 'orders.buyer_id', '=', 'buyers.id')
+                ->whereBetween('orders.created_at', [$startDate, $endDate])
+                ->where('orders.status', '!=', 'cancelled');
+
+            if ($userId) {
+                // Filter orders where the current user is either buyer or seller
+                $query->where(function($q) use ($userId) {
+                    $q->where('orders.buyer_id', $userId)
+                      ->orWhere('orders.seller_id', $userId);
+                });
+            }
+
+            $salesData = $query->select(
+                    'orders.created_at as date',
+                    'products.name as product',
+                    'order_items.quantity',
+                    'order_items.unit_price as price',
+                    DB::raw('(order_items.quantity * order_items.unit_price) as total'),
+                    'sellers.name as seller_name',
+                    'buyers.name as buyer_name',
+                    'orders.status'
+                )
+                ->orderBy('orders.created_at', 'desc')
+                ->get()
+                ->map(function ($sale) {
+                    return [
+                        'date' => Carbon::parse($sale->date)->format('Y-m-d'),
+                        'product' => $sale->product ?? 'Unknown Product',
+                        'quantity' => $sale->quantity,
+                        'price' => number_format($sale->price, 2),
+                        'total' => number_format($sale->total, 2),
+                        'seller' => $sale->seller_name ?? 'Unknown Seller',
+                        'buyer' => $sale->buyer_name ?? 'Unknown Buyer',
+                        'status' => ucfirst($sale->status)
+                    ];
+                })
+                ->toArray();
+
+            Log::info('Sales data retrieved successfully', ['user_id' => $userId, 'count' => count($salesData)]);
+
+            // Add fallback message if no data found
+            if (empty($salesData)) {
+                $salesData = [
+                    [
+                        'date' => 'N/A',
+                        'product' => 'No sales data found for the selected period',
+                        'quantity' => 0,
+                        'price' => '0.00',
+                        'total' => '0.00',
+                        'seller' => 'N/A',
+                        'buyer' => 'N/A',
+                        'status' => 'N/A'
+                    ]
+                ];
+            }
+
+            return $salesData;
+        } catch (\Exception $e) {
+            Log::error('Error retrieving sales data', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
-    private function getInventoryData(): array
+    private function getInventoryData(int $userId = null): array
     {
-        // Simulate fetching inventory data
-        // Example: return InventoryItem::all()->toArray();
-        return [
-            ['name' => 'Laptop', 'stock' => 15, 'last_updated' => '2025-06-29'],
-            ['name' => 'Keyboard', 'stock' => 30, 'last_updated' => '2025-06-28'],
-        ];
+        try {
+            // Fetch inventory data from the inventory table
+            $query = Inventory::with(['product', 'user'])
+                ->select([
+                    'id',
+                    'quantity',
+                    'reorder_point',
+                    'unit_cost',
+                    'selling_price',
+                    'location',
+                    'last_restocked_at',
+                    'updated_at',
+                    'product_id',
+                    'user_id'
+                ]);
+
+            if ($userId) {
+                // Filter inventory by the current user
+                $query->where('user_id', $userId);
+            }
+
+            $inventoryData = $query->get()
+                ->map(function ($inventory) {
+                    return [
+                        'name' => $inventory->product->name ?? 'Unknown Product',
+                        'product_name' => $inventory->product->name ?? 'Unknown Product',
+                        'stock' => $inventory->quantity,
+                        'reorder_point' => $inventory->reorder_point,
+                        'unit_cost' => number_format((float)$inventory->unit_cost, 2),
+                        'selling_price' => number_format((float)$inventory->selling_price, 2),
+                        'unit' => $inventory->product->unit ?? 'pcs',
+                        'location' => $inventory->location ?? 'N/A',
+                        'status' => $inventory->auto_status, // Uses the accessor from the model
+                        'last_restocked' => $inventory->last_restocked_at ?
+                            (string) $inventory->last_restocked_at : 'Never',
+                        'last_updated' => $inventory->updated_at->format('Y-m-d'),
+                        'owner' => $inventory->user->name ?? 'Unknown Owner'
+                    ];
+                })
+                ->toArray();
+
+            Log::info('Inventory data retrieved successfully', ['user_id' => $userId, 'count' => count($inventoryData)]);
+
+            // Add fallback message if no data found
+            if (empty($inventoryData)) {
+                $inventoryData = [
+                    [
+                        'name' => 'No inventory data found',
+                        'product_name' => 'N/A',
+                        'stock' => 0,
+                        'reorder_point' => 0,
+                        'unit_cost' => '0.00',
+                        'selling_price' => '0.00',
+                        'unit' => 'N/A',
+                        'location' => 'N/A',
+                        'status' => 'N/A',
+                        'last_restocked' => 'Never',
+                        'last_updated' => 'N/A',
+                        'owner' => 'N/A'
+                    ]
+                ];
+            }
+
+            return $inventoryData;
+        } catch (\Exception $e) {
+            Log::error('Error retrieving inventory data', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
-    private function getSupplierData(): array
+    private function getSupplierData(?int $userId = null): array
     {
-        // Simulate fetching supplier data
-        // Example: return Supplier::all()->toArray();
-        return [
-            ['name' => 'Tech Supplies Inc.', 'contact' => 'john@example.com'],
-            ['name' => 'Office Goods Ltd.', 'contact' => 'jane@example.com'],
-        ];
+        try {
+            // Get unique seller IDs from orders where the current user was the buyer
+            $query = DB::table('orders')->whereNotNull('seller_id');
+
+            if ($userId) {
+                // Show suppliers (sellers) from orders where current user was the buyer
+                $query->where('buyer_id', $userId);
+            }
+
+            $sellerIds = $query->distinct()
+                ->pluck('seller_id')
+                ->toArray();
+
+            Log::info('Found seller IDs for user', ['user_id' => $userId, 'seller_ids' => $sellerIds]);
+
+            if (empty($sellerIds)) {
+                // If no sellers found, return fallback data
+                $supplierData = [
+                    [
+                        'name' => 'No supplier data found',
+                        'email' => 'N/A',
+                        'role' => 'N/A',
+                        'total_orders' => 0,
+                        'total_revenue' => '0.00',
+                        'products_sold' => 0,
+                        'last_order' => 'Never',
+                        'status' => 'Inactive'
+                    ]
+                ];
+            } else {
+                // Get supplier data for each seller
+                $supplierData = [];
+
+                foreach ($sellerIds as $sellerId) {
+                    $user = User::find($sellerId);
+                    if (!$user) continue;
+
+                    // Calculate statistics for this supplier with user context
+                    $statsQuery = DB::table('orders')
+                        ->leftJoin('order_items', 'orders.id', '=', 'order_items.order_id')
+                        ->where('orders.seller_id', $sellerId);
+
+                    // Apply same user filtering as the main query
+                    if ($userId) {
+                        $statsQuery->where('orders.buyer_id', $userId);
+                    }
+
+                    $stats = $statsQuery->select(
+                            DB::raw('COUNT(DISTINCT orders.id) as total_orders'),
+                            DB::raw('COALESCE(SUM(order_items.quantity * order_items.unit_price), 0) as total_revenue'),
+                            DB::raw('COUNT(DISTINCT order_items.product_id) as products_sold'),
+                            DB::raw('MAX(orders.created_at) as last_order_date')
+                        )
+                        ->first();
+
+                    $supplierData[] = [
+                        'name' => $user->name ?? 'Unknown Name',
+                        'email' => $user->email ?? 'No Email',
+                        'role' => $user->role ? $user->role->value : 'Unknown',
+                        'total_orders' => $stats->total_orders ?? 0,
+                        'total_revenue' => number_format($stats->total_revenue ?? 0, 2),
+                        'products_sold' => $stats->products_sold ?? 0,
+                        'last_order' => $stats->last_order_date ?
+                            Carbon::parse($stats->last_order_date)->format('Y-m-d') : 'Never',
+                        'status' => ($stats->total_orders ?? 0) > 0 ? 'Active' : 'Inactive'
+                    ];
+
+                    Log::info('Added supplier to data', [
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'has_email' => !empty($user->email)
+                    ]);
+                }
+
+                // Sort by total revenue descending
+                usort($supplierData, function($a, $b) {
+                    return (float)str_replace(',', '', $b['total_revenue']) <=> (float)str_replace(',', '', $a['total_revenue']);
+                });
+            }
+
+            Log::info('Supplier data retrieved successfully', ['user_id' => $userId, 'count' => count($supplierData)]);
+            return $supplierData;
+        } catch (\Exception $e) {
+            Log::error('Error retrieving supplier data', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 
-    private function getCustomerData(Carbon $startDate, Carbon $endDate): array
+    private function getCustomerData(Carbon $startDate, Carbon $endDate, int $userId = null): array
     {
-        // Simulate fetching customer data
-        // Example: return Customer::whereHas('orders', function($query) use ($startDate, $endDate) {
-        //     $query->whereBetween('order_date', [$startDate, $endDate]);
-        // })->get()->toArray();
-        return [
-            ['name' => 'Alice Smith', 'email' => 'alice@example.com', 'total_purchases' => 500],
-            ['name' => 'Bob Johnson', 'email' => 'bob@example.com', 'total_purchases' => 750],
-        ];
+        try {
+            // Get unique buyer IDs from orders where the current user was the seller
+            $query = DB::table('orders')
+                ->whereNotNull('buyer_id')
+                ->whereBetween('created_at', [$startDate, $endDate]);
+
+            if ($userId) {
+                // Show customers (buyers) from orders where current user was the seller
+                $query->where('seller_id', $userId);
+            }
+
+            $buyerIds = $query->distinct()
+                ->pluck('buyer_id')
+                ->toArray();
+
+            Log::info('Found buyer IDs for user and date range', ['user_id' => $userId, 'buyer_ids' => $buyerIds, 'date_range' => [$startDate, $endDate]]);
+
+            if (empty($buyerIds)) {
+                // If no buyers found, return fallback data
+                $customerData = [
+                    [
+                        'name' => 'No customer data found for the selected period',
+                        'email' => 'N/A',
+                        'role' => 'N/A',
+                        'total_orders' => 0,
+                        'total_purchases' => '0.00',
+                        'products_purchased' => 0,
+                        'last_order' => 'Never',
+                        'first_order' => 'Never',
+                        'customer_status' => 'New'
+                    ]
+                ];
+            } else {
+                // Get customer data for each buyer
+                $customerData = [];
+
+                foreach ($buyerIds as $buyerId) {
+                    $user = User::find($buyerId);
+                    if (!$user) continue;
+
+                    // Calculate statistics for this customer within the date range and user context
+                    $statsQuery = DB::table('orders')
+                        ->leftJoin('order_items', 'orders.id', '=', 'order_items.order_id')
+                        ->where('orders.buyer_id', $buyerId)
+                        ->whereBetween('orders.created_at', [$startDate, $endDate]);
+
+                    // Apply user filtering if specified
+                    if ($userId) {
+                        $statsQuery->where('orders.seller_id', $userId);
+                    }
+
+                    $stats = $statsQuery->select(
+                            DB::raw('COUNT(DISTINCT orders.id) as total_orders'),
+                            DB::raw('COALESCE(SUM(order_items.quantity * order_items.unit_price), 0) as total_purchases'),
+                            DB::raw('COUNT(DISTINCT order_items.product_id) as products_purchased'),
+                            DB::raw('MAX(orders.created_at) as last_order_date'),
+                            DB::raw('MIN(orders.created_at) as first_order_date')
+                        )
+                        ->first();
+
+                    $customerData[] = [
+                        'name' => $user->name ?? 'Unknown Name',
+                        'email' => $user->email ?? 'No Email',
+                        'role' => $user->role ? $user->role->value : 'Unknown',
+                        'total_orders' => $stats->total_orders ?? 0,
+                        'total_purchases' => number_format($stats->total_purchases ?? 0, 2),
+                        'products_purchased' => $stats->products_purchased ?? 0,
+                        'last_order' => $stats->last_order_date ?
+                            Carbon::parse($stats->last_order_date)->format('Y-m-d') : 'Never',
+                        'first_order' => $stats->first_order_date ?
+                            Carbon::parse($stats->first_order_date)->format('Y-m-d') : 'Never',
+                        'customer_status' => ($stats->total_orders ?? 0) > 5 ? 'VIP' :
+                            (($stats->total_orders ?? 0) > 0 ? 'Regular' : 'New')
+                    ];
+
+                    Log::info('Added customer to data', [
+                        'name' => $user->name,
+                        'email' => $user->email,
+                        'has_email' => !empty($user->email)
+                    ]);
+                }
+
+                // Sort by total purchases descending
+                usort($customerData, function($a, $b) {
+                    return (float)str_replace(',', '', $b['total_purchases']) <=> (float)str_replace(',', '', $a['total_purchases']);
+                });
+            }
+
+            Log::info('Customer data retrieved successfully', ['user_id' => $userId, 'count' => count($customerData)]);
+            return $customerData;
+        } catch (\Exception $e) {
+            Log::error('Error retrieving customer data', ['error' => $e->getMessage()]);
+            throw $e;
+        }
     }
 }
