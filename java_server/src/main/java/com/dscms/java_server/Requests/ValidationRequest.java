@@ -15,7 +15,7 @@ public class ValidationRequest {
 
     @NotBlank(message = "Please upload a National ID")
     private MultipartFile nationalId;
-    //private MultipartFile bankStatement;
+
     @NotBlank(message = "Please upload a URSB certificate")
     private MultipartFile ursbCertificate;
 }

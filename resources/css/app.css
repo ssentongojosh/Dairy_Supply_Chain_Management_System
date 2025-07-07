@@ -1,8 +1,9 @@
 /* filepath: c:\xampp\htdocs\DSCMS\resources\css\app.css */
+@import 'bootstrap';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import 'bootstrap';
+
 
 /* Custom styles for slideshow */
 .slideshow-container {

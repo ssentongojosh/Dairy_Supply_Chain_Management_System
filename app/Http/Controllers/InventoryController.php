@@ -36,7 +36,7 @@ class InventoryController extends Controller
 
             case 'farmer':
                 // Redirect farmers to their inventory page
-                return redirect()->route('farmer.inventory');
+                return redirect()->route('plant_manager.inventory');
 
             case 'plant_manager':
                 // Redirect plant managers to their inventory page
@@ -59,3 +59,4 @@ class InventoryController extends Controller
         }
     }
 }
+

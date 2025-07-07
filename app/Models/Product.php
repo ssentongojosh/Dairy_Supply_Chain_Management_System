@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+
 use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
@@ -14,9 +16,10 @@ class Product extends Model
         'price',
         'cost',
         'category',
+        'added_on', //inventory table for updates on final processing
         'supplier_id', // Using supplier_id as per the migration
         'image_url',
-        'is_active'
+        'is_active',
     ];
 
     protected $casts = [
@@ -51,3 +54,4 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 }
+

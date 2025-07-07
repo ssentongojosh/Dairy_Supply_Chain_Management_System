@@ -57,7 +57,7 @@ class LoginBasic extends Controller
 
             // User is verified, proceed to dashboard
             $userRole = $user->role; // This should be an App\Enums\Role instance or null
-            
+
             // Ensure $userRole is an instance of Role before accessing ->value
             if ($userRole instanceof Role) {
                 $userRoleValue = $userRole->value;
@@ -72,7 +72,7 @@ class LoginBasic extends Controller
                 $request->session()->regenerateToken();
                 return back()->withErrors(['email' => 'Invalid user role configuration.'])->onlyInput('email');
             }
-            
+
             return $this->redirectBasedOnRoleValue($userRoleValue);
         }
 
@@ -90,7 +90,7 @@ class LoginBasic extends Controller
                 return redirect()->route('dashboard.analytics');
             case 'retailer':
                 Log::info('Retailer role detected, redirecting to retailer.dashboard');
-                return redirect()->route('retailer.dashboard');
+                return redirect()->route('dashboard.retailer');
             case 'wholesaler':
                 Log::info('Wholesaler role detected, redirecting to wholesaler.dashboard');
                 return redirect()->route('wholesaler.dashboard');
@@ -100,7 +100,10 @@ class LoginBasic extends Controller
             case 'plant_manager':
                 Log::info('Plant manager role detected, redirecting to plant_manager.dashboard');
                 return redirect()->route('plant_manager.dashboard');
-            default:
+
+            case 'supplier':
+                return redirect()->route('supplier.dashboard');
+             default:
                 Log::info('Default role or unknown role, redirecting to home', ['role' => $roleValue]);
                 return redirect()->route('home');
         }

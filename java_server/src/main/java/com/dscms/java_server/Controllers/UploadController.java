@@ -1,7 +1,6 @@
 package com.dscms.java_server.Controllers;
 
 import com.dscms.java_server.Requests.ValidationRequest;
-import com.dscms.java_server.Services.BankStatementService;
 import com.dscms.java_server.Services.IdService;
 import com.dscms.java_server.Services.UrsbCertificateService;
 import org.springframework.http.HttpStatus;
@@ -14,11 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class UploadController {
 
     private  final IdService idService;
-    private final BankStatementService bankStatementService;
     private final UrsbCertificateService ursbCertificateService;
-    public UploadController(IdService idService,BankStatementService bankStatementService, UrsbCertificateService ursbCertificateService){
+    public UploadController(IdService idService, UrsbCertificateService ursbCertificateService){
         this.idService = idService;
-        this.bankStatementService = bankStatementService;
         this.ursbCertificateService = ursbCertificateService;
     }
 

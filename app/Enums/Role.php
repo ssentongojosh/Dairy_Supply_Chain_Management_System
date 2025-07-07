@@ -5,7 +5,7 @@ namespace App\Enums;
 enum Role: string
 {
     case ADMIN = 'admin';
-    case USER = 'user';  // Adding the standard user role
+    case SUPPLIER = 'supplier';  // Adding the standard user role
     case RETAILER = 'retailer';
     case WHOLESALER = 'wholesaler';
     case FARMER = 'farmer';
@@ -20,7 +20,7 @@ enum Role: string
     {
         return match($this) {
             self::ADMIN => 'Administrator',
-            self::USER => 'Standard User',  // Adding corresponding label
+            self::SUPPLIER => 'supplier',  // Adding corresponding label
             self::RETAILER => 'Retailer',
             self::WHOLESALER => 'Wholesaler',
             self::FARMER => 'Dairy Farmer',

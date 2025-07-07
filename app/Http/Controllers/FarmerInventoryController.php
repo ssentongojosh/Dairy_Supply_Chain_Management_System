@@ -49,6 +49,20 @@ class FarmerInventoryController extends Controller
                     $query->where('quantity', 0);
                     break;
             }
+
+            //inventory sake
+            $products = Product::all();
+    $rawMaterials = RawMaterial::all();
+
+    $lowStockProducts = Product::where('quantity', '<=', 150)->count();
+    $lowStockRawMaterials = RawMaterial::where('quantity', '<=', 150)->count();
+    $totalLowStock = $lowStockProducts + $lowStockRawMaterials;
+
+    return view('farmer.inventory', compact(
+        'products',
+        'rawMaterials',
+        'totalLowStock'
+    ));
         }
 
         $inventory = $query->orderBy('updated_at', 'desc')->paginate(15);

@@ -46,6 +46,9 @@ class ChatController extends Controller
         ]);
     }
 
+    /**  show notification badge-dot  */
+
+
     /**
      * Send a message (API endpoint for AJAX)
      */
@@ -64,23 +67,16 @@ class ChatController extends Controller
         $user = Auth::user();
         $recipientId = $request->input('recipient_id');
         $messageText = $request->input('message');
-        
-        // For system messages or when no specific recipient
+
+        // Require a recipient to save message
         if (!$recipientId) {
-            // Save in memory only, not in database
             return response()->json([
-                'success' => true,
-                'message' => 'Message sent successfully',
-                'data' => [
-                    'message' => $messageText,
-                    'sender' => $user->name,
-                    'contact' => $request->input('contact', 'support'),
-                    'timestamp' => now()->format('H:i')
-                ]
-            ]);
+                'success' => false,
+                'error' => 'Recipient is required'
+            ], 400);
         }
 
-        // Save message to database when recipient is provided
+        // Save message to database
         $message = Message::create([
             'sender_id' => $user->id,
             'recipient_id' => $recipientId,
@@ -93,7 +89,7 @@ class ChatController extends Controller
             'data' => [
                 'message' => $message->message,
                 'sender' => $user->name,
-                'contact' => $request->input('contact', 'support'),
+                'contact' => $request->input('contact'),
                 'timestamp' => $message->created_at->format('H:i')
             ]
         ]);
@@ -107,17 +103,17 @@ class ChatController extends Controller
         if (!Auth::check()) {
             return response()->json(['success' => false, 'error' => 'Unauthenticated'], 401);
         }
-        
+
         $user = Auth::user();
         $recipientId = $request->input('recipient_id');
-        
+
         if (!$recipientId) {
             return response()->json([
                 'success' => true,
                 'messages' => []
             ]);
         }
-        
+
         // Fetch messages between the authenticated user and the selected contact
         $messages = Message::where(function($q) use ($user, $recipientId) {
                 $q->where('sender_id', $user->id)
@@ -139,9 +135,50 @@ class ChatController extends Controller
                 ];
             });
 
+        // Automatically mark messages as read for the authenticated user
+        Message::where('recipient_id', $user->id)
+               ->where('sender_id', $recipientId)
+               ->where('is_read', false)
+               ->update(['is_read' => true]);
+
         return response()->json([
             'success' => true,
             'messages' => $messages
         ]);
     }
+
+    /**
+     * Mark a specific message as read
+     */
+    public function markMessageAsRead(Request $request)
+    {
+        if (!Auth::check()) {
+            return response()->json(['success' => false, 'error' => 'Unauthenticated'], 401);
+        }
+
+        $request->validate([
+            'message_id' => 'required|exists:messages,id'
+        ]);
+
+        $user = Auth::user();
+        $messageId = $request->input('message_id');
+
+        // Find the message and ensure the user is the recipient
+        $message = Message::where('id', $messageId)
+                          ->where('recipient_id', $user->id)
+                          ->first();
+
+        if (!$message) {
+            return response()->json(['success' => false, 'error' => 'Message not found or unauthorized'], 404);
+        }
+
+        // Mark as read
+        $message->update(['is_read' => true]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Message marked as read'
+        ]);
+    }
+
 }

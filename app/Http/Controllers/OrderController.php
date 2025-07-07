@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+
+use App\Models\Product;
 use App\Models\Inventory;
-use App\Services\OrderWorkflowService;
 use Illuminate\Http\Request;
+use App\Services\OrderWorkflowService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -232,4 +234,5 @@ class OrderController extends Controller
 
         return view($user->role->value . '.orders', compact('orders'));
     }
+
 }
