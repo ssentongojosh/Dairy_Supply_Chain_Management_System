@@ -137,7 +137,8 @@
             <i class="bx bx-dots-vertical-rounded"></i>
           </button>
           <div class="dropdown-menu dropdown-menu-end" aria-labelledby="salesChart">
-            <a class="dropdown-item" href="{{ route('supplier.orders.index') }}">View All Orders</a>
+            {{-- Uncomment if you want to add a link to view all orders --}}
+            {{-- <a class="dropdown-item" href="{{ route('supplier.orders.index') }}">View All Orders</a> --}}
             <a class="dropdown-item" href="{{ route('supplier.inventory') }}">Manage Inventory</a>
           </div>
         </div>
@@ -224,7 +225,8 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="card-title m-0">Recent Orders</h5>
-        <a href="{{ route('supplier.orders.index') }}" class="btn btn-primary btn-sm">View All</a>
+        {{-- Uncomment if you want to add a link to view all orders --}}
+        {{-- <a href="{{ route('supplier.orders.index') }}" class="btn btn-primary btn-sm">View All</a> --}}
       </div>
       <div class="card-body">
         @forelse($recentOrders as $order)

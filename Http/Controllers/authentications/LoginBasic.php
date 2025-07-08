@@ -25,8 +25,17 @@ class LoginBasic extends Controller
       $request->session()->regenerate();
 
       $user = Auth::user();
+      
+      // Check if user is verified first
+      if (!$user->verified) {
+        if (!$user->business_document_path) {
+          return redirect()->route('verification.upload');
+        }
+        return redirect()->route('verification.pending');
+      }
+      
+      // User is verified, redirect to appropriate dashboard
       $redirectUrl = $this->redirectBasedOnRole($user);
-
       return redirect($redirectUrl);
     }
 
@@ -41,7 +50,7 @@ class LoginBasic extends Controller
       case Role::ADMIN:
         return route('dashboard.analytics');
       case Role::RETAILER:
-        return route('retailer.dashboard');
+        return route('dashboard.retailer');
       case Role::WHOLESALER:
         return route('wholesaler.dashboard');
       case Role::FARMER:

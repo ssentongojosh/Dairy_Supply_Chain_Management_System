@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +16,45 @@ class PlantManagerDashboard extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        // Get products from inventory - the view expects the inventory items themselves
+        // The view accesses properties like $product->name, $product->quantity, $product->price
+        $products = Inventory::where('user_id', Auth::id())
+                           ->with('product')
+                           ->whereHas('product', function($query) {
+                               $query->whereIn('category', ['Pasteurized Milk', 'Yogurt', 'Cheese', 'Butter']);
+                           })
+                           ->get();
+
+        // For the view, we need to transform the data so it can access name, quantity, price directly
+        $products = $products->map(function($inventory) {
+            return (object) [
+                'id' => $inventory->id,
+                'name' => $inventory->product->name ?? $inventory->name,
+                'quantity' => $inventory->quantity,
+                'price' => $inventory->selling_price ?? $inventory->product->price ?? 0,
+                'manufacture_date' => $inventory->product->added_on ?? $inventory->last_restocked_at,
+                'product_id' => $inventory->product_id
+            ];
+        });
+
+        // Raw materials from the separate RawMaterial model - filtered by user
+        $rawMaterials = RawMaterial::where('user_id', Auth::id())->get();
+
+        // Low stock count from Inventory table
+        $totalLowStock = Inventory::where('user_id', Auth::id())
+                               ->where('quantity', '<=', 150)
+                               ->count();
+
+        // Stats for delivery activity
+        $stats = [
+            'incoming_deliveries' => Order::where('buyer_id', Auth::id())
+                                          ->where('status', 'shipped')
+                                          ->count(),
+            'outgoing_deliveries' => Order::where('seller_id', Auth::id())
+                                          ->where('status', 'shipped')
+                                          ->count(),
+        ];
 
         // Production and Processing Statistics
         $productionStats = [
@@ -104,6 +144,10 @@ class PlantManagerDashboard extends Controller
 
         return view('plant_manager.dashboard', compact(
             'user',
+            'products',           // Added for the view
+            'rawMaterials',       // Added for the view
+            'totalLowStock',      // Added for the view
+            'stats',              // Added for the view
             'productionStats',
             'inventoryStats',
             'recentOrders',

@@ -32,6 +32,26 @@
       "slug": "app-inventory"
     },
     {
+      "menuHeader": "Reports"
+    },
+    {
+      "name": "Reports",
+      "icon": "bx bx-chart",
+      "slug": "report",
+      "submenu": [
+        {
+          "url": "/report/settings",
+          "name": "settings",
+          "slug": "report-settings"
+        },
+        {
+          "url": "/reports/history",
+          "name": "history",
+          "slug": "reports-history"
+        }
+      ]
+    },
+    {
       "menuHeader": "Accounts & Settings",
       "icon": "menu-icon tf-icons ri-settings-2-line"
     },
@@ -79,26 +99,6 @@
           "name": "Forgot Password",
           "slug": "auth-forgot-password-basic",
           "target": "_blank"
-        }
-      ]
-    },
-    {
-      "menuHeader": "Reports"
-    },
-    {
-      "name": "Reports",
-      "icon": "bx bx-chart",
-      "slug": "report",
-      "submenu": [
-        {
-          "url": "/report/settings",
-          "name": "settings",
-          "slug": "report-settings"
-        },
-        {
-          "url": "/reports/history",
-          "name": "history",
-          "slug": "reports-history"
         }
       ]
     }

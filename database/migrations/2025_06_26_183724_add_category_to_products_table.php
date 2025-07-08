@@ -11,6 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
+      if (Schema::hasColumn('products', 'category')) {
+            // If the column already exists, we can skip adding it
+            return;
+        }
         Schema::table('products', function (Blueprint $table) {
             //
         $table->string('category')->nullable()->after('price');
