@@ -16,6 +16,7 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 
@@ -24,6 +25,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 @Service
+@ConditionalOnProperty(name = "facial.recognition.enabled", havingValue = "true", matchIfMissing = false)
 public class FacialRecognitionService {
 
   private static boolean openCVLoaded = false;
