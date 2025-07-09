@@ -29,8 +29,11 @@ class OrderController extends Controller
         $role = $user->role->value;
 
         // Redirect plant managers to their dedicated dashboard
-        if ($role === 'plant_manager') {
-            return redirect()->route('plant-manager.dashboard');
+        if ($role === 'wholesaler') {
+            return redirect()->route('wholesaler.orders');
+        }
+        elseif ($role === 'plant_manager') {
+            return redirect()->route('plant_manager.dashboard');
         }
 
         // Role configuration mapping
@@ -206,6 +209,11 @@ class OrderController extends Controller
             'lowStockProductsCount',
             'keyBuyers'
         );
+        // Ensure $incomingOrders and $outgoingOrders are sent for wholesaler dashboard
+        if ($role === 'wholesaler') {
+            $viewData['incomingOrders'] = $orders;
+            $viewData['outgoingOrders'] = $orders;
+        }
         if (isset($productsToRestock)) {
             $viewData['productsToRestock'] = $productsToRestock;
         }
@@ -416,7 +424,11 @@ class OrderController extends Controller
             ->orderByDesc('created_at')
             ->paginate(10);
 
-        return view('wholesaler.orders', compact('orders'));
+        // Pass both $orders and $outgoingOrders to the view for compatibility
+        return view('wholesaler.orders', [
+            'orders' => $orders,
+            'outgoingOrders' => $orders
+        ]);
     }
 
     public function orderHistory()
@@ -442,4 +454,5 @@ class OrderController extends Controller
         $order = \App\Models\Order::with(['seller', 'buyer', 'items.product'])->findOrFail($orderId);
         return view('orders.show', compact('order'));
     }
+
 }

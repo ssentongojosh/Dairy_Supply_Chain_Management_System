@@ -13,7 +13,17 @@
       <div class="card-body">
         <div class="alert alert-info">
           <i class="ri-information-line me-2"></i>
-          To access the system, please upload a PDF document containing your business details for verification.
+          <strong>Document Requirements:</strong>
+          <ul class="mb-2 mt-2">
+            <li><strong>National ID:</strong> Clear, readable PDF of valid government-issued ID</li>
+            <li><strong>URSB Certificate:</strong> Official business registration document from Uganda Registration Services Bureau</li>
+            <li><strong>File Format:</strong> PDF only (max 10MB each)</li>
+            <li><strong>Quality:</strong> Documents must be clear and all text must be readable</li>
+          </ul>
+          <small class="text-muted">
+            <i class="ri-lightbulb-line me-1"></i>
+            <strong>Tip:</strong> Use original digital documents when possible for best verification results.
+          </small>
         </div>
 
         @if (session('success'))

@@ -3,9 +3,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Enums\Role;
 class HomeController extends Controller
 {
     /**
@@ -44,7 +43,7 @@ class HomeController extends Controller
         $userRole = $user->role;
 
         // Ensure $userRole is properly handled
-        if ($userRole instanceof \App\Enums\Role) {
+        if ($userRole instanceof Role) {
             $userRoleValue = $userRole->value;
         } elseif (is_string($userRole)) {
             $userRoleValue = $userRole;
@@ -53,13 +52,13 @@ class HomeController extends Controller
             return redirect()->route('home')->with('error', 'Invalid user role configuration.');
         }
 
-        return $this->redirectBasedOnRoleValue($userRoleValue);
+        return $this->redirectBasedOnRoleValue($user);
     }
 
     /**
-     * Redirect to the specific route based on the role value.
+     * Redirect to the specific route based on the user's role.
      *
-     * @param  string  $roleValue
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function redirectBasedOnRoleValue($roleValue)
@@ -85,4 +84,5 @@ class HomeController extends Controller
                 return redirect()->route('home')->with('error', 'No dashboard available for your role.');
         }
     }
-}
+  }
+

@@ -42,16 +42,22 @@ class RegisterBasic extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'role' => $request->role,
+                'verified' => false, // New users start unverified
+                'business_document_path' => null, // No documents uploaded yet
             ]);
             DB::commit();
 
             Log::info('User created successfully', ['id' => $user->id, 'role' => $user->role]);
 
-            event(new Registered($user));
+            // Temporarily comment out the event to test if it's causing issues
+            // Log::info('About to fire Registered event');
+            // event(new Registered($user));
+            // Log::info('Registered event fired successfully');
+
             Auth::login($user);
 
-            // For now, just redirect to home to ensure registration works
-            return redirect()->route('home')->with('success', 'Registration successful!');
+            // Simple test - redirect with query parameter to verify it's working
+            return redirect('/verification/upload?debug=from_registration')->with('success', 'Registration successful! Please upload your business documents to verify your account.');
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Registration failed: ' . $e->getMessage(), [

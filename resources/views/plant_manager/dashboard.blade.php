@@ -85,6 +85,55 @@
         </a>
     </div>
 
+        </div>
+
+        <!-- 🧪 Card: Total Raw Materials -->
+        <!-- <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100 border-start border-4 border-success">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="avatar flex-shrink-0 bg-label-info me-3">
+                            <i class="ri-cup-line fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Raw Materials</h5>
+                            <h6 class="fw-bold">{{ $rawMaterials->count() }}</h6>
+                        </div>
+                    </div>
+                </div>
+        </div>            -->
+
+        <!-- Card: Low Stock Alert -->
+        <!-- <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100 border-start border-4 border-warning">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="avatar flex-shrink-0 bg-label-danger me-3">
+                            <i class="ri-alert-line fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Low Stock</h5>
+                            <small class="text-muted fw-bold">{{ $totalLowStock }}</small>
+                        </div>
+                    </div>
+                </div>
+        </div>            -->
+
+        <!-- Card: Expected Deliveries -->
+        <!-- <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 border-start border-4 border-secondary">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar flex-shrink-0 bg-label-secondary me-3">
+                       <i class="ri-truck-line fs-3"></i>
+                    </div>
+                    <div>
+                       <h5 class="card-title mb-0">Today's Deliveries</h5>
+                       <small class="text-muted fw-bold">{{ $todayDeliveriesCount }}</small>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+     
+    </div>
+
     <!-- 🔍 SEARCH BAR (Optional Feature) -->
     <div class="mb-4">
         <input type="text" class="form-control" placeholder="🔍 Search inventory... ">
@@ -173,13 +222,17 @@
                     <!-- button for product deliveries -->
                     <a href="{{ route('inventory.search') }}" class="btn btn-outline-primary btn-sm ms-2">
                        <i class="ri-truck-line"></i> Deliveries
+
+                    <!-- button for product deliveries -->
+                    <a href="{{ route('inventory.search') }}" class="btn btn-outline-primary btn-sm ms-2">
+                       <i class="ri-shopping-cart-line"></i> Orders
                     </a>
                 </div>
         </div>
 
         {{-- Table title / header --}}
-        <div class="card-header bg-success text-white">
-            🧪 Raw Materials
+        <div class="card-header bg-primary text-white">
+            📦 Finished Products
         </div>
         <div class="card-body">
             <table class="table table-striped table-bordered">
@@ -187,23 +240,24 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Quantity</th>
-                        <th>Expiry</th>
+                        <th>Stock</th>
+                        <th>Price</th>
                         <th>Status</th>
+                        <th>Added on</th>
                         <th>Actions</th> {{-- For buttons like "View" --}}
                     </tr>
                 </thead>
-                {{-- Loop through each raw material and display it --}}
+                {{-- Loop through each product and display in the table --}}
                 <tbody>
-                    @foreach($rawMaterials as $material)
+                    @foreach($products as $product)
                         <tr>
-                            <td>{{ $material->name }}</td>
-                            <td>{{ $material->quantity }}</td>
-                            <td>{{ $material->expiry ?? 'N/A' }}</td>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->quantity }}</td>
+                            <td>{{ $product->price }}</td>
                             <td>
-                                @if ($material->quantity <= 150)
+                                @if ($product->quantity <= 150)
                                    <span class="text-danger">Out of Stock</span>
-                                @elseif ($material->quantity <= 350)
+                                @elseif ($product->quantity <= 350)
                                    <span class="text-warning">Limited</span>
                                 @else
                                    <span class="text-success">Available</span>
@@ -212,6 +266,10 @@
                             <td>
                                 {{-- Button to view raw material details --}}
                                 <a href="{{ route('raw_materials.show', $material->id) }}" class="btn btn-sm btn-info">
+                            <td>{{ $product->manufacture_date }}</td>
+                            <td>
+                                {{-- Button to view product details --}}
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>

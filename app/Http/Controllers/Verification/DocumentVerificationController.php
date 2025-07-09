@@ -46,7 +46,11 @@ class DocumentVerificationController extends Controller
         if (!$user) return redirect()->route('login')->withErrors(['session_error' => 'Your session is invalid. Please log in again.']);
 
         if ($user->verified) {
-            return $this->redirectToDashboard($user);
+            Log::info('Already verified user accessing upload form, redirecting to dashboard', [
+                'user_id' => $user->id,
+                'role' => $user->role
+            ]);
+            return $this->redirectToDashboard($user, false); // false = don't show verification message
         }
 
         return view('content.verification.upload-document');
@@ -112,32 +116,57 @@ class DocumentVerificationController extends Controller
                     $user->verification_notes = "Document verified successfully via Java server.";
                     $user->save();
 
-                    // Redirect directly to dashboard on success
-                    return $this->redirectToDashboard($user)
-                        ->with('success', 'Your documents have been verified successfully. Welcome to the system!');
+                    Log::info('User verification successful, redirecting to dashboard', [
+                        'user_id' => $user->id,
+                        'role' => $user->role
+                    ]);
+
+                    // Redirect directly to dashboard instead of pending page
+                    return $this->redirectToDashboard($user);
                 } else {
                     $user->verified = false;
-                    $user->verification_notes = "Verification failed. Please submit a valid document.";
+                    $user->verification_notes = "Verification failed. Please check that your documents meet our requirements and try again.";
                     $user->save();
 
                     return redirect()->route('verification.pending')
-                        ->with('warning', 'Document verification failed. Our team will review your submission manually.');
+                        ->with('warning', 'Document verification failed. Please review the requirements below and try uploading again.');
                 }
             } else {
                 Log::error('Java server returned an error', [
                     'status' => $response->status(),
                     'body' => $response->body()
                 ]);
+
+                // Update user with user-friendly failure information
+                $user->verified = false;
+                $errorMessage = "Document verification could not be completed.";
+
+                // Try to extract more specific error from response body
+                $responseBody = $response->body();
+                if (strpos($responseBody, 'Verification failed') !== false) {
+                    $errorMessage = "Documents could not be verified as authentic.";
+                } elseif (strpos($responseBody, 'compatible type') !== false) {
+                    $errorMessage = "Invalid file format or document type detected.";
+                }
+
+                $user->verification_notes = $errorMessage . " Please ensure your documents meet our requirements.";
+                $user->save();
+
                 return redirect()->route('verification.pending')
-                    ->with('error', 'Document processing failed on Java server. Please try again later or contact support.');
+                    ->with('error', 'Document verification failed. Please check that your documents meet the requirements and try again.');
             }
         } catch (\Exception $e) {
             Log::error('Exception while communicating with Java server', [
                 'exception' => $e->getMessage(),
                 'trace' => $e->getTraceAsString()
             ]);
+
+            $user->verified = false;
+            $user->verification_notes = "Verification service temporarily unavailable. Please try again later.";
+            $user->save();
+
             return redirect()->route('verification.pending')
-                ->with('error', 'Connection to document verification service failed: ' . $e->getMessage());
+                ->with('error', 'Document verification service is temporarily unavailable. Please try again in a few minutes.');
         }
     }
 
@@ -153,7 +182,7 @@ class DocumentVerificationController extends Controller
         return view('content.verification.pending');
     }
 
-    protected function redirectToDashboard(User $user) // Type hint User
+    protected function redirectToDashboard(User $user, $withVerificationMessage = true)
     {
         $userRole = $user->role;
         $roleValue = null;
@@ -167,16 +196,36 @@ class DocumentVerificationController extends Controller
             return redirect()->route('home')->with('error', 'Invalid user role.');
         }
 
+        // Determine the success message
+        $successMessage = $withVerificationMessage
+            ? 'Welcome! Your documents have been verified successfully.'
+            : 'Welcome to your dashboard!';
+
         switch ($roleValue) {
             case 'admin':
-            case 'retailer': // Assuming retailer also goes to analytics
-                return redirect()->route('dashboard.analytics');
-            // case 'wholesaler':
-            //     return redirect()->route('wholesaler.dashboard');
-            // case 'farmer':
-            //     return redirect()->route('farmer.dashboard');
+                return redirect()->route('dashboard.analytics')->with('success', $successMessage);
+            case 'retailer':
+                return redirect()->route('dashboard.retailer')->with('success', $successMessage);
+            case 'wholesaler':
+                return redirect()->route('wholesaler.dashboard')->with('success', $successMessage);
+            case 'farmer':
+                return redirect()->route('farmer.dashboard')->with('success', $successMessage);
+            case 'plant_manager':
+                return redirect()->route('plant_manager.dashboard')->with('success', $successMessage);
+            case 'driver':
+                return redirect()->route('driver.dashboard')->with('success', $successMessage);
+            case 'warehouse_manager':
+                return redirect()->route('warehouse.dashboard')->with('success', $successMessage);
+            case 'executive':
+                return redirect()->route('executive.dashboard')->with('success', $successMessage);
+            case 'inspector':
+                return redirect()->route('inspector.dashboard')->with('success', $successMessage);
+            case 'quality_assurance':
+                return redirect()->route('quality.dashboard')->with('success', $successMessage);
             default:
-                return redirect()->route('home');
+                // For any unrecognized role, redirect to analytics dashboard
+                Log::info('User with unrecognized role redirected to analytics dashboard', ['user_id' => $user->id, 'role' => $roleValue]);
+                return redirect()->route('dashboard.analytics')->with('success', $successMessage);
         }
     }
 }

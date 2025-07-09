@@ -40,7 +40,18 @@ class RawMaterialInventoryController extends Controller
         $rawMaterial->save();
 
         return redirect()->back()->with('success', 'Raw material added!');
-    }
+ 
+    $data = $request->validate([
+        'name' => 'required|string|max:15',
+        'quantity' => 'required|integer|min:1',
+        'expiry' => 'required|date',
+    ]);
+
+    // Save the raw material
+    $newItem = RawMaterial::create($data);
+
+    return redirect()->back()->with('success', 'Item added successfully!');
+}
 
     
 

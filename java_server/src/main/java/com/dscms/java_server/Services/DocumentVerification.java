@@ -60,7 +60,7 @@ public class DocumentVerification {
         }
     }
 
-    //Method to turn pdf to image
+    //Method to turn pdf to image (without closing the document)
     public static File pdfToImage(PDDocument doc, int pageIndex){
 
         //create a PDFRenderer object to turn the pdf to image
@@ -76,7 +76,8 @@ public class DocumentVerification {
             //Store the image in the file
             ImageIO.write(image,"png",img);
 
-            doc.close();
+            // Don't close the document here - let the caller handle it
+            // doc.close();
 
             return img;
 
@@ -160,23 +161,30 @@ public class DocumentVerification {
 
         StringBuilder extractedText = new StringBuilder();
 
-        try{
-            PDDocument document = PDDocument.load(file);
+        // Use try-with-resources to ensure PDDocument is always closed
+        try (PDDocument document = PDDocument.load(file)) {
 
             for (int i=0; i<document.getNumberOfPages(); i++){
 
-                File image = pdfToImage(document, i);
+                File image = null;
+                try {
+                    image = pdfToImage(document, i);
 
-                Mat preProcessedImage = preProcessing(image.getPath());
+                    Mat preProcessedImage = preProcessing(image.getPath());
 
-                BufferedImage bufferedImage = matToBufferedImage(preProcessedImage);
+                    BufferedImage bufferedImage = matToBufferedImage(preProcessedImage);
 
-                String text = ocr(bufferedImage);
+                    String text = ocr(bufferedImage);
 
-                extractedText.append(text).append("\n");
+                    extractedText.append(text).append("\n");
+
+                } finally {
+                    // Clean up temporary image file
+                    if (image != null && image.exists()) {
+                        image.delete();
+                    }
+                }
             }
-
-            document.close();
 
             return extractedText.toString();
 

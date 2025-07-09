@@ -56,15 +56,15 @@ use App\Http\Controllers\SupplierDashboardController;
 use App\Http\Controllers\PlantManagerOrderController;
 use App\Http\Controllers\PlantManagerInventoryController;
 use App\Http\Controllers\MarketplaceController;
-
+use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\OrderController;
 Use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 
 use App\Http\Controllers\SupplierOrderController;
-
-
-
+//delivery controller
+use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\InventoryController;
 
 use App\Http\Controllers\DocumentVerificationController;
@@ -74,7 +74,7 @@ use App\Models\User;
 use App\Http\Controllers\dashboard\SupplierDashboard;
 use App\Http\Controllers\SupplierInventoryController;
 use App\Http\Controllers\RetailerSupplierController;
-use App\Http\Controllers\dashboard\FarmerDashboard;
+// use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\dashboard\PlantManagerDashboard;
 // Root route - Welcome page
 
@@ -96,6 +96,25 @@ Route::get('/forgot-password', [ForgotPasswordBasic::class, 'index'])->name('pas
 Route::get('/register', [RegisterBasic::class, 'index'])->name('register');
 Route::post('/register', [RegisterBasic::class, 'register'])->name('register.submit');
 
+// Debug route to test registration flow
+Route::get('/test-register-redirect', function() {
+    if (!Auth::check()) {
+        return 'Not authenticated';
+    }
+
+    $user = Auth::user();
+    $controller = new \App\Http\Controllers\authentications\RegisterBasic();
+    $redirectResponse = $controller->handlePostRegistrationRedirect($user);
+
+    return [
+        'user_id' => $user->id,
+        'verified' => $user->verified,
+        'has_documents' => !empty($user->business_document_path),
+        'redirect_url' => $redirectResponse->getTargetUrl(),
+        'redirect_status' => $redirectResponse->getStatusCode()
+    ];
+})->middleware('auth')->name('test.register.redirect');
+
 // General dashboard route that redirects based on role and verification status
 Route::get('/dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
 
@@ -106,10 +125,13 @@ Route::get('/chat/messages', [ChatController::class, 'getMessages'])->name('chat
 Route::post('/messages/mark-as-read', [ChatController::class, 'markMessageAsRead'])->name('messages.mark-read')->middleware('auth');
 
 // Order routes
-Route::get('/app/order', [OrderController::class, 'index'])->name('app.order');
+
 
 // Inventory routes
+Route::get('/app/order', [OrderController::class, 'index'])->name('app.order');
 Route::get('/app/inventory', [InventoryController::class, 'index'])->name('app-inventory')->middleware('auth');
+Route::get('/farmer/products', [ProductController::class, 'index'])->name('farmer.products');
+
 
 // Dashboard routes with role middleware
 Route::get('/analytics', [Analytics::class, 'index'])
@@ -145,7 +167,7 @@ Route::get('/wholesaler/orders/{order}/payment', [PaymentController::class, 'sho
 // Add update status route for orders
 Route::put('/orders/{order}/update-status', [OrderController::class, 'updateStatus'])->name('orders.updateStatus');
 
-// Other role dashboard routes
+// Other role dashboard routes controller doesnot exist
 Route::get('/farmer/dashboard', [FarmerDashboard::class, 'index'])
   ->name('farmer.dashboard')
   ->middleware(['auth', 'role:farmer']);
@@ -273,8 +295,62 @@ Route::post('/inventory', [PrInventoryController::class, 'store'])->name('invent
 //route for search
 Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
 Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
-Route::put('/inventory/{id}',[PrInventoryController::class, 'update'])->name('inventory.update');
+;
+
+//tryout
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('raw_materials', RawMaterialInventoryController::class);
 });
+
+//delete inventory
+Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
+
+//raw materials inventory
+//route for inventory
+Route::resource('raw_materials', \App\Http\Controllers\RawMaterialInventoryController::class);
+Route::resource('inventory', RawMaterialInventoryController::class);
+Route::get('raw-material', [RawMaterialInventoryController::class, 'index']);
+
+//route to create a new inventory item
+Route::get('/plant_manager/dashboard', [RawMaterialInventoryController::class, 'index'])->name('plant_manager.dashboard');
+Route::get('/raw-material/create', [RawMaterialInventoryController::class, 'create'])->name('raw-material.create');
+Route::post('/raw-material', [RawMaterialInventoryController::class, 'store'])->name('raw-material.store');
+
+//route for search
+Route::get('/raw-material/search',[RawMaterialInventoryController::class, 'search'])->name('raw-material.search');
+Route::get('/raw-material/{id}/edit',[RawMaterialInventoryController::class, 'edit'])->name('raw-material.edit');
+Route::put('/raw-material/{id}',[RawMaterialInventoryController::class, 'update'])->name('raw-material.update');
+
+//update item
+Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])->name('inventory.update');
+
+//delete item
+Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
+});
+
+//delivery routes
+Route::resource('delivery',DeliveryController::class);
+Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+Route::get('/delivery/create', [DeliveryController::class, 'create'])->name('delivery.create');
+//confirm route for arrival
+Route::put('/delivery/{id}/confirm', [DeliveryController::class, 'confirm'])->name('delivery.confirm');
+//update the status
+Route::put('/delivery/{id}/status', [DeliveryController::class, 'updateStatus'])->name('delivery.updateStatus');
+//check for delivery id confirmation
+// In routes/api.php
+Route::get('/delivery/{id}/status', [DeliveryController::class, 'checkStatus']);
+Route::get('/delivery/{delivery}/status', function (App\Models\Delivery $delivery) {
+    return response()->json(['status' => $delivery->status]);
+});
+Route::get('/delivery/{id}/status-page', [DeliveryController::class, 'statusPage'])->name('delivery.statusPage');
+Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate'])->name('delivery.terminate');
+Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
+
+
+//catalog for inventory
+Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+
 
 // User CRUD routes for admin
 Route::resource('users', UserController::class)
@@ -296,9 +372,9 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->name('supplier
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/history', [SupplierOrderController::class, 'orderHistory'])->name('orders.history');
     Route::get('/orders/{order}', [SupplierOrderController::class, 'showOrder'])->name('orders.show');
-    Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder'])->name('orders.approve');
-    Route::post('/orders/{order}/reject', [SupplierOrderController::class, 'rejectOrder'])->name('orders.reject');
-    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped'])->name('orders.ship');
+    Route::patch('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder'])->name('orders.approve');
+    Route::patch('/orders/{order}/reject', [SupplierOrderController::class, 'rejectOrder'])->name('orders.reject');
+    Route::patch('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped'])->name('orders.ship');
 
     // Inventory management
     Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('inventory');
@@ -369,15 +445,15 @@ Route::post('/inventory/auto-reorder', [RetailInventoryController::class, 'autoR
 // Suppliers listing
 Route::get('/suppliers', [RetailerSupplierController::class, 'index'])->name('retailer.suppliers');
 
-// Retailer vendor browse
-Route::get('/vendors', [RetailerOrderController::class, 'vendors'])
-         ->name('retailer.vendors');
+// Retailer vendor browse controller doesnot exist
+// Route::get('/vendors', [RetailerOrderController::class, 'vendors'])
+//          ->name('retailer.vendors');
 
-// Vendor actions for retailer
-Route::post('/vendors/{wholesaler}/key', [RetailerOrderController::class, 'addKeySupplier'])
-         ->name('retailer.vendors.addKey');
-Route::get('/vendors/{wholesaler}/products', [RetailerOrderController::class, 'viewVendorProducts'])
-         ->name('retailer.vendors.products');
+// // Vendor actions for retailer
+// Route::post('/vendors/{wholesaler}/key', [RetailerOrderController::class, 'addKeySupplier'])
+//          ->name('retailer.vendors.addKey');
+// Route::get('/vendors/{wholesaler}/products', [RetailerOrderController::class, 'viewVendorProducts'])
+//          ->name('retailer.vendors.products');
 
 
 
@@ -403,51 +479,86 @@ Route::middleware(['auth'])->group(function () {
          ->name('marketplace.create-product');
 });
 
-//plantmanager order
-Route::prefix('plant_manager')->middleware(['auth', 'role:plantmanager'])->group(function () {
-    Route::get('plant_manager/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
+//supplier order
+Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
+    // Route::get('supplier/dashboard', [SupplierDashboardController::class, 'index'])->name('supplier.dashboard'); // COMMENTED OUT - MISSING CONTROLLER
+    Route::get('/orders', [OrderController::class, 'orderHistory'])->name('supplier.orders');
+    Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('supplier.order.dashboard');
+    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('supplier.orders.show');
+    Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('supplier.orders.approve');
+    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('supplier.orders.reject');
+    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('supplier.orders.ship');
+    Route::get('/orders/history', [OrderController::class, 'history'])->name('supplier.orders.history');
+        Route::get('/orders/index', [OrderController::class, 'index'])->name('supplier.orders.index');
+    Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
+});
+
+
+//plant_manager order
+Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
+    // Route::get('plant_manager/dashboard', [plant_managerDashboardController::class, 'index'])->name('plant_manager.dashboard'); controller absent
     Route::get('/orders', [OrderController::class, 'orderHistory'])->name('plant_manager.orders');
+    
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plant_manager.order.dashboard');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plant_manager.orders.show');
-    Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
-    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plant_manager.orders.reject');
-    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
+    Route::patch('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
+    Route::patch('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plant_manager.orders.reject');
+    Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
     Route::get('/orders/history', [OrderController::class, 'history'])->name('plant_manager.orders.history');
-    Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
-    Route::post('/plantmanager/orders', [OrderController::class, 'storeOrder'])->name('plant_manager.orders.store')->middleware(['auth', 'role:plant_manager']);
+     Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
+ 
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
-    Route::patch('/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
 });
+
+   Route::get('/plant_manager/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
 
 //wholesaler order
 Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(function () {
-    Route::get('/wholesaler/dashboard', [\App\Http\Controllers\dashboard\WholesalerDashboard::class, 'index'])->name('wholesaler.dashboard');
-    Route::get('/wholesaler/orders', [OrderController::class, 'orderHistory'])->name('wholesaler.orders');
-    Route::get('/wholesaler/orders/dashboard', [OrderController::class, 'index'])->name('wholesaler.order.dashboard');
-    Route::get('/wholesaler/orders/{order}', [OrderController::class, 'showOrder'])->name('wholesaler.orders.show');
-    Route::post('/wholesaler/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
-    Route::post('/wholesaler/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');
-    Route::post('/wholesaler/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
-    Route::get('/wholesaler/orders/history', [OrderController::class, 'history'])->name('wholesaler.orders.history');
-    Route::post('/wholesaler/orders', [OrderController::class, 'storeOrder'])->name('wholesaler.orders.store');
-    Route::post('/wholesaler/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('wholesaler.orders.cancel');
-    Route::get('/wholesaler/inventory', [WholesalerInventoryController::class, 'index'])->name('wholesaler.inventory');
-    Route::patch('/wholesaler/orders/{order}/status', [OrderController::class, 'updateStatus'])->name('wholesaler.orders.updateStatus');
+    // Route::get('wholesaler/dashboard', [WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
+    Route::get('/orders', [OrderController::class, 'orderHistory'])->name('wholesaler.orders');
+    Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('wholesaler.order.dashboard');
+    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('wholesaler.orders.show');
+    Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
+    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');
+    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
+    Route::get('/orders/history', [OrderController::class, 'history'])->name('wholesaler.orders.history');
+    // Route::get('/inventory', [wholesalerInventoryController::class, 'index'])->name('wholesaler.inventory');
 });
 
-// Inventory management
-Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
-Route::post('/inventory', [FarmerInventoryController::class, 'store'])->name('farmer.inventory.store');
-Route::put('/inventory/{inventory}/update-quantity', [FarmerInventoryController::class, 'updateQuantity'])->name('farmer.inventory.update-quantity');
-Route::put('/inventory/{inventory}/threshold', [FarmerInventoryController::class, 'updateThreshold'])->name('farmer.inventory.threshold');
-Route::delete('/inventory/{inventory}', [FarmerInventoryController::class, 'destroy'])->name('farmer.inventory.destroy');
-Route::get('/inventory/products', [FarmerInventoryController::class, 'getAvailableProducts'])->name('farmer.inventory.products');
+// Inventory management contrller doesnot exist
+    // Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
+    // Route::post('/inventory', [FarmerInventoryController::class, 'store'])->name('farmer.inventory.store');
+    // Route::put('/inventory/{inventory}/update-quantity', [FarmerInventoryController::class, 'updateQuantity'])->name('farmer.inventory.update-quantity');
+    // Route::put('/inventory/{inventory}/threshold', [FarmerInventoryController::class, 'updateThreshold'])->name('farmer.inventory.threshold');
+    // Route::delete('/inventory/{inventory}', [FarmerInventoryController::class, 'destroy'])->name('farmer.inventory.destroy');
+    // Route::get('/inventory/products', [FarmerInventoryController::class, 'getAvailableProducts'])->name('farmer.inventory.products');
 
 // Plant Manager routes group
-Route::get('plant_manager/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant-manager.dashboard');
+
+    // Route::get('plant_manager/dashboard', [PlantManagerDashboardController::class, 'index'])->name('plant-manager.dashboard');
 Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
-    // Dashboard - using the dedicated controller
-    // ... add plant manager routes here ...
+    // Dashboard - using the dedicated dashboard controller
+    Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
+
+    // Product management routes
+    Route::post('/products', [PlantManagerInventoryController::class, 'storeProduct'])->name('product.store');
+    Route::get('/products/{product}', [PlantManagerInventoryController::class, 'showProduct'])->name('products.show');
+
+    // Raw materials management routes
+    Route::post('/raw-materials', [PlantManagerInventoryController::class, 'storeRawMaterial'])->name('raw_materials.store');
+    Route::get('/raw-materials/{rawMaterial}', [PlantManagerInventoryController::class, 'showRawMaterial'])->name('raw_materials.show');
+
+    // Inventory search route
+    Route::get('/inventory/search', [PlantManagerInventoryController::class, 'search'])->name('inventory.search');
+
+    // Inventory management
+    Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
+    Route::post('/inventory', [PlantManagerInventoryController::class, 'store'])->name('plant_manager.inventory.store');
+    Route::put('/inventory/{inventory}/update-quantity', [PlantManagerInventoryController::class, 'updateQuantity'])->name('plant_manager.inventory.update-quantity');
+    Route::put('/inventory/{inventory}/threshold', [PlantManagerInventoryController::class, 'updateThreshold'])->name('plant_manager.inventory.threshold');
+    Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');
+    Route::get('/inventory/products', [PlantManagerInventoryController::class, 'getAvailableProducts'])->name('plant_manager.inventory.products');
+    Route::post('/inventory/process', [PlantManagerInventoryController::class, 'processProduction'])->name('plant_manager.inventory.process');
 });
 
 
@@ -463,6 +574,21 @@ Route::middleware(['auth'])->group(function () {
 
     // Report configuration routes
     Route::get('/reports/download-on-demand', [ReportConfigurationController::class, 'downloadOnDemand'])->name('reports.download-on-demand');
+});
+
+// Farmer Order Management
+Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('farmer.orders.dashboard');
+
+    // Change this name to avoid conflict
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('farmer.orders.history');
+
+    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('farmer.orders.show');
+    Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('farmer.orders.approve');
+    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('farmer.orders.reject');
+    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('farmer.orders.ship');
+
+    // Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
 });
 
 Route::post('/products', [ProductController::class, 'store'])->name('product.store')->middleware(['auth', 'role:plant_manager']);
