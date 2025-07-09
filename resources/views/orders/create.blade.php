@@ -40,7 +40,11 @@
                                             <div class="col-md-6">
                                                 <label class="form-label">
                                                     <input type="checkbox" name="items[{{ $product->id }}][product_id]" value="{{ $product->id }}" class="form-check-input me-2">
-                                                    {{ $product->name }} - {{ $product->type }}
+                                                    {{ $product->name }}
+                                                    @if($product->supplier)
+                                                        <span class="text-muted">by {{ $product->supplier->name }}</span>
+                                                    @endif
+                                                    - {{ $product->type }}
                                                 </label>
                                             </div>
                                             <div class="col-md-3">

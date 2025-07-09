@@ -70,7 +70,7 @@ class OrderController extends Controller
 
         $recentOrders = Order::where($config['order_filter'])
             ->with(['seller', 'buyer', 'items.product'])
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->limit(5)
             ->get();
 
@@ -271,11 +271,19 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
+            // Calculate total amount
+            $total = 0;
+            foreach ($validated['items'] as $item) {
+                $product = Product::find($item['product_id']);
+                $total += ($product ? $product->price : 0) * $item['quantity'];
+            }
+
             $order = Order::create([
                 'buyer_id' => Auth::id(),
                 'seller_id' => $validated['seller_id'],
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
+                'total_amount' => $total,
             ]);
 
             foreach ($validated['items'] as $item) {
@@ -415,7 +423,7 @@ class OrderController extends Controller
     {
         $user = auth()->user();
         $orders = Order::where('seller_id', $user->id)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->paginate(10);
 
         $view = match($user->role->value) {
