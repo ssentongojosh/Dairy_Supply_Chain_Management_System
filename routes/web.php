@@ -61,9 +61,9 @@ Use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 
 use App\Http\Controllers\SupplierOrderController;
-
-
-
+//delivery controller
+use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\InventoryController;
 
 use App\Http\Controllers\DocumentVerificationController;
@@ -287,6 +287,27 @@ Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])-
 Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
 });
 
+//delivery routes
+Route::resource('delivery',DeliveryController::class);
+Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+Route::get('/delivery/create', [DeliveryController::class, 'create'])->name('delivery.create');
+//confirm route for arrival
+Route::put('/delivery/{id}/confirm', [DeliveryController::class, 'confirm'])->name('delivery.confirm');
+//update the status
+Route::put('/delivery/{id}/status', [DeliveryController::class, 'updateStatus'])->name('delivery.updateStatus');
+//check for delivery id confirmation
+// In routes/api.php
+Route::get('/delivery/{id}/status', [DeliveryController::class, 'checkStatus']);
+Route::get('/delivery/{delivery}/status', function (App\Models\Delivery $delivery) {
+    return response()->json(['status' => $delivery->status]);
+});
+Route::get('/delivery/{id}/status-page', [DeliveryController::class, 'statusPage'])->name('delivery.statusPage');
+Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate'])->name('delivery.terminate');
+Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
+
+
+//catalog for inventory
+Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
 
 
 // User CRUD routes for admin
