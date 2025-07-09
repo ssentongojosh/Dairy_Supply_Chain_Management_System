@@ -9,7 +9,7 @@ use Carbon\Carbon;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
-use App\Models\Inventory;
+// Removed: use App\Models\Inventory;
 use Illuminate\Support\Facades\DB;
 
 class FarmerDashboard extends Controller
@@ -36,7 +36,7 @@ class FarmerDashboard extends Controller
             ->count();
 
         // Get farmer's inventory data (dairy products/raw milk)
-        $inventory = Inventory::where('user_id', $user->id)->get();
+        $inventory = Product::where('supplier_id', $user->id)->get();
 
         $totalMilkProducts = $inventory->count();
 
@@ -96,9 +96,8 @@ class FarmerDashboard extends Controller
             ->get();
 
         // Get products that need attention (low milk production)
-        $productsToRestock = Inventory::where('user_id', $user->id)
+        $productsToRestock = Product::where('supplier_id', $user->id)
             ->whereColumn('quantity', '<=', 'reorder_point')
-            ->with('product')
             ->orderBy('quantity', 'asc')
             ->take(5)
             ->get();
@@ -127,6 +126,12 @@ class FarmerDashboard extends Controller
             'recentOrders' => $recentOrders,
             'productsToRestock' => $productsToRestock,
             'keyBuyers' => $keyBuyers,
+            'inventoryStats' => [
+                'total_products' => $totalMilkProducts,
+                'low_stock_items' => $lowStockProductsCount,
+                'out_of_stock' => $outOfStockProductsCount,
+                'total_value' => $inventory->sum(function($item) { return $item->quantity * $item->price; }),
+            ],
         ]);
     }
 }

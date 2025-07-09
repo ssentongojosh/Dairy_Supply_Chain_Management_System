@@ -123,7 +123,7 @@ class Order extends Model
     // Check if payment is required
     public function requiresPayment()
     {
-        return in_array($this->status, ['approved', 'processing']) &&
+        return in_array($this->status, ['pending', 'approved', 'processing']) &&
                $this->payment_status === 'unpaid';
     }
 

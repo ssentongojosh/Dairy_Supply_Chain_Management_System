@@ -200,6 +200,10 @@
                     <a href="{{ route('retailer.orders') }}" class="btn btn-outline-primary">
                         <i class="ri-list-check me-2"></i>View Orders
                     </a>
+                    <a href="{{ route('retailer.orders.create') }}" class="btn btn-outline-primary">
+    <i class="ri-add-line me-2"></i> Create Order
+</a>
+
                     {{-- <a href="{{ route('retailer.inventory') }}" class="btn btn-outline-info"> --}}
                         <i class="ri-box-3-line me-2"></i>Manage Inventory
                     </a>
@@ -222,7 +226,7 @@
                     <h5 class="mb-0">Recent Orders</h5>
                     <small class="text-muted">Your latest customer orders</small>
                 </div>
-                <a href="{{ route('retailer.orders.history') }}" class="btn btn-outline-primary btn-sm">
+                <a href="{{ route('retailer.orders') }}" class="btn btn-outline-primary btn-sm">
                     <i class="ri-external-link-line me-1"></i>View All
                 </a>
             </div>
@@ -250,6 +254,15 @@
                                         {{ ucfirst($order->status) }}
                                     </span>
                                     <small class="text-muted d-block">UGX {{ number_format($order->total_amount, 0) }}</small>
+                                    @if ($order->status === 'approved' && $order->payment_status === 'unpaid')
+                                        <a href="{{ route('retailer.orders.payment.show', $order->id) }}" class="btn btn-sm btn-primary mt-1">Pay</a>
+                                    @endif
+                                    @if ($order->payment_status === 'unpaid')
+                                        <form action="{{ route('retailer.orders.cancel', $order->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Are you sure you want to cancel this order?');">Cancel</button>
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach

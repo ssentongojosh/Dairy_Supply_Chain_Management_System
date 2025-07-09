@@ -16,6 +16,23 @@ class PlantManagerDashboard extends Controller
     {
         $user = Auth::user();
 
+        // Fetch all finished products for this plant manager
+        $products = Inventory::where('user_id', $user->id)
+            ->whereHas('product', function($q) {
+                $q->whereIn('category', ['Pasteurized Milk', 'Yogurt', 'Cheese', 'Butter']);
+            })
+            ->get();
+
+        // Fetch all raw materials for this plant manager
+        $rawMaterials = Inventory::where('user_id', $user->id)
+            ->whereHas('product', function($q) {
+                $q->where('category', 'Raw Milk');
+            })
+            ->get();
+
+        // Calculate total low stock items (for both products and raw materials)
+        $totalLowStock = $products->where('quantity', '<=', 150)->count() + $rawMaterials->where('quantity', '<=', 150)->count();
+
         // Production and Processing Statistics
         $productionStats = [
             'daily_capacity' => 5000, // liters per day
@@ -50,6 +67,20 @@ class PlantManagerDashboard extends Controller
                             ->orderBy('created_at', 'desc')
                             ->limit(5)
                             ->get();
+
+        // Recent Incoming Orders (as seller)
+        $incomingOrders = Order::where('seller_id', Auth::id())
+            ->with(['buyer', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Recent Outgoing Orders (as buyer)
+        $outgoingOrders = Order::where('buyer_id', Auth::id())
+            ->with(['seller', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
 
         // Order Statistics
         $orderStats = [
@@ -104,12 +135,17 @@ class PlantManagerDashboard extends Controller
 
         return view('plant_manager.dashboard', compact(
             'user',
+            'products',
+            'rawMaterials',
+            'totalLowStock',
             'productionStats',
             'inventoryStats',
             'recentOrders',
             'orderStats',
             'qualityAlerts',
-            'productionLines'
+            'productionLines',
+            'incomingOrders',
+            'outgoingOrders'
         ));
     }
 

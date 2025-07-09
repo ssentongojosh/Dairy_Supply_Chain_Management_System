@@ -25,18 +25,22 @@ class RawMaterialInventoryController extends Controller
 
     //store
     public function store(Request $request)
-{
-    $data = $request->validate([
-        'name' => 'required|string|max:15',
-        'quantity' => 'required|integer|min:1',
-        'expiry' => 'required|date',
-    ]);
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+        ]);
 
-    // Save the raw material
-    $newItem = RawMaterial::create($data);
+        // Create a new Product as a raw material
+        $rawMaterial = new \App\Models\Product();
+        $rawMaterial->name = $validated['name'];
+        $rawMaterial->quantity = $validated['quantity'];
+        $rawMaterial->category = 'Raw Milk';
+        $rawMaterial->created_by = auth()->id(); // if you have such a column
+        $rawMaterial->save();
 
-    return redirect()->back()->with('success', 'Item added successfully!');
-}
+        return redirect()->back()->with('success', 'Raw material added!');
+    }
 
     
 
