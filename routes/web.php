@@ -124,6 +124,8 @@ Route::get('/app/order', [OrderController::class, 'index'])->name('app.order');
 
 // Inventory routes
 Route::get('/app/inventory', [InventoryController::class, 'index'])->name('app-inventory')->middleware('auth');
+Route::get('/farmer/products', [ProductController::class, 'index'])->name('farmer.products');
+
 
 // Dashboard routes with role middleware
 Route::get('/analytics', [Analytics::class, 'index'])
@@ -273,7 +275,7 @@ Route::middleware(['auth'])->group(function () {
 
 //delete inventory
 Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
- 
+
 //raw materials inventory
 //route for inventory
 Route::resource('raw_materials', \App\Http\Controllers\RawMaterialInventoryController::class);
