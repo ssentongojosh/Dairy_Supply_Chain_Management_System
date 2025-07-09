@@ -28,11 +28,11 @@ class InventoryController extends Controller
         switch ($role) {
             case 'retailer':
                 // Redirect retailers to their inventory page
-                return redirect()->route('retailer.inventory');
+                return redirect()->route('catalog.index');
 
             case 'wholesaler':
                 // Redirect wholesalers to their inventory page
-                return redirect()->route('wholesaler.inventory');
+                return redirect()->route('catalog.index');
 
             case 'farmer':
                 // Redirect farmers to their inventory page
@@ -48,7 +48,7 @@ class InventoryController extends Controller
 
             case 'supplier':
                 // Redirect suppliers to their inventory page
-                return redirect()->route('supplier.inventory');
+                return redirect()->route('delivery.mine');
 
             case 'admin':
                 // TODO: Create admin inventory overview

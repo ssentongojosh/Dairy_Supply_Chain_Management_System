@@ -27,11 +27,11 @@
         </div>
 
         <!-- 🧪 Card: Total Raw Materials -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card h-100 border-start border-4 border-success">
                     <div class="card-body d-flex align-items-center">
-                        <div class="avatar flex-shrink-0 bg-label-danger me-3">
-                            <i class="ri-alert-line fs-3"></i>
+                        <div class="avatar flex-shrink-0 bg-label-info me-3">
+                            <i class="ri-cup-line fs-3"></i>
                         </div>
                         <div>
                             <h5 class="card-title mb-0">Raw Materials</h5>
@@ -42,7 +42,7 @@
         </div>           
 
         <!-- Card: Low Stock Alert -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card h-100 border-start border-4 border-warning">
                     <div class="card-body d-flex align-items-center">
                         <div class="avatar flex-shrink-0 bg-label-danger me-3">
@@ -57,26 +57,20 @@
         </div>           
 
         <!-- Card: Expected Deliveries -->
-        <div class="col-md-3">
-            <div class="card text-white bg-secondary mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">🚚  Delivery Activity</h5>
-
-                    <div class="d-flex justify-content-between">
-                       <div>
-                           <p class="mb-1">📥Incoming</p>
-                           <h4>{{ $stats['incoming_deliveries'] ?? 0 }}</h4>
-                        </div>
-                        <div>
-                           <p class="mb-1">📤Outgoing</p>
-                           <h4>{{ $stats['outgoing_deliveries'] ?? 0 }}</h4>
-                        </div>
+        <div class="col-md-3 col-sm-6 mb-4">
+            <div class="card h-100 border-start border-4 border-secondary">
+                <div class="card-body d-flex align-items-center">
+                    <div class="avatar flex-shrink-0 bg-label-secondary me-3">
+                       <i class="ri-truck-line fs-3"></i>
                     </div>
-
+                    <div>
+                       <h5 class="card-title mb-0">Today's Deliveries</h5>
+                       <small class="text-muted fw-bold">{{ $todayDeliveriesCount }}</small>
+                    </div>
                 </div>
-           </div>
+            </div>
         </div>
-        
+     
     </div>
 
     <!-- 🔍 SEARCH BAR (Optional Feature) -->
@@ -99,7 +93,7 @@
 
                     <!-- button for product deliveries -->
                     <a href="{{ route('inventory.search') }}" class="btn btn-outline-primary btn-sm ms-2">
-                       <i class="ri-truck-line"></i> Deliveries
+                       <i class="ri-shopping-cart-line"></i> Orders
                     </a>
                 </div>
         </div>
@@ -165,7 +159,7 @@
                     </button>
 
                     <!-- button for product deliveries -->
-                    <a href="{{ route('inventory.search') }}" class="btn btn-outline-primary btn-sm ms-2">
+                    <a href="{{ route('delivery.index') }}" class="btn btn-outline-primary btn-sm ms-2">
                        <i class="ri-truck-line"></i> Deliveries
                     </a>
                 </div>

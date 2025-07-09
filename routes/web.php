@@ -62,9 +62,9 @@ Use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
 
 use App\Http\Controllers\SupplierOrderController;
-
-
-
+//delivery controller
+use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\InventoryController;
 
 use App\Http\Controllers\DocumentVerificationController;
@@ -260,11 +260,65 @@ Route::middleware(['auth'])->group(function () {
 // Route::get('/inventory/create', [PrInventoryController::class, 'create'])->name('inventory.create');
 // Route::post('/inventory', [PrInventoryController::class, 'store'])->name('inventory.store');
 
-//route for search - COMMENTED OUT DUE TO MISSING CONTROLLER
-// Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
-// Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
-// Route::put('/inventory/{id}',[PrInventoryController::class, 'update'])->name('inventory.update');
+//route for search
+Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
+Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
+;
+
+//tryout
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('raw_materials', RawMaterialInventoryController::class);
 });
+
+//delete inventory
+Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
+ 
+//raw materials inventory
+//route for inventory
+Route::resource('raw_materials', \App\Http\Controllers\RawMaterialInventoryController::class);
+Route::resource('inventory', RawMaterialInventoryController::class);
+Route::get('raw-material', [RawMaterialInventoryController::class, 'index']);
+
+//route to create a new inventory item
+Route::get('/plant_manager/dashboard', [RawMaterialInventoryController::class, 'index'])->name('plant_manager.dashboard');
+Route::get('/raw-material/create', [RawMaterialInventoryController::class, 'create'])->name('raw-material.create');
+Route::post('/raw-material', [RawMaterialInventoryController::class, 'store'])->name('raw-material.store');
+
+//route for search
+Route::get('/raw-material/search',[RawMaterialInventoryController::class, 'search'])->name('raw-material.search');
+Route::get('/raw-material/{id}/edit',[RawMaterialInventoryController::class, 'edit'])->name('raw-material.edit');
+Route::put('/raw-material/{id}',[RawMaterialInventoryController::class, 'update'])->name('raw-material.update');
+
+//update item
+Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])->name('inventory.update');
+
+//delete item
+Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
+});
+
+//delivery routes
+Route::resource('delivery',DeliveryController::class);
+Route::get('/delivery', [DeliveryController::class, 'index'])->name('delivery.index');
+Route::get('/delivery/create', [DeliveryController::class, 'create'])->name('delivery.create');
+//confirm route for arrival
+Route::put('/delivery/{id}/confirm', [DeliveryController::class, 'confirm'])->name('delivery.confirm');
+//update the status
+Route::put('/delivery/{id}/status', [DeliveryController::class, 'updateStatus'])->name('delivery.updateStatus');
+//check for delivery id confirmation
+// In routes/api.php
+Route::get('/delivery/{id}/status', [DeliveryController::class, 'checkStatus']);
+Route::get('/delivery/{delivery}/status', function (App\Models\Delivery $delivery) {
+    return response()->json(['status' => $delivery->status]);
+});
+Route::get('/delivery/{id}/status-page', [DeliveryController::class, 'statusPage'])->name('delivery.statusPage');
+Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate'])->name('delivery.terminate');
+Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
+
+
+//catalog for inventory
+Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+
 
 // User CRUD routes for admin
 Route::resource('users', UserController::class)
