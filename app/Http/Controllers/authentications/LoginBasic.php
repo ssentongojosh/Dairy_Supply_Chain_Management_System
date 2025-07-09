@@ -99,7 +99,7 @@ class LoginBasic extends Controller
                 return redirect()->route('farmer.dashboard');
             case 'plant_manager':
                 Log::info('Plant manager role detected, redirecting to plant-manager.dashboard');
-                return redirect()->route('plant-manager.dashboard');
+                return redirect()->route('plant_manager.dashboard');
 
             case 'supplier':
                 return redirect()->route('supplier.dashboard');

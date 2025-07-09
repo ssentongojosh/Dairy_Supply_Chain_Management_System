@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('messages', function (Blueprint $table) {
-            // $table->tinyInteger('is_read')->default(0)->after('recipient_id');
+            //
+            $table->boolean('is_read')->default(false)->after('recipient_id');
         });
     }
 
