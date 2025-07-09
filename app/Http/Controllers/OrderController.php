@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Product;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 use App\Services\OrderWorkflowService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -448,11 +449,4 @@ class OrderController extends Controller
 
         return view($view, compact('orders'));
     }
-
-    public function showOrder($orderId)
-    {
-        $order = \App\Models\Order::with(['seller', 'buyer', 'items.product'])->findOrFail($orderId);
-        return view('orders.show', compact('order'));
-    }
-
 }

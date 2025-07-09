@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Enums\Role;
+// use App\Enums\Role;
 class HomeController extends Controller
 {
     /**
@@ -44,6 +45,7 @@ class HomeController extends Controller
 
         // Ensure $userRole is properly handled
         if ($userRole instanceof Role) {
+        if ($userRole instanceof Role) {
             $userRoleValue = $userRole->value;
         } elseif (is_string($userRole)) {
             $userRoleValue = $userRole;
@@ -53,16 +55,19 @@ class HomeController extends Controller
         }
 
         return $this->redirectBasedOnRoleValue($user);
+        return $this->redirectBasedOnRoleValue($user);
     }
+  }
 
     /**
      * Redirect to the specific route based on the user's role.
+     * Redirect to the specific route based on the user's role.
      *
+     * @param  \App\Models\User  $user
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectBasedOnRoleValue($roleValue)
-    {
+    protected function redirectBasedOnRoleValue($roleValue){
         switch ($roleValue) {
             case 'admin':
                 return redirect()->route('dashboard.analytics');
