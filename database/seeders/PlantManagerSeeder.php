@@ -21,7 +21,7 @@ class PlantManagerSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => Role::PLANT_MANAGER,
                 'verified' => true,
-                
+                grace.nakato@modernmilk.com
              
             ],
             [
@@ -60,3 +60,4 @@ class PlantManagerSeeder extends Seeder
         $this->command->info('Plant Manager users created successfully!');
     }
 }
+grace.nakato@modernmilk.comgrace.nakato@modernmilk.com

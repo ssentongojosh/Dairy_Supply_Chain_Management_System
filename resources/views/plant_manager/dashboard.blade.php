@@ -117,7 +117,7 @@
                 </thead>
                 {{-- Loop through each product and display in the table --}}
                 <tbody>
-                    @foreach($products as $product)
+                    @foreach($products as $product)grace.nakato@modernmilk.com
                         <tr>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->quantity }}</td>
@@ -149,7 +149,7 @@
 
     <!-- RAW MATERIALS TABLE -->
     <div class="card">
-
+grace.nakato@modernmilk.com
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
                 <h5 class="card-title mb-0">Raw Material Management</h5>
