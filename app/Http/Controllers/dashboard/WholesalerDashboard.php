@@ -6,77 +6,108 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use App\Models\Order;
+use App\Models\User;
+use App\Models\Product;
+use App\Models\Inventory;
+use Illuminate\Support\Facades\DB;
 
 class WholesalerDashboard extends Controller
 {
     /**
-     * Display the wholesaler dashboard.
+     * Display the Wholesaler dashboard.
      */
     public function index()
     {
         $user = Auth::user();
 
-        // Dashboard metrics (mock data)
-        $pendingOrdersCount      = 5;
-        $lowStockProductsCount   = 2;
-        $totalSalesThisMonth     = 1250000.00;
-        $newOrdersToday          = 7;
-        $totalUniqueProducts     = 50;
-        $outOfStockProductsCount = 1;
+        // Orders
+        $orders = \App\Models\Order::where('seller_id', $user->id)
+            ->whereHas('buyer', function($q) {
+                $q->where('role', 'retailer');
+            })
+            ->with(['items.product', 'buyer'])
+            ->get();
+        $orderStats = [
+            'total_orders' => $orders->count(),
+            'pending_orders' => $orders->where('status', 'pending')->count(),
+            'completed_orders' => $orders->where('status', 'completed')->count(),
+            'total_revenue' => $orders->where('status', 'completed')->sum(function($order) {
+                return $order->items->sum(function($item) {
+                    return $item->quantity * $item->price;
+                });
+            }),
+        ];
 
-        // Sample chart data
-        $salesChartLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
-        $salesChartData   = [300000, 350000, 320000, 280000];
+        // Inventory
+        $inventory = \App\Models\Inventory::where('user_id', $user->id)->with('product')->get();
+        $inventoryStats = [
+            'total_products' => $inventory->count(),
+            'low_stock_items' => $inventory->where('quantity', '<=', 10)->count(),
+            'out_of_stock' => $inventory->where('quantity', 0)->count(),
+            'total_value' => $inventory->sum(function($inv) {
+                return $inv->quantity * ($inv->product->price ?? 0);
+            }),
+        ];
 
-        $ordersChartLabels = $salesChartLabels;
-        $ordersChartData   = [20, 25, 22, 18];
+        $lowStockItems = $inventory->where('quantity', '<=', 10);
+        // Top Selling Products (by sales)
+        $topProducts = $orders
+            ->flatMap->items
+            ->groupBy('product_id')
+            ->map(function($items) {
+                return [
+                    'name' => $items->first()->product->name ?? 'Unknown',
+                    'total_sold' => $items->sum('quantity'),
+                    'total_revenue' => $items->sum(function($item) {
+                        return $item->quantity * $item->unit_price;
+                    }),
+                ];
+            })
+            ->sortByDesc('total_sold')
+            ->take(5)
+            ->values();
 
-        // Mock recent orders
-        $recentOrders = collect([
-            (object) ['id' => 2001, 'customer_name' => 'ACME Retail', 'total_amount' => 500000, 'status' => 'pending', 'created_at' => Carbon::now()->subDays(1)],
-            (object) ['id' => 2002, 'customer_name' => 'BestStores Ltd', 'total_amount' => 750000, 'status' => 'shipped', 'created_at' => Carbon::now()->subDays(2)],
-            (object) ['id' => 2003, 'customer_name' => 'LocalMart', 'total_amount' => 300000, 'status' => 'delivered', 'created_at' => Carbon::now()->subDays(3)],
-        ]);
+        // Customer Insights
+        $uniqueCustomers = $orders->groupBy('buyer_id');
+        $totalCustomers = $uniqueCustomers->count();
+        $repeatCustomers = $uniqueCustomers->filter(function($orders) {
+            return $orders->count() > 1;
+        })->count();
+        $newCustomersThisMonth = $orders->where('created_at', '>=', now()->startOfMonth())->groupBy('buyer_id')->count();
 
-        // Mock products to reorder
-        $productsToReorder = collect([
-            (object)[ 'name' => 'Yogurt 500g',    'sku' => 'YOGT500', 'current_stock' => 5,  'reorder_point' => 15 ],
-            (object)[ 'name' => 'Cheese Block',    'sku' => 'CHED300', 'current_stock' => 2,  'reorder_point' => 10 ],
-            (object)[ 'name' => 'Butter Pack',     'sku' => 'BTR100',  'current_stock' => 0,  'reorder_point' => 8  ],
-        ]);
+        $customerStats = [
+            'total_customers' => $totalCustomers,
+            'repeat_customers' => $repeatCustomers,
+            'new_customers_this_month' => $newCustomersThisMonth,
+        ];
+        $recentOrders = $orders->sortByDesc('created_at')->take(5);
+        $incomingOrders = $orders->sortByDesc('created_at')->take(5);
+        $outgoingOrders = \App\Models\Order::where('buyer_id', $user->id)
+            ->with(['items.product', 'seller'])
+            ->orderByDesc('created_at')
+            ->take(5)
+            ->get();
 
-        // Mock key suppliers
-        $keySuppliers = collect([
-            (object)[ 'name' => 'Dairy Source Inc', 'contact_person' => 'Eve Adams', 'total_orders_this_month' => 6 ],
-            (object)[ 'name' => 'FarmFresh Foods',  'contact_person' => 'Tom Brown', 'total_orders_this_month' => 9 ],
-            (object)[ 'name' => 'Creamy Delights',  'contact_person' => 'Sara Lee',  'total_orders_this_month' => 4 ],
-        ]);
+        // Monthly Revenue for the current year
+        $monthlyRevenue = \App\Models\Order::where('seller_id', $user->id)
+            ->whereYear('created_at', now()->year)
+            ->selectRaw('MONTH(created_at) as month, SUM(total_amount) as revenue')
+            ->groupBy('month')
+            ->orderBy('month')
+            ->pluck('revenue', 'month')
+            ->toArray();
 
-        return view('dashboard.wholesaler', [
-            'user'                    => $user,
-            'pendingOrdersCount'      => $pendingOrdersCount,
-            'lowStockProductsCount'   => $lowStockProductsCount,
-            'totalSalesThisMonth'     => $totalSalesThisMonth,
-            'newOrdersToday'          => $newOrdersToday,
-            'totalUniqueProducts'     => $totalUniqueProducts,
-            'outOfStockProductsCount' => $outOfStockProductsCount,
-            'salesChartLabels'        => $salesChartLabels,
-            'salesChartData'          => $salesChartData,
-            'ordersChartLabels'       => $ordersChartLabels,
-            'ordersChartData'         => $ordersChartData,
-            'recentOrders'            => $recentOrders,
-            'productsToReorder'       => $productsToReorder,
-            'keySuppliers'            => $keySuppliers,
-        ]);
-
-        $revenueTrend = collect([
-    (object) ['month' => 'Jan', 'revenue' => 1000000],
-    (object) ['month' => 'Feb', 'revenue' => 1250000],
-    (object) ['month' => 'Mar', 'revenue' => 900000],
-    (object) ['month' => 'Apr', 'revenue' => 1400000],
-    (object) ['month' => 'May', 'revenue' => 1300000],
-    (object) ['month' => 'Jun', 'revenue' => 1500000],
-]);
-
+        return view('wholesaler.dashboard', compact(
+            'orderStats',
+            'inventoryStats',
+            'lowStockItems',
+            'topProducts',
+            'monthlyRevenue',
+            'customerStats',
+            'incomingOrders',
+            'outgoingOrders',
+            'orders'
+        ));
     }
 }

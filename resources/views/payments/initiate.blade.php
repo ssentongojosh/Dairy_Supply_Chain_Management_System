@@ -14,13 +14,18 @@
                     <div class="alert alert-info mb-4">
                         <h6 class="mb-2">Payment Summary</h6>
                         <p class="mb-1"><strong>Order to:</strong> {{ $order->seller->name }}</p>
-                        <p class="mb-1"><strong>Total Amount:</strong> ${{ number_format($order->total_amount, 2) }}</p>
+                        @php
+                            $total = $order->items->sum(function($item) {
+                                return $item->unit_price * $item->quantity;
+                            });
+                        @endphp
+                        <p class="mb-1"><strong>Total Amount:</strong> UGX {{ number_format($total, 2) }}</p>
                         @if($order->payment_due_date)
                             <p class="mb-0"><strong>Due Date:</strong> {{ $order->payment_due_date->format('M d, Y') }}</p>
                         @endif
                     </div>
 
-                    <form action="{{ route('payments.process', $order) }}" method="POST">
+                    <form action="{{ route('retailer.orders.payment.process', $order) }}" method="POST">
                         @csrf
 
                         <div class="mb-3">

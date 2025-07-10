@@ -17,6 +17,22 @@ class PlantManagerDashboard extends Controller
     {
         $user = Auth::user();
 
+        // Fetch all finished products for this plant manager
+        $products = Inventory::where('user_id', $user->id)
+            ->whereHas('product', function($q) {
+                $q->whereIn('category', ['Pasteurized Milk', 'Yogurt', 'Cheese', 'Butter']);
+            })
+            ->get();
+
+        // Fetch all raw materials for this plant manager
+        $rawMaterials = Inventory::where('user_id', $user->id)
+            ->whereHas('product', function($q) {
+                $q->where('category', 'Raw Milk');
+            })
+            ->get();
+
+        // Calculate total low stock items (for both products and raw materials)
+        $totalLowStock = $products->where('quantity', '<=', 150)->count() + $rawMaterials->where('quantity', '<=', 150)->count();
         // Get products from inventory - the view expects the inventory items themselves
         // The view accesses properties like $product->name, $product->quantity, $product->price
         $products = Inventory::where('user_id', Auth::id())
@@ -91,6 +107,20 @@ class PlantManagerDashboard extends Controller
                             ->limit(5)
                             ->get();
 
+        // Recent Incoming Orders (as seller)
+        $incomingOrders = Order::where('seller_id', Auth::id())
+            ->with(['buyer', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Recent Outgoing Orders (as buyer)
+        $outgoingOrders = Order::where('buyer_id', Auth::id())
+            ->with(['seller', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
         // Order Statistics
         $orderStats = [
             'pending_orders' => Order::where('seller_id', Auth::id())
@@ -142,6 +172,12 @@ class PlantManagerDashboard extends Controller
             ],
         ];
 
+        // Today's Deliveries Count
+        $todayDeliveriesCount = Order::where('seller_id', Auth::id())
+            ->where('status', 'delivered')
+            ->whereDate('updated_at', today())
+            ->count();
+
         return view('plant_manager.dashboard', compact(
             'user',
             'products',           // Added for the view
@@ -153,7 +189,10 @@ class PlantManagerDashboard extends Controller
             'recentOrders',
             'orderStats',
             'qualityAlerts',
-            'productionLines'
+            'productionLines',
+            'incomingOrders',
+            'outgoingOrders',
+            'todayDeliveriesCount' // Pass to view
         ));
     }
 

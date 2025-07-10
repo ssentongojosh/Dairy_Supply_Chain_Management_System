@@ -65,6 +65,8 @@ class LoginBasic extends Controller
         return route('inspector.dashboard');
       case Role::QUALITY_ASSURANCE:
         return route('quality.dashboard');
+      case Role::PLANT_MANAGER:
+        return route('plant_manager.dashboard');
       default:
         return route('home');
     }

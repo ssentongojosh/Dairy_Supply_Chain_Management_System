@@ -15,7 +15,7 @@
                 @if($order->status === 'pending')
                     <form action="{{ route('orders.updateStatus', $order) }}" method="POST" class="d-inline">
                         @csrf
-                        @method('PUT')
+                        @method('PATCH')
                         <input type="hidden" name="status" value="approved">
                         <button class="btn btn-success btn-sm">Approve</button>
                     </form>

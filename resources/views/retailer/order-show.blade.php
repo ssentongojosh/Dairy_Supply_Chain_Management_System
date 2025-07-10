@@ -15,7 +15,7 @@
             <h5>Items</h5>
             <ul>
                 @foreach($order->items as $item)
-                    <li>{{ $item->quantity }} x {{ $item->product->name }} (Ksh {{ number_format($item->unit_price, 2) }})</li>
+                    <li>{{ $item->quantity }} x {{ $item->product->name }} (UGX {{ number_format($item->unit_price, 2) }})</li>
                 @endforeach
             </ul>
 
@@ -123,31 +123,31 @@
                                             </div>
                                         </td>
                                         <td>{{ $item->quantity }} {{ $item->product->unit ?? 'pcs' }}</td>
-                                        <td>₱{{ number_format($item->unit_price, 2) }}</td>
-                                        <td>₱{{ number_format($item->quantity * $item->unit_price, 2) }}</td>
+                                        <td>UGX {{ number_format($item->unit_price, 2) }}</td>
+                                        <td>UGX {{ number_format($item->quantity * $item->unit_price, 2) }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th colspan="3" class="text-end">Subtotal:</th>
-                                    <th>₱{{ number_format($order->items->sum(fn($item) => $item->quantity * $item->unit_price), 2) }}</th>
+                                    <th>UGX {{ number_format($order->items->sum(fn($item) => $item->quantity * $item->unit_price), 2) }}</th>
                                 </tr>
                                 @if($order->delivery_fee > 0)
                                 <tr>
                                     <th colspan="3" class="text-end">Delivery Fee:</th>
-                                    <th>₱{{ number_format($order->delivery_fee, 2) }}</th>
+                                    <th>UGX {{ number_format($order->delivery_fee, 2) }}</th>
                                 </tr>
                                 @endif
                                 @if($order->tax_amount > 0)
                                 <tr>
                                     <th colspan="3" class="text-end">Tax:</th>
-                                    <th>₱{{ number_format($order->tax_amount, 2) }}</th>
+                                    <th>UGX {{ number_format($order->tax_amount, 2) }}</th>
                                 </tr>
                                 @endif
                                 <tr class="table-active">
                                     <th colspan="3" class="text-end">Grand Total:</th>
-                                    <th>₱{{ number_format($order->total_amount, 2) }}</th>
+                                    <th>UGX {{ number_format($order->total_amount, 2) }}</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -353,7 +353,7 @@
                         @if($order->delivery_fee > 0)
                             <div class="mb-0">
                                 <label class="form-label text-muted">Delivery Fee:</label>
-                                <p>₱{{ number_format($order->delivery_fee, 2) }}</p>
+                                <p>UGX {{ number_format($order->delivery_fee, 2) }}</p>
                             </div>
                         @endif
                     </div>

@@ -4,13 +4,13 @@
 
 @section('content')
 <div class="container">
-    <h2 class="mb-4">Orders to Factory</h2>
+    <h2 class="mb-4">Orders to Wholesaler</h2>
 
     @forelse($orders as $order)
         <div class="card mb-3">
             <div class="card-body">
                 <p><strong>Order #:</strong> {{ $order->id }}</p>
-                <p><strong>To:</strong> {{ $order->seller->name }} (Factory)</p>
+                <p><strong>To:</strong> {{ $order->seller->name ?? 'Unknown Wholesaler' }} (Wholesaler)</p>
                 <p><strong>Status:</strong> {{ ucfirst($order->status) }}</p>
                 <p><strong>Total:</strong> UGX {{ number_format($order->total_amount, 0) }}</p>
                 <p><strong>Created:</strong> {{ $order->created_at->format('M d, Y H:i') }}</p>
@@ -34,7 +34,7 @@
             </div>
         </div>
     @empty
-        <p>You haven't placed any orders to the factory yet.</p>
+        <p>You haven't placed any orders to the wholesaler yet.</p>
     @endforelse
 </div>
 @endsection

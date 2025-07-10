@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Enums\Role;
+// use App\Enums\Role;
 class HomeController extends Controller
 {
     /**
@@ -44,6 +45,7 @@ class HomeController extends Controller
 
         // Ensure $userRole is properly handled
         if ($userRole instanceof Role) {
+        if ($userRole instanceof Role) {
             $userRoleValue = $userRole->value;
         } elseif (is_string($userRole)) {
             $userRoleValue = $userRole;
@@ -53,37 +55,39 @@ class HomeController extends Controller
         }
 
         return $this->redirectBasedOnRoleValue($user);
+        return $this->redirectBasedOnRoleValue($user);
     }
+  }
 
     /**
      * Redirect to the specific route based on the user's role.
+     * Redirect to the specific route based on the user's role.
      *
+     * @param  \App\Models\User  $user
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectBasedOnRoleValue($user)
-  {
-    switch ($user->role) {
-      case Role::ADMIN:
-        return redirect()->route('dashboard.analytics');
-      case Role::RETAILER:
-        return redirect()->route('dashboard.retailer');
-      case Role::WHOLESALER:
-        return redirect()->route('wholesaler.dashboard');
-      case Role::FARMER:
-        return redirect()->route('farmer.dashboard');
-      case Role::DRIVER:
-        return redirect()->route('driver.dashboard');
-      case Role::WAREHOUSE_MANAGER:
-        return redirect()->route('warehouse.dashboard');
-      case Role::EXECUTIVE:
-        return redirect()->route('executive.dashboard');
-      case Role::INSPECTOR:
-        return redirect()->route('inspector.dashboard');
-      case Role::QUALITY_ASSURANCE:
-        return redirect()->route('quality.dashboard');
-      default:
-        return redirect()->route('home');
+    protected function redirectBasedOnRoleValue($roleValue){
+        switch ($roleValue) {
+            case 'admin':
+                return redirect()->route('dashboard.analytics');
+            case 'retailer':
+                return redirect()->route('retailer.dashboard');
+            case 'wholesaler':
+                return redirect()->route('wholesaler.dashboard');
+            case 'farmer':
+                return redirect()->route('farmer.dashboard');
+            case 'plant_manager':
+                return redirect()->route('plant_manager.dashboard');
+            case 'driver':
+                return redirect()->route('driver.dashboard');
+            case 'supplier':
+                return redirect()->route('supplier.dashboard');
+            case 'executive':
+                return redirect()->route('executive.dashboard');
+            default:
+                return redirect()->route('home')->with('error', 'No dashboard available for your role.');
+        }
     }
   }
-}
+

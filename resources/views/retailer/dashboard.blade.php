@@ -1,51 +1,4 @@
-{{-- @extends('layouts.contentNavbarLayout')
-@section('title', 'Retailer Orders') --}}
 
-{{-- @section('content')
-<div class="container-fluid">
-    <h4 class="fw-bold py-3 mb-4">Retailer Dashboard</h4>
-
-    @if($orders->isEmpty())
-        <div class="alert alert-info">No incoming orders at the moment.</div>
-    @else
-        <div class="card">
-            <h5 class="card-header">Incoming Orders</h5>
-            <div class="table-responsive text-nowrap">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Order #</th>
-                            <th>Buyer</th>
-                            <th>Status</th>
-                            <th>Payment</th>
-                            <th>Items</th>
-                            <th>Placed On</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($orders as $order)
-                        <tr>
-                            <td>#{{ $order->id }}</td>
-                            <td>{{ $order->buyer->name }}</td>
-                            <td><span class="badge bg-label-primary">{{ ucfirst($order->status) }}</span></td>
-                            <td><span class="badge bg-label-success">{{ ucfirst($order->payment_status) }}</span></td>
-                            <td>
-                                <ul class="list-unstyled mb-0">
-                                    @foreach($order->items as $item)
-                                        <li>{{ $item->product->name }} x {{ $item->quantity }}</li>
-                                    @endforeach
-                                </ul>
-                            </td>
-                            <td>{{ $order->created_at->format('d M Y') }}</td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    @endif
-</div>
-@endsection --}}
  @extends('layouts.contentNavbarLayout')
 
 @section('title', 'Retailer Dashboard')
@@ -128,6 +81,7 @@
                     <small class="text-muted">Your product inventory status</small>
                 </div>
                 {{-- <a href="{{ route('retailer.inventory') }}" class="btn btn-primary"> --}}
+                {{-- <a href="{{ route('retailer.inventory') }}" class="btn btn-primary"> --}}
                     <i class="ri-box-3-line me-1"></i> Manage Inventory
                 </a>
             </div>
@@ -200,9 +154,14 @@
                     <a href="{{ route('retailer.orders') }}" class="btn btn-outline-primary">
                         <i class="ri-list-check me-2"></i>View Orders
                     </a>
+                    <a href="{{ route('retailer.orders.create') }}" class="btn btn-outline-primary">
+    <i class="ri-add-line me-2"></i> Create Order
+</a>
+
                     {{-- <a href="{{ route('retailer.inventory') }}" class="btn btn-outline-info"> --}}
                         <i class="ri-box-3-line me-2"></i>Manage Inventory
                     </a>
+                    {{-- <a href="{{ route('marketplace.index') }}" class="btn btn-outline-success"> --}}
                     {{-- <a href="{{ route('marketplace.index') }}" class="btn btn-outline-success"> --}}
                         <i class="ri-store-line me-2"></i>Browse Marketplace
                     </a>
@@ -222,7 +181,7 @@
                     <h5 class="mb-0">Recent Orders</h5>
                     <small class="text-muted">Your latest customer orders</small>
                 </div>
-                <a href="{{ route('retailer.orders.history') }}" class="btn btn-outline-primary btn-sm">
+                <a href="{{ route('retailer.orders') }}" class="btn btn-outline-primary btn-sm">
                     <i class="ri-external-link-line me-1"></i>View All
                 </a>
             </div>
@@ -250,6 +209,15 @@
                                         {{ ucfirst($order->status) }}
                                     </span>
                                     <small class="text-muted d-block">UGX {{ number_format($order->total_amount, 0) }}</small>
+                                    @if ($order->status === 'approved' && $order->payment_status === 'unpaid')
+                                        <a href="{{ route('retailer.orders.payment.show', $order->id) }}" class="btn btn-sm btn-primary mt-1">Pay</a>
+                                    @endif
+                                    @if ($order->payment_status === 'unpaid')
+                                        <form action="{{ route('retailer.orders.cancel', $order->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-danger mt-1" onclick="return confirm('Are you sure you want to cancel this order?');">Cancel</button>
+                                        </form>
+                                    @endif
                                 </div>
                             </div>
                         @endforeach
@@ -344,6 +312,7 @@
 @endsection
 
 {{-- @section('page-script')
+{{-- @section('page-script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 // Revenue Chart
@@ -396,4 +365,5 @@ setInterval(() => {
     location.reload();
 }, 300000);
 </script>
-@endsection --> --}}
+@endsection 
+

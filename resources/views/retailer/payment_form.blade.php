@@ -18,14 +18,14 @@
                         @foreach($order->items as $item)
                             <div class="d-flex justify-content-between mb-2">
                                 <span>{{ $item->product->name }} ({{ $item->quantity }}x)</span>
-                                <span>${{ number_format($item->unit_price * $item->quantity, 2) }}</span>
+                                <span>UGX {{ number_format($item->unit_price * $item->quantity, 2) }}</span>
                             </div>
                         @endforeach
                     </div>
                     <div class="col-md-6">
                         <div class="alert alert-info">
                             <h6 class="mb-2">Payment Due</h6>
-                            <p class="mb-1">Total Amount: <strong>${{ number_format($order->total_amount, 2) }}</strong></p>
+                            <p class="mb-1">Total Amount: <strong>UGX {{ number_format($order->total_amount, 2) }}</strong></p>
                             @if($order->payment_due_date)
                                 <p class="mb-0">Due Date: {{ $order->payment_due_date->format('M d, Y') }}</p>
                             @endif

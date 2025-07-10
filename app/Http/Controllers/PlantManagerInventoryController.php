@@ -18,10 +18,10 @@ class PlantManagerInventoryController extends Controller
      */
     public function index()
     {
-        // Get all finished products from the database
+        // ✅ Get all finished products from the database
         $products = Product::all();
 
-        // Get all raw materials from the database
+        // ✅ Get all raw materials from the database
         $rawMaterials = RawMaterial::all();
 
         //count for the low stock
