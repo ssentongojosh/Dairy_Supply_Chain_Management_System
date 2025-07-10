@@ -97,7 +97,8 @@ class FarmerDashboard extends Controller
 
         // Get products that need attention (low milk production)
         $productsToRestock = Product::where('supplier_id', $user->id)
-            ->whereColumn('quantity', '<=', 'reorder_point')
+            // Get products with low stock (e.g., less than or equal to 10 units)
+            ->where('quantity', '<=', 10)
             ->orderBy('quantity', 'asc')
             ->take(5)
             ->get();
