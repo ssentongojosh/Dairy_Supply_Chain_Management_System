@@ -23,7 +23,14 @@ public class FaceCaptureApp {
     }else System.out.println("Camera opened");
 
 
-    String cascadePath = "C:\\xampp\\htdocs\\Dairy_Supply_Chain_Management_System\\java_server\\Data\\haarcascade_frontalface_default.xml";
+    // String cascadePath = "C:\\xampp\\htdocs\\Dairy_Supply_Chain_Management_System\\java_server\\Data\\haarcascade_frontalface_default.xml";
+
+    ClassLoader classloader = FaceCaptureApp.class.getClassLoader();
+    String cascadePath = classloader.getResource("Data/haarcascade_frontalface_default.xml").getPath();
+    if (cascadePath == null) {
+      System.err.println("❌ Cascade file not found in resources. Please check the path.");
+      return null;
+    }
 
     CascadeClassifier faceDetector = new CascadeClassifier(cascadePath);
     if (faceDetector.empty()) {
