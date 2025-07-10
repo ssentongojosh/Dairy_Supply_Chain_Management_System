@@ -244,6 +244,11 @@ Route::get('/plant_manager/dashboard', [DashboardController::class, 'index'])->n
 //route for inventory
 Route::resource('inventoriess', \App\Http\Controllers\ProductInventoryController::class);
 Route::get('/inventory', [PrInventoryController::class, 'index']);
+//tryout for supplier inventory
+Route::get('/supplier/inventory', function () {
+    return view('supplier.inventory');
+});
+
 
 //route to create a new inventory item
 Route::get('/inventory', [PrInventoryController::class, 'index'])->name('inventory.index');
