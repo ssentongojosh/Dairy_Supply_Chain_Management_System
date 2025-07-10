@@ -10,6 +10,7 @@ class RawMaterial extends Model
     protected $fillable = [
         'name',
         'quantity',
+        'unit',
         'expiry',
         'reorder_threshold',
     ];

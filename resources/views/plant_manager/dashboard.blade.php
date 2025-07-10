@@ -27,7 +27,7 @@
         </div>
 
         <!-- 🧪 Card: Total Raw Materials -->
-        <div class="col-md-3 col-sm-6 mb-4">
+        <div onclick="document.getElementById('rawMaterialsTable').scrollIntoView({ behavior: 'smooth' })" style="cursor: pointer;" class="col-md-3 col-sm-6 mb-4">
                 <div class="card h-100 border-start border-4 border-success">
                     <div class="card-body d-flex align-items-center">
                         <div class="avatar flex-shrink-0 bg-label-info me-3">
@@ -166,7 +166,7 @@ grace.nakato@modernmilk.com
         </div>
 
         {{-- Table title / header --}}
-        <div class="card-header bg-success text-white">
+        <div id = "rawMaterialTable" class="card-header bg-success text-white">
             🧪 Raw Materials
         </div>
         <div class="card-body">
