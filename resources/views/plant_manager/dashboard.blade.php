@@ -14,9 +14,9 @@
         <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card h-100 border-start border-4 border-primary">
                     <div class="card-body d-flex align-items-center ">
-                       
+
                         <div class="avatar flex-shrink-0 bg-label-primary me-3">
-                            <i class="ri-archive-line fs-3"></i> 
+                            <i class="ri-archive-line fs-3"></i>
                         </div>
                         <div>
                             <h5 class="card-title mb-0">Products</h5>
@@ -27,10 +27,10 @@
         </div>
 
         <!-- 🧪 Card: Total Raw Materials -->
-        <div class="col-md-3">
+        <div class="col-md-3 col-sm-6 mb-4">
                 <div class="card h-100 border-start border-4 border-success">
                     <div class="card-body d-flex align-items-center">
-                        <div class="avatar flex-shrink-0 bg-label-danger me-3">
+                        <div class="avatar flex-shrink-0 bg-label-success me-3">
                             <i class="ri-alert-line fs-3"></i>
                         </div>
                         <div>
@@ -39,14 +39,14 @@
                         </div>
                     </div>
                 </div>
-        </div>           
+        </div>
 
         <!-- Card: Low Stock Alert -->
         <div class="col-md-3">
                 <div class="card h-100 border-start border-4 border-warning">
                     <div class="card-body d-flex align-items-center">
                         <div class="avatar flex-shrink-0 bg-label-danger me-3">
-                            <i class="ri-alert-line fs-3"></i>
+                            <i class="ri-error-warning-line text-warning fs-3"></i>
                         </div>
                         <div>
                             <h5 class="card-title mb-0">Low Stock</h5>
@@ -54,7 +54,7 @@
                         </div>
                     </div>
                 </div>
-        </div>           
+        </div>
 
         <!-- Card: Expected Deliveries -->
         <div class="col-md-3">
@@ -76,7 +76,7 @@
                 </div>
            </div>
         </div>
-        
+
     </div>
 
     <!-- 🔍 SEARCH BAR (Optional Feature) -->
