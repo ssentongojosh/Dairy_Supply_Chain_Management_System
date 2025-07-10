@@ -13,13 +13,23 @@ df = pd.read_csv(DATA_PATH)
 OUTPUT_DIR = os.path.join('database', 'pythonfiles', 'graphs')
 os.makedirs(OUTPUT_DIR, exist_ok=True)  # Create the folder if it doesn't exist
 
+# === 1c. Encode Product column if it exists and is categorical ===
+if 'Product' in df.columns:
+    if df['Product'].dtype == object:
+        product_encoder = LabelEncoder()
+        df['Product'] = product_encoder.fit_transform(df['Product'])
+
 # === 2. Encode Gender column (if not already numeric) ===
 if df['Gender'].dtype == object:
     label_encoder = LabelEncoder()
     df['Gender'] = label_encoder.fit_transform(df['Gender'])
 
 # === 3. KMeans Clustering to create 'segment' column ===
-features = df[['Age', 'Gender', 'Annual Income', 'Spending Score']]
+# Add 'Product' to features if it exists
+feature_cols = ['Age', 'Gender', 'Annual Income', 'Spending Score']
+if 'Product' in df.columns:
+    feature_cols.append('Product')
+features = df[feature_cols]
 scaler = StandardScaler()
 scaled_features = scaler.fit_transform(features)
 
@@ -105,12 +115,34 @@ plt.savefig(os.path.join(OUTPUT_DIR, 'segments_by_shopping_mall.png'))
 plt.close()
 
 # === 10. Summary Table: Average Age, Income, Spending Score per Segment ===
-summary = df.groupby('segment').agg(
-    avg_age=('Age', 'mean'),
-    avg_income=('Annual Income', 'mean'),
-    avg_spending_score=('Spending Score', 'mean'),
-    count=('Age', 'count')
-).round(1)
+# If Product was label-encoded, decode for summary
+if 'Product' in df.columns:
+    try:
+        product_encoder
+    except NameError:
+        product_encoder = None
+
+    def decode_product(val):
+        if product_encoder is not None:
+            return product_encoder.inverse_transform([int(val)])[0]
+        return val
+
+    summary = df.groupby('segment').agg(
+        avg_age=('Age', 'mean'),
+        avg_income=('Annual Income', 'mean'),
+        avg_spending_score=('Spending Score', 'mean'),
+        count=('Age', 'count'),
+        most_common_product=('Product', lambda x: x.mode()[0] if len(x.mode()) > 0 else None)
+    ).round(1)
+    summary['most_common_product'] = summary['most_common_product'].apply(decode_product)
+else:
+    summary = df.groupby('segment').agg(
+        avg_age=('Age', 'mean'),
+        avg_income=('Annual Income', 'mean'),
+        avg_spending_score=('Spending Score', 'mean'),
+        count=('Age', 'count')
+    ).round(1)
+
 summary.to_csv(os.path.join(OUTPUT_DIR, 'segment_summary.csv'))
 
 print(f"\nAll charts and summary table saved in: {os.path.abspath(OUTPUT_DIR)}\nYou can tweak groupings or plots by editing this script!\n")
@@ -119,3 +151,28 @@ print(summary)
 # === END OF SCRIPT ===
 # You can comment out any section above to skip a plot or analysis.
 # All plots use seaborn/matplotlib only, and are saved as PNGs for easy review.
+
+# After clustering, decode Product column for visualization if label-encoded
+if 'Product' in df.columns and 'product_encoder' in locals():
+    df['Product_decoded'] = product_encoder.inverse_transform(df['Product'])
+else:
+    df['Product_decoded'] = df['Product']
+
+# === Product Distribution by Segment Plot (grouped by Product) ===
+if 'Product' in df.columns:
+    plt.figure(figsize=(14, 7))
+    sns.countplot(data=df, x='Product_decoded', hue='segment')
+    plt.title('Customer Segment Distribution for Each Product')
+    plt.xlabel('Product')
+    plt.ylabel('Number of Customers')
+    plt.legend(title='Segment')
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.savefig(os.path.join(OUTPUT_DIR, 'customer_segment_distribution_by_product.png'))
+    plt.close()
+
+    # === Product-Segment Counts Table ===
+    product_segment_counts = df.groupby(['Product_decoded', 'segment']).size().unstack(fill_value=0)
+    product_segment_counts.to_csv(os.path.join(OUTPUT_DIR, 'product_segment_counts.csv'))
+else:
+    print('No "Product" column found in the data. Skipping product distribution plot and table.')

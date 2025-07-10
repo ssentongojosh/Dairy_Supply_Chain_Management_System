@@ -76,13 +76,41 @@ print("📊 Creating bar chart for first 20 predictions...")
 plt.figure(figsize=(16, 6))
 plt.bar(range(20), y_test.iloc[:20], label='Actual', width=0.4, align='edge')
 plt.bar(range(20), y_pred_rounded[:20], label='Predicted', width=-0.4, align='edge', color='orange')
-plt.xlabel("Sample Index")
+plt.xlabel("Units")
 plt.ylabel("Quantity Sold")
 plt.title("📊 Actual vs Predicted Quantity Sold (Random Forest)")
 plt.legend()
 plt.tight_layout()
 plt.show()
 
+# === New: Actual vs Predicted Quantity Sold by Month ===
+print("📊 Creating bar chart for actual vs predicted quantity by month...")
 
+# Add predictions and actuals to X_test for grouping
+X_test_with_preds = X_test.copy()
+X_test_with_preds['actual_quantity'] = y_test
+X_test_with_preds['predicted_quantity'] = y_pred_rounded
+
+# Group by Month and sum
+monthly_comparison = X_test_with_preds.groupby('Month')[['actual_quantity', 'predicted_quantity']].sum()
+
+# Plot actual vs predicted by month
+plt.figure(figsize=(10, 6))
+plt.bar(monthly_comparison.index - 0.2, monthly_comparison['actual_quantity'], width=0.4, label='Actual')
+plt.bar(monthly_comparison.index + 0.2, monthly_comparison['predicted_quantity'], width=0.4, label='Predicted', color='orange')
+plt.xlabel("Month")
+plt.ylabel("Total Quantity Sold")
+plt.title("Actual vs Predicted Quantity Sold by Month")
+plt.legend()
+plt.tight_layout()
+plt.show()
 
 print("\n 🎉🤩🤩🤗Demand Prediction Completed Successfully! 🎉🤩🤩🤗")
+
+summary = df.groupby('segment').agg(
+    avg_age=('Age', 'mean'),
+    avg_income=('Annual Income', 'mean'),
+    avg_spending_score=('Spending Score', 'mean'),
+    count=('Age', 'count'),
+    most_common_product=('product', lambda x: x.mode()[0] if len(x.mode()) > 0 else None)
+).round(1)

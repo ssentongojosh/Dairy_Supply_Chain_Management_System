@@ -1,6 +1,6 @@
-segment,avg_age,avg_income,avg_spending_score,count
-Middle Age Average Income Spenders,55.2,109243.8,80.9,2770
-Middle Age Savers,55.3,108010.0,25.8,3750
-Middle Age Spenders,53.2,111121.6,75.2,3845
-Older Spenders,73.3,114081.6,31.5,2332
-Young Savers,34.2,106578.0,33.4,2382
+segment,avg_age,avg_income,avg_spending_score,count,most_common_product
+Middle Age Average Income Spenders,55.4,111919.6,50.8,3830,Small cheese
+Middle Age Savers,53.1,107361.5,50.5,3737,Cultured milk
+Middle Age Spenders,53.8,160636.0,66.6,2391,Powdered milk 26% mg
+Older Spenders,53.3,62689.2,70.8,2300,Yogurt
+Young Savers,55.0,105170.1,20.5,2821,Powdered milk 20% mg
