@@ -188,9 +188,9 @@
                     </div>
 
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <a href="{{ route('plant_manager.orders.create') }}" class="btn btn-outline-warning w-100">
-                            <i class="ri-shopping-cart-line me-1"></i>Create Order
-                        </a>
+                       <a href="{{ route('plant_manager.orders.create') }}" class="btn btn-success w-100">
+    <i class="ri-add-line me-1"></i>Create Order
+</a>
                     </div>
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
                         <a href="{{ route('inventory.search') }}" class="btn btn-outline-info w-100">
@@ -268,7 +268,7 @@
                             <h5 class="mb-0">Recent Outgoing Orders</h5>
                             <small class="text-muted">Orders you have placed</small>
                         </div>
-                        <a href="{{ route('plant_manager.orders') }}" class="btn btn-outline-primary btn-sm">
+                        <a href="{{ route('plant_manager.orders.create') }}" class="btn btn-outline-primary btn-sm">
                             <i class="ri-external-link-line me-1"></i>View All
                         </a>
                     </div>

@@ -449,4 +449,10 @@ class OrderController extends Controller
 
         return view($view, compact('orders'));
     }
+
+    public function getProductsForSeller($sellerId)
+    {
+        $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
+        return response()->json($products);
+    }
 }

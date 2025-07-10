@@ -496,11 +496,12 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
 
 //plant_manager order
 Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
-    // Route::get('plant_manager/dashboard', [plant_managerDashboardController::class, 'index'])->name('plant_manager.dashboard'); controller absent
-    Route::get('/orders', [OrderController::class, 'orderHistory'])->name('plant_manager.orders');
+    Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders');
     
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plant_manager.order.dashboard');
-    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plant_manager.orders.show');
+    Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
+    Route::post('/orders', [OrderController::class, 'storeOrder'])->name('plant_manager.orders.store');
     Route::patch('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
     Route::patch('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plant_manager.orders.reject');
     Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
@@ -510,7 +511,7 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
 });
 
-   Route::get('/plant_manager/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
+
 
 //wholesaler order
 Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(function () {
@@ -595,4 +596,4 @@ Route::post('/products', [ProductController::class, 'store'])->name('product.sto
 Route::post('/raw-materials', [RawMaterialInventoryController::class, 'store'])->name('raw_materials.store')->middleware(['auth', 'role:plant_manager']);
 // ... existing code ...
 Route::get('/wholesaler/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])->name('wholesaler.orders.pay');
-// ... existing code ...
+Route::get('/seller/{seller}/products', [OrderController::class, 'getProductsForSeller'])->name('seller.products');
