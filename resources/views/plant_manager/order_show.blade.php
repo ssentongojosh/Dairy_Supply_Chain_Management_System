@@ -54,7 +54,7 @@
             @if($order->status === 'pending')
                 <form method="POST" action="{{ route('orders.updateStatus', $order) }}" class="d-inline">
                     @csrf
-                    @method('PUT')
+                    @method('PATCH')
                     <input type="hidden" name="status" value="approved">
                     <button type="submit" class="btn btn-success">Approve Order</button>
                 </form>
@@ -64,7 +64,7 @@
             @if($order->status === 'approved')
                 <form method="POST" action="{{ route('orders.updateStatus', $order) }}" class="d-inline">
                     @csrf
-                    @method('PUT')
+                    @method('PATCH')
                     <input type="hidden" name="status" value="shipped">
                     <button type="submit" class="btn btn-primary">Mark as Shipped</button>
                 </form>

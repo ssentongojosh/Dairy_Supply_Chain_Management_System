@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Inventory;
 use App\Models\Product;
 use App\Models\RawMaterial;
+use App\Models\Delivery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PlantManagerInventoryController extends Controller
 {
@@ -29,8 +31,12 @@ class PlantManagerInventoryController extends Controller
         //total for low stock
         $totalLowStock = $lowStockProducts + $lowStockRawMaterials;
 
-        // ✅ Pass the data to the Blade view
-        return view('plant_manager.dashboard', compact('products', 'rawMaterials', 'totalLowStock'));
+        //get count for today deliveries
+        $today = Carbon::today();
+        $todayDeliveriesCount = Delivery::whereDate('created_at', $today)->count();
+
+        // Pass the data to the Blade view
+        return view('plant_manager.dashboard', compact('products', 'rawMaterials', 'totalLowStock','todayDeliveriesCount'));
     }
 
     /**

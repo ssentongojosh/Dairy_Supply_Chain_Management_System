@@ -122,7 +122,7 @@ class SupplierDashboard extends Controller
         $productsToRestock = Inventory::where('user_id', $user->id)
             ->where(function ($query) {
                 $query->where('quantity', 0)
-                      ->orWhereRaw('quantity <= threshold');
+                      ->orWhereRaw('quantity <= low_stock_threshold');
             })
             ->with('product')
             ->orderBy('quantity', 'asc')

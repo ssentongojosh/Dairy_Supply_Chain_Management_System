@@ -99,7 +99,7 @@
                                         <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0">₱{{ number_format($stats['total_revenue'] ?? 0, 2) }}</h6>
+                                        <h6 class="mb-0">UGX {{ number_format($stats['total_revenue'] ?? 0, 2) }}</h6>
                                         <small class="text-muted">Total Revenue</small>
                                     </div>
                                 </div>
@@ -160,7 +160,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="fw-semibold">₱{{ number_format($order->total_amount, 2) }}</span>
+                                                <span class="fw-semibold">UGX {{ number_format($order->total_amount, 2) }}</span>
                                             </td>
                                             <td>
                                                 @php
