@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+      if (Schema::hasColumn('users', 'verification_notes')) {
+        return; // Column already exists, no need to add it again
+      }
         Schema::table('users', function (Blueprint $table) {
             $table->text('verification_notes')->nullable();
         });

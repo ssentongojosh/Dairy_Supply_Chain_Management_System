@@ -59,6 +59,7 @@ php artisan db:seed --class=AdminUserSeeder
 php artisan db:seed --class=SupplierSeeder
 php artisan db:seed --class=FarmerSeeder
 php artisan db:seed --class=RetailerSeeder
+php artisan db:seed --class=PlantManagerSeeder
 ```
 
 ## Default Login Credentials

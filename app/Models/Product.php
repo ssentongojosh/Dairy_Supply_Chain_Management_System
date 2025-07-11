@@ -53,5 +53,42 @@ class Product extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
+
+    // Many-to-many relationship with users through product_items
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'product_items')
+                    ->withPivot([
+                        'quantity', 
+                        'cost_price', 
+                        'selling_price', 
+                        'minimum_stock',
+                        'maximum_stock',
+                        'expiry_date',
+                        'manufacture_date',
+                        'batch_number',
+                        'status'
+                    ])
+                    ->withTimestamps();
+    }
+
+    // Direct relationship to product items
+    public function productItems()
+    {
+        return $this->hasMany(ProductItem::class);
+    }
+
+    // Get available stock across all users
+    public function getTotalStockAttribute()
+    {
+        return $this->productItems()->where('status', 'active')->sum('quantity');
+    }
+
+    // Get users who have this product in stock
+    public function usersWithStock()
+    {
+        return $this->users()->wherePivot('quantity', '>', 0)
+                            ->wherePivot('status', 'active');
+    }
 }
 

@@ -6,61 +6,62 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\ProductItem;
 use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-
+ 
 class PlantManagerDashboard extends Controller
 {
     public function index()
     {
         $user = Auth::user();
 
-        // Fetch all finished products for this plant manager
-        $products = Inventory::where('user_id', $user->id)
-            ->whereHas('product', function($q) {
-                $q->whereIn('category', ['Pasteurized Milk', 'Yogurt', 'Cheese', 'Butter']);
-            })
-            ->get();
+        // Get user's product items (using new ProductItem model)
+        $productItems = ProductItem::where('user_id', $user->id)
+                                   ->with('product')
+                                   ->where('status', 'active')
+                                   ->get();
 
-        // Fetch all raw materials for this plant manager
-        $rawMaterials = Inventory::where('user_id', $user->id)
-            ->whereHas('product', function($q) {
-                $q->where('category', 'Raw Milk');
-            })
-            ->get();
-
-        // Calculate total low stock items (for both products and raw materials)
-        $totalLowStock = $products->where('quantity', '<=', 150)->count() + $rawMaterials->where('quantity', '<=', 150)->count();
-        // Get products from inventory - the view expects the inventory items themselves
-        // The view accesses properties like $product->name, $product->quantity, $product->price
-        $products = Inventory::where('user_id', Auth::id())
-                           ->with('product')
-                           ->whereHas('product', function($query) {
-                               $query->whereIn('category', ['Pasteurized Milk', 'Yogurt', 'Cheese', 'Butter']);
-                           })
-                           ->get();
-
-        // For the view, we need to transform the data so it can access name, quantity, price directly
-        $products = $products->map(function($inventory) {
+        // Separate finished products from raw materials based on category
+        $products = $productItems->filter(function($item) {
+            return in_array($item->product->category, ['Milk', 'Yogurt', 'Cheese', 'Butter', 'Cream']);
+        })->map(function($item) {
             return (object) [
-                'id' => $inventory->id,
-                'name' => $inventory->product->name ?? $inventory->name,
-                'quantity' => $inventory->quantity,
-                'price' => $inventory->selling_price ?? $inventory->product->price ?? 0,
-                'manufacture_date' => $inventory->product->added_on ?? $inventory->last_restocked_at,
-                'product_id' => $inventory->product_id
+                'id' => $item->id,
+                'name' => $item->product->name,
+                'quantity' => $item->quantity,
+                'price' => $item->selling_price,
+                'status' => $item->status,
+                'created_at' => $item->created_at,
+                'product_id' => $item->product_id
             ];
         });
 
-        // Raw materials from the separate RawMaterial model - filtered by user
-        $rawMaterials = RawMaterial::where('user_id', Auth::id())->get();
+        // Raw materials - for now using both ProductItem and RawMaterial models
+        $rawMaterialsFromProducts = $productItems->filter(function($item) {
+            return !in_array($item->product->category, ['Milk', 'Yogurt', 'Cheese', 'Butter', 'Cream']);
+        });
 
-        // Low stock count from Inventory table
-        $totalLowStock = Inventory::where('user_id', Auth::id())
-                               ->where('quantity', '<=', 150)
-                               ->count();
+        // Legacy raw materials from RawMaterial model
+        $rawMaterialsFromModel = RawMaterial::where('user_id', $user->id)->get();
+
+        // Combine both sources
+        $rawMaterials = $rawMaterialsFromModel->merge($rawMaterialsFromProducts->map(function($item) {
+            return (object) [
+                'id' => $item->id,
+                'name' => $item->product->name,
+                'quantity' => $item->quantity,
+                'expiry_date' => $item->expiry_date,
+                'status' => $item->status
+            ];
+        }));
+
+        // Calculate low stock items from ProductItems
+        $totalLowStock = $productItems->filter(function($item) {
+            return $item->quantity <= $item->minimum_stock;
+        })->count();
 
         // Stats for delivery activity
         $stats = [

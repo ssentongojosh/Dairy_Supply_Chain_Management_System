@@ -193,6 +193,11 @@
 </a>
                     </div>
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <a href="{{ route('plant_manager.inventory') }}" class="btn btn-outline-warning w-100">
+                            <i class="ri-shopping-cart-line me-1"></i>View inventory
+                        </a>
+                    </div>
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
                         <a href="{{ route('inventory.search') }}" class="btn btn-outline-info w-100">
                             <i class="ri-search-line me-1"></i>Search
                         </a>
