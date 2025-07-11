@@ -105,12 +105,76 @@ plt.legend()
 plt.tight_layout()
 plt.show()
 
-print("\n 🎉🤩🤩🤗Demand Prediction Completed Successfully! 🎉🤩🤩🤗")
+# === New: Add predictions and actuals to X_test for grouping and time-based analysis ===
+print("\n🔹 Preparing data for time-based predictions and visualizations...")
 
-summary = df.groupby('segment').agg(
-    avg_age=('Age', 'mean'),
-    avg_income=('Annual Income', 'mean'),
-    avg_spending_score=('Spending Score', 'mean'),
-    count=('Age', 'count'),
-    most_common_product=('product', lambda x: x.mode()[0] if len(x.mode()) > 0 else None)
-).round(1)
+# Add predictions and actuals to X_test for grouping
+X_test_with_preds = X_test.copy()
+X_test_with_preds['actual_quantity'] = y_test.values
+X_test_with_preds['predicted_quantity'] = y_pred_rounded
+
+# Add back the date columns for grouping
+X_test_with_preds['invoice_date'] = df.loc[X_test_with_preds.index, 'invoice_date']
+X_test_with_preds['Year'] = df.loc[X_test_with_preds.index, 'Year']
+X_test_with_preds['Month'] = df.loc[X_test_with_preds.index, 'Month']
+
+# =========================
+# DAILY PREDICTION SECTION
+# =========================
+print("\n=== Daily Prediction: Actual vs Predicted Total Quantity Sold Each Day ===")
+daily_comparison = X_test_with_preds.groupby('invoice_date')[['actual_quantity', 'predicted_quantity']].sum()
+
+# Print summary table (first 10 days for brevity)
+print("\nDaily summary (first 10 days):")
+print(daily_comparison.head(10))
+
+# Plot daily prediction (Predicted only)
+plt.figure(figsize=(16, 6))
+plt.plot(daily_comparison.index, daily_comparison['predicted_quantity'], label='Predicted', marker='x', linestyle='--', color='orange')
+plt.xlabel("Date")
+plt.ylabel("Total Quantity Sold")
+plt.title("Daily: Predicted Quantity Sold")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# =========================
+# MONTHLY PREDICTION SECTION
+# =========================
+print("\n=== Monthly Prediction: Actual vs Predicted Total Quantity Sold Each Month ===")
+monthly_comparison = X_test_with_preds.groupby(['Year', 'Month'])[['actual_quantity', 'predicted_quantity']].sum()
+print("\nMonthly summary:")
+print(monthly_comparison)
+
+# Plot monthly prediction (Predicted only)
+plt.figure(figsize=(10, 6))
+bar_width = 0.35
+months = range(len(monthly_comparison))
+plt.bar(months, monthly_comparison['predicted_quantity'], width=bar_width, label='Predicted', color='orange')
+plt.xlabel("Year, Month")
+plt.ylabel("Total Quantity Sold")
+plt.title("Monthly: Predicted Quantity Sold")
+plt.xticks(months, [f"{idx[0]}-{idx[1]:02d}" for idx in monthly_comparison.index], rotation=45)
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+# =========================
+# YEARLY PREDICTION SECTION
+# =========================
+print("\n=== Yearly Prediction: Actual vs Predicted Total Quantity Sold Each Year ===")
+yearly_comparison = X_test_with_preds.groupby('Year')[['actual_quantity', 'predicted_quantity']].sum()
+print("\nYearly summary:")
+print(yearly_comparison)
+
+# Plot yearly prediction (Predicted only)
+plt.figure(figsize=(8, 5))
+plt.bar(yearly_comparison.index, yearly_comparison['predicted_quantity'], width=0.3, label='Predicted', color='orange')
+plt.xlabel("Year")
+plt.ylabel("Total Quantity Sold")
+plt.title("Yearly: Predicted Quantity Sold")
+plt.legend()
+plt.tight_layout()
+plt.show()
+
+print("\n 🎉🤩🤩🤗Demand Prediction Completed Successfully! 🎉🤩🤩🤗")
