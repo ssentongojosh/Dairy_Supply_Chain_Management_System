@@ -101,26 +101,6 @@
           "target": "_blank"
         }
       ]
-    },
-    {
-      "menuHeader": "Reports"
-    },
-    {
-      "name": "Reports",
-      "icon": "bx bx-chart",
-      "slug": "report",
-      "submenu": [
-        {
-          "url": "/report/settings",
-          "name": "settings",
-          "slug": "report-settings"
-        },
-        {
-          "url": "/reports/history",
-          "name": "history",
-          "slug": "reports-history"
-        }
-      ]
     }
   ]
 }
