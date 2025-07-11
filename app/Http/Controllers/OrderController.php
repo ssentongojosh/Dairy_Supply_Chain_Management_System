@@ -234,10 +234,10 @@ class OrderController extends Controller
     public function createOrder()
     {
         $user = Auth::user();
-        
+
         // Get allowed sellers based on user role
         $allowedSellers = [];
-        
+
         switch ($user->role->value) {
             case 'retailer':
                 // Retailers can order from wholesalers
@@ -254,14 +254,14 @@ class OrderController extends Controller
             default:
                 abort(403, 'Order creation not allowed for this role.');
         }
-        
+
         // Get available products from allowed sellers
         $products = Product::whereHas('inventory', function($query) use ($allowedSellers) {
             $query->whereIn('user_id', $allowedSellers->pluck('id'));
         })->with(['inventory' => function($query) use ($allowedSellers) {
             $query->whereIn('user_id', $allowedSellers->pluck('id'));
         }])->get();
-        
+
         return view('orders.create', compact('allowedSellers', 'products'));
     }
 
@@ -434,7 +434,7 @@ class OrderController extends Controller
 
     public function orderHistory()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $orders = Order::where('seller_id', $user->id)
             ->orderBy('created_at', 'asc')
             ->paginate(10);
@@ -442,10 +442,10 @@ class OrderController extends Controller
         $view = match($user->role->value) {
             'retailer' => 'retailer.orders',
             'wholesaler' => 'wholesaler.order_history',
-            'plant_manager' => 'plant_manager.orders_history',
+            'plant_manager' => 'plant_manager.order_history',
             default => 'orders.history',
         };
-        
+
 
         return view($view, compact('orders'));
     }

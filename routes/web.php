@@ -541,6 +541,11 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     // Dashboard - using the dedicated dashboard controller
     Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
 
+    // Product Items management routes
+    Route::post('/product-items', [\App\Http\Controllers\ProductItemController::class, 'store'])->name('product_items.store');
+    Route::put('/product-items/{productItem}', [\App\Http\Controllers\ProductItemController::class, 'update'])->name('product_items.update');
+    Route::delete('/product-items/{productItem}', [\App\Http\Controllers\ProductItemController::class, 'destroy'])->name('product_items.destroy');
+
     // Product management routes
     Route::post('/products', [PlantManagerInventoryController::class, 'storeProduct'])->name('product.store');
     Route::get('/products/{product}', [PlantManagerInventoryController::class, 'showProduct'])->name('products.show');

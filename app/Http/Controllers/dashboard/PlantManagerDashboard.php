@@ -27,16 +27,6 @@ class PlantManagerDashboard extends Controller
         // Separate finished products from raw materials based on category
         $products = $productItems->filter(function($item) {
             return in_array($item->product->category, ['Milk', 'Yogurt', 'Cheese', 'Butter', 'Cream']);
-        })->map(function($item) {
-            return (object) [
-                'id' => $item->id,
-                'name' => $item->product->name,
-                'quantity' => $item->quantity,
-                'price' => $item->selling_price,
-                'status' => $item->status,
-                'created_at' => $item->created_at,
-                'product_id' => $item->product_id
-            ];
         });
 
         // Raw materials - for now using both ProductItem and RawMaterial models
@@ -47,16 +37,8 @@ class PlantManagerDashboard extends Controller
         // Legacy raw materials from RawMaterial model
         $rawMaterialsFromModel = RawMaterial::where('user_id', $user->id)->get();
 
-        // Combine both sources
-        $rawMaterials = $rawMaterialsFromModel->merge($rawMaterialsFromProducts->map(function($item) {
-            return (object) [
-                'id' => $item->id,
-                'name' => $item->product->name,
-                'quantity' => $item->quantity,
-                'expiry_date' => $item->expiry_date,
-                'status' => $item->status
-            ];
-        }));
+        // Combine both sources - keep as collections, don't convert to stdClass
+        $rawMaterials = $rawMaterialsFromModel->concat($rawMaterialsFromProducts);
 
         // Calculate low stock items from ProductItems
         $totalLowStock = $productItems->filter(function($item) {
