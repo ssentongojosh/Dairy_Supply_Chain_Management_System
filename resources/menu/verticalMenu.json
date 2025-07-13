@@ -5,11 +5,13 @@
       "name": "Dashboards",
       "icon": "menu-icon tf-icons ri-home-smile-line",
       "slug": "dashboard",
+      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "executive"],
       "submenu": [
         {
           "url": "/",
           "name": "Analytics",
-          "slug": "dashboard-analytics"
+          "slug": "dashboard-analytics",
+          "roles": ["admin", "executive"]
         }
       ]
     },
@@ -17,69 +19,81 @@
       "url": "app/chat",
       "name": "Chat",
       "icon": "menu-icon tf-icons ri-wechat-line",
-      "slug": "app-chat"
+      "slug": "app-chat",
+      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
     },
     {
       "url": "/app/order",
       "name": "Orders",
       "icon": "menu-icon tf-icons ri-shopping-cart-2-line",
-      "slug": "app-order"
+      "slug": "app-order",
+      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier"]
     },
     {
       "url": "/app/inventory",
       "name": "Inventory",
       "icon": "menu-icon tf-icons ri-archive-line",
-      "slug": "app-inventory"
+      "slug": "app-inventory",
+      "roles": ["admin", "retailer", "wholesaler", "plant_manager", "supplier"]
     },
     {
-      "menuHeader": "Reports"
+      "menuHeader": "Reports",
+      "roles": ["admin", "executive", "plant_manager","farmer","retailer", "wholesaler", "supplier"]
     },
     {
       "name": "Reports",
       "icon": "bx bx-chart",
       "slug": "report",
+      "roles": ["admin", "executive", "plant_manager", "farmer", "retailer", "wholesaler", "supplier"],
       "submenu": [
         {
           "url": "/report/settings",
           "name": "settings",
-          "slug": "report-settings"
+          "slug": "report-settings",
+          "roles": ["admin", "executive", "plant_manager", "farmer", "retailer", "wholesaler", "supplier"]
         },
         {
           "url": "/reports/history",
           "name": "history",
-          "slug": "reports-history"
+          "slug": "reports-history",
+          "roles": ["admin", "executive", "plant_manager", "farmer", "retailer", "wholesaler", "supplier"]
         }
       ]
     },
     {
       "url": "/tasks",
       "name": "Tasks",
-      "slug": "tasks.index"
+      "icon": "menu-icon tf-icons ri-task-line",
+      "slug": "tasks.index",
+      "roles": ["inspector", "admin","driver"]
     },
-
     {
       "menuHeader": "Accounts & Settings",
-      "icon": "menu-icon tf-icons ri-settings-2-line"
+      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
     },
     {
       "name": "Account Settings",
       "icon": "menu-icon tf-icons ri-layout-left-line",
       "slug": "pages-account-settings",
+      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"],
       "submenu": [
         {
           "url": "pages/account-settings-account",
           "name": "Account",
-          "slug": "pages-account-settings-account"
+          "slug": "pages-account-settings-account",
+          "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
         },
         {
           "url": "pages/account-settings-notifications",
           "name": "Notifications",
-          "slug": "pages-account-settings-notifications"
+          "slug": "pages-account-settings-notifications",
+          "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
         },
         {
           "url": "pages/account-settings-connections",
           "name": "Connections",
-          "slug": "pages-account-settings-connections"
+          "slug": "pages-account-settings-connections",
+          "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
         }
       ]
     },
@@ -87,24 +101,28 @@
       "name": "Authentications",
       "icon": "menu-icon tf-icons ri-shield-keyhole-line",
       "slug": "auth",
+      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"],
       "submenu": [
         {
           "url": "auth/login-basic",
           "name": "Login",
           "slug": "auth-login-basic",
-          "target": "_blank"
+          "target": "_blank",
+          "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
         },
         {
           "url": "auth/register-basic",
           "name": "Register",
           "slug": "auth-register-basic",
-          "target": "_blank"
+          "target": "_blank",
+          "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
         },
         {
           "url": "auth/forgot-password-basic",
           "name": "Forgot Password",
           "slug": "auth-forgot-password-basic",
-          "target": "_blank"
+          "target": "_blank",
+          "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "inspector", "driver", "executive"]
         }
       ]
     }
