@@ -103,7 +103,10 @@ class LoginBasic extends Controller
 
             case 'supplier':
                 return redirect()->route('supplier.dashboard');
-             default:
+            case 'inspector':
+                Log::info('Inspector role detected, redirecting to inspector.dashboard');
+                return redirect()->route('tasks.index'); // Assuming this is the inspector dashboard
+            default:
                 Log::info('Default role or unknown role, redirecting to home', ['role' => $roleValue]);
                 return redirect()->route('home');
         }

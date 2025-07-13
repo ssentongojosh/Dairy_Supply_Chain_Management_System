@@ -52,6 +52,12 @@
       ]
     },
     {
+      "url": "/tasks",
+      "name": "Tasks",
+      "slug": "tasks.index"
+    },
+
+    {
       "menuHeader": "Accounts & Settings",
       "icon": "menu-icon tf-icons ri-settings-2-line"
     },

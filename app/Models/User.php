@@ -103,7 +103,7 @@ public function childOrders()
 
 public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class, 'user_id');
     }
 
     // You might also want to add a helper method to easily get active tasks count

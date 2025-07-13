@@ -450,9 +450,151 @@ class OrderController extends Controller
         return view($view, compact('orders'));
     }
 
+    /**
+     * View order history (orders where user is the seller)
+     */
+    public function history()
+    {
+        $user = Auth::user();
+
+        // Apply filters if provided
+        $query = Order::where('seller_id', $user->id);
+
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        if (request('date_from')) {
+            $query->whereDate('created_at', '>=', request('date_from'));
+        }
+
+        if (request('date_to')) {
+            $query->whereDate('created_at', '<=', request('date_to'));
+        }
+
+        if (request('search')) {
+            $query->whereHas('buyer', function($q) {
+                $q->where('name', 'like', '%' . request('search') . '%');
+            });
+        }
+
+        $orders = $query->with(['buyer', 'items.product'])
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        // Calculate order statistics
+        $stats = [
+            'total_orders' => Order::where('seller_id', $user->id)->count(),
+            'pending_orders' => Order::where('seller_id', $user->id)->where('status', 'pending')->count(),
+            'completed_orders' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count(),
+            'total_revenue' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount'),
+        ];
+
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.orders',
+            'wholesaler' => 'wholesaler.order_history',
+            'plant_manager' => 'plant_manager.order_history',
+            default => 'orders.history',
+        };
+
+        return view($view, compact('orders', 'stats'));
+    }
+
     public function getProductsForSeller($sellerId)
     {
         $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
         return response()->json($products);
     }
+
+    /**
+     * Show order details
+     */
+    public function showOrder(Order $order)
+    {
+        $user = Auth::user();
+
+        // Check if user is authorized to view this order
+        if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
+            abort(403, 'Unauthorized access to this order.');
+        }
+
+        $order->load(['seller', 'buyer', 'items.product']);
+
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.order_detail',
+            'wholesaler' => 'wholesaler.order_detail',
+            'plant_manager' => 'plant_manager.order_detail',
+            default => 'orders.show',
+        };
+
+        return view($view, compact('order'));
+    }
+
+    /**
+     * Approve an order
+     */
+    public function approveOrder(Order $order)
+    {
+        $user = Auth::user();
+
+        // Check if user is authorized to approve this order
+        if ($order->seller_id !== $user->id) {
+            abort(403, 'Only the seller can approve this order.');
+        }
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Only pending orders can be approved.');
+        }
+
+        $order->update(['status' => 'approved']);
+
+        // You may want to trigger events or notifications here
+        // Event::dispatch(new OrderApproved($order));
+
+        return back()->with('success', 'Order has been approved.');
+    }
+
+    /**
+     * Reject an order
+     */
+    public function rejectOrder(Order $order)
+    {
+        $user = Auth::user();
+
+        // Check if user is authorized to reject this order
+        if ($order->seller_id !== $user->id) {
+            abort(403, 'Only the seller can reject this order.');
+        }
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Only pending orders can be rejected.');
+        }
+
+        $order->update(['status' => 'rejected']);
+
+        return back()->with('success', 'Order has been rejected.');
+    }
+
+    /**
+     * Mark an order as shipped
+     */
+    public function markShipped(Order $order)
+    {
+        $user = Auth::user();
+
+        // Check if user is authorized to mark this order as shipped
+        if ($order->seller_id !== $user->id) {
+            abort(403, 'Only the seller can mark this order as shipped.');
+        }
+
+        if ($order->status !== 'approved' && $order->status !== 'processing') {
+            return back()->with('error', 'Only approved or processing orders can be marked as shipped.');
+        }
+
+        $order->update(['status' => 'shipped']);
+
+        return back()->with('success', 'Order has been marked as shipped.');
+    }
 }
+
+

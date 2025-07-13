@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Log; // For logging assignment decisions
 use Illuminate\Support\Facades\DB; // For potential locking if concurrency is an issue
+use App\Notifications\NewTaskAssignedNotification;
 
 class TaskAssignmentService
 {
@@ -60,7 +61,9 @@ class TaskAssignmentService
             // TODO: Trigger in-app notification here
             // Example: $assignee->notify(new NewTaskAssignedNotification($task));
             // This assumes you have Laravel's Notification system set up and a Mailable/Notification class defined.
-
+            // Send in-app notification to the assigned user
+            $assignee->notify(new NewTaskAssignedNotification($task));
+            Log::info("New task assigned notification dispatched for Task ID: {$task->id} to User ID: {$assignee->id}.");
             return $task;
 
         } catch (\Exception $e) {
@@ -82,7 +85,7 @@ class TaskAssignmentService
         // Get all active and verified users for the given role
         $eligibleUsers = User::where('role', $role)
                              ->where('verified', true) // Assuming 'verified' means they are active/available
-                             ->where('is_active', true) // Add an 'is_active' column to your users table if you have one
+                            //  ->where('is_active', true) // Add an 'is_active' column to your users table if you have one
                              ->get();
 
         if ($eligibleUsers->isEmpty()) {
@@ -91,6 +94,7 @@ class TaskAssignmentService
 
         $leastBusyUser = null;
         $minTasks = PHP_INT_MAX; // Initialize with a very large number
+        $candidates = [];
 
         foreach ($eligibleUsers as $user) {
             // Count tasks that are not yet completed, failed, or cancelled
@@ -107,15 +111,15 @@ class TaskAssignmentService
                 $minTasks = $taskCount;
                 $leastBusyUser = $user;
             } elseif ($taskCount == $minTasks) {
-                // If multiple users have the same minimum tasks, apply "next available agent" logic.
-                // A simple approach for "next available agent" when workloads are equal:
-                // could be the one with the oldest 'assigned_at' on their latest task (meaning they finished their last task earliest)
-                // or just pick one deterministically (e.g., by ID, or simply the one encountered first in this loop).
-                // For a more robust "next available agent" (round-robin), you'd need to store something like 'last_assigned_time' on the User model
-                // or use a more complex queue. For now, we'll keep it simple and just take the first one found with min tasks.
-                // If you need strict round-robin for equal workload, we'll need to adjust.
-                // For simplicity here, we'll just keep the first one found with min tasks.
+                // If we find another user with the same minimum task count, we can add them to candidates
+                $candidates[] = $user;
             }
+        }
+
+        // If we have candidates, we can apply round-robin or other logic to select one
+        if (!empty($candidates)) {
+            // For simplicity, we'll just pick the first candidate
+            return collect($candidates)->sortBy('id')->first(); // Sort by ID to ensure consistent selection
         }
 
         return $leastBusyUser;
