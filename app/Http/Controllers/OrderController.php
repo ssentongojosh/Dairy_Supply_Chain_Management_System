@@ -442,12 +442,36 @@ class OrderController extends Controller
         $view = match($user->role->value) {
             'retailer' => 'retailer.orders',
             'wholesaler' => 'wholesaler.order_history',
-            'plant_manager' => 'plant_manager.orders_history',
+            'plant_manager' => 'plant_manager.order_history',
             default => 'orders.history',
         };
         
 
         return view($view, compact('orders'));
+    }
+
+    public function showOrder(Order $order)
+    {
+        $user = Auth::user();
+        
+        // Check if user has permission to view this order
+        if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
+            abort(403, 'You do not have permission to view this order.');
+        }
+        
+        // Load the order with relationships
+        $order->load(['buyer', 'seller', 'items.product']);
+        
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.order-show',
+            'wholesaler' => 'wholesaler.order-show',
+            'plant_manager' => 'plant_manager.order_show',
+            'supplier' => 'supplier.order-show',
+            'farmer' => 'farmer.order-show',
+            default => 'orders.show',
+        };
+        
+        return view($view, compact('order'));
     }
 
     public function getProductsForSeller($sellerId)

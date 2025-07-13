@@ -155,7 +155,7 @@ Route::get('/wholesaler/orders', [OrderController::class, 'index'])
 Route::get('/wholesaler/orders/create', [OrderController::class, 'createOrder'])->name('wholesaler.orders.create');
 
 // Wholesaler order history route
-Route::get('/wholesaler/orders/history', [OrderController::class, 'history'])
+Route::get('/wholesaler/orders/history', [OrderController::class, 'orderHistory'])
   ->name('wholesaler.orders.history')
   ->middleware(['auth', 'role:wholesaler']);
 
@@ -488,7 +488,7 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('supplier.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('supplier.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('supplier.orders.ship');
-    Route::get('/orders/history', [OrderController::class, 'history'])->name('supplier.orders.history');
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('supplier.orders.history');
         Route::get('/orders/index', [OrderController::class, 'index'])->name('supplier.orders.index');
     Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
 });
@@ -497,7 +497,8 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
 //plant_manager order
 Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
     Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
-    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders');
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders_history');
+    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plant_manager.orders.show');
     
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plant_manager.order.dashboard');
     Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
@@ -505,7 +506,7 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     Route::patch('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
     Route::patch('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plant_manager.orders.reject');
     Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
-    Route::get('/orders/history', [OrderController::class, 'history'])->name('plant_manager.orders.history');
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders.history');
      Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
  
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
@@ -522,7 +523,7 @@ Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(func
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
-    Route::get('/orders/history', [OrderController::class, 'history'])->name('wholesaler.orders.history');
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('wholesaler.orders.history');
     // Route::get('/inventory', [wholesalerInventoryController::class, 'index'])->name('wholesaler.inventory');
 });
 
