@@ -421,12 +421,19 @@ class OrderController extends Controller
     {
         $user = Auth::user();
         $orders = Order::where('buyer_id', $user->id)
+            ->where('status', '!=', 'cancelled') // Exclude cancelled orders
             ->with(['seller', 'items.product'])
             ->orderByDesc('created_at')
             ->paginate(10);
 
-        // Pass both $orders and $outgoingOrders to the view for compatibility
-        return view('wholesaler.orders', [
+        // Return appropriate view based on user role
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.orders',
+            'wholesaler' => 'wholesaler.orders',
+            default => 'orders.outgoing',
+        };
+
+        return view($view, [
             'orders' => $orders,
             'outgoingOrders' => $orders
         ]);
