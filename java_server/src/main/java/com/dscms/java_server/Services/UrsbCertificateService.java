@@ -120,7 +120,7 @@ public class UrsbCertificateService {
       );
 
       // Save the output image
-      Imgcodecs.imwrite("match.jpg", outputImage);
+      //Imgcodecs.imwrite("match.jpg", outputImage);
 
       // Step 5: Decision logic
       int matchThreshold = 5;
