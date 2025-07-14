@@ -117,7 +117,7 @@
                 </thead>
                 {{-- Loop through each product and display in the table --}}
                 <tbody>
-                    @foreach($products as $product)grace.nakato@modernmilk.com
+                    @foreach($products as $product)
                         <tr>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->quantity }}</td>
