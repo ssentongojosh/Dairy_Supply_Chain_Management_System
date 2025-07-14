@@ -14,6 +14,7 @@ class Products extends Model
         'quantity',
         'manufacture_date',
         'supplier_id',
+        'sale_unit',
     ];
 
     protected $casts = [
