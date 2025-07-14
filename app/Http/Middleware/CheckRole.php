@@ -45,7 +45,34 @@ class CheckRole
     ]);
 
     // Check if user has any of the required roles
-    if (!$user || !in_array($user->role, $enumRoles)) {
+    $hasRole = false;
+    
+    if ($user && $user->role) {
+      // Check if user role matches any of the required roles (both enum and string comparison)
+      foreach ($enumRoles as $requiredRole) {
+        if ($user->role === $requiredRole || $user->role->value === $requiredRole->value) {
+          $hasRole = true;
+          break;
+        }
+      }
+      
+      // Also check string values directly in case of enum conversion issues
+      foreach ($roles as $roleString) {
+        if ($user->role->value === $roleString) {
+          $hasRole = true;
+          break;
+        }
+      }
+    }
+    
+    if (!$hasRole) {
+      Log::warning('Access denied', [
+        'user_role' => $user ? $user->role : 'not authenticated',
+        'user_role_value' => $user && $user->role ? $user->role->value : null,
+        'required_roles' => $roles,
+        'required_enum_roles' => $enumRoles,
+        'request_url' => $request->url()
+      ]);
       return redirect()->route('home')->with('error', 'You do not have permission to access that page.');
     }
 

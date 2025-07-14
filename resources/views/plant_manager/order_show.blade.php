@@ -78,7 +78,7 @@
             @endif
         @endif
 
-        <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-secondary">Back to Orders</a>
+        <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-secondary">Back to Orders</a>
     </div>
 </div>
 @endsection

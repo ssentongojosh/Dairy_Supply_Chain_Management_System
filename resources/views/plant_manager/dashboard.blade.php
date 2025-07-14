@@ -83,7 +83,7 @@
                     <h5 class="mb-0">Production Overview</h5>
                     <small class="text-muted">Your production and inventory status</small>
                 </div>
-                <a href="{{ route('inventory.search') }}" class="btn btn-primary">
+                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-primary">
                     <i class="ri-factory-line me-1"></i> Manage Production
                 </a>
             </div>
@@ -201,7 +201,7 @@
                         </a>
                     </div>
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <a href="{{ route('inventory.search') }}" class="btn btn-outline-info w-100">
+                        <a href="{{ route('plant_manager.inventory') }}" class="btn btn-outline-info w-100">
                             <i class="ri-search-line me-1"></i>Search
                         </a>
                     </div>
@@ -249,7 +249,7 @@
                             <td>{{ $product->manufacture_date }}</td>
                             <td>
                                 {{-- Button to view product details --}}
-                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>
@@ -314,7 +314,7 @@ grace.nakato@modernmilk.com
                             </td>
                             <td>
                                 {{-- Button to view raw material details --}}
-                                <a href="{{ route('raw_materials.show', $material->id) }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>
@@ -335,7 +335,7 @@ grace.nakato@modernmilk.com
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('product.store') }}" method="POST">
+                <form action="{{ route('plant_manager.inventory.store') }}" method="POST">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Product Name</label>

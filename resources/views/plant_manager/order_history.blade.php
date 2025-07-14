@@ -50,7 +50,7 @@
 
                         @if(request()->hasAny(['status', 'date_from', 'date_to', 'search']))
                             <div class="mb-3">
-                                <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-outline-secondary btn-sm">
+                                <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-outline-secondary btn-sm">
                                     <i class="ri-close-line"></i> Clear Filters
                                 </a>
                             </div>
@@ -254,7 +254,7 @@
                                     @endif
                                 </p>
                                 @if(request()->hasAny(['status', 'date_from', 'date_to', 'search']))
-                                    <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-outline-primary">
+                                    <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-outline-primary">
                                         <i class="ri-refresh-line me-2"></i>Clear Filters
                                     </a>
                                 @endif

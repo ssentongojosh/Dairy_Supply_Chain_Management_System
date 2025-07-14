@@ -82,13 +82,14 @@ class HomeController extends Controller
             case 'plant_manager':
                 return redirect()->route('plant_manager.dashboard');
             case 'driver':
-                return redirect()->route('driver.dashboard');
+                return redirect()->route('tasks.index');
             case 'supplier':
                 return redirect()->route('supplier.dashboard');
             case 'executive':
                 return redirect()->route('executive.dashboard');
             case 'inspector':
                 return redirect()->route('tasks.index');
+            // Assuming this is the driver dashboard
             default:
                 return redirect()->route('home')->with('error', 'No dashboard available for your role.');
         }

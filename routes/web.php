@@ -55,7 +55,7 @@ use App\Http\Controllers\SupplierDashboardController;
 use App\Http\Controllers\PlantManagerOrderController;
 use App\Http\Controllers\PlantManagerInventoryController;
 use App\Http\Controllers\MarketplaceController;
-
+use App\Http\Controllers\RawMaterialInventoryController;
 use App\Http\Controllers\OrderController;
 Use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReportController;
@@ -63,7 +63,7 @@ use App\Http\Controllers\FarmerInventoryController;
 use App\Http\Controllers\SupplierOrderController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\TaskController;
-
+use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\InventoryController;
 
 use App\Http\Controllers\DocumentVerificationController;
@@ -258,7 +258,7 @@ Route::middleware(['auth'])->group(function () {
 
 //route for inventory
 Route::resource('inventoriess', \App\Http\Controllers\ProductInventoryController::class);
-Route::get('/inventory', [PrInventoryController::class, 'index']);
+
 //tryout for supplier inventory
 Route::get('/supplier/inventory', function () {
     return view('supplier.inventory');
@@ -266,14 +266,7 @@ Route::get('/supplier/inventory', function () {
 
 
 //route to create a new inventory item
-Route::get('/inventory', [PrInventoryController::class, 'index'])->name('inventory.index');
-Route::get('/inventory/create', [PrInventoryController::class, 'create'])->name('inventory.create');
-Route::post('/inventory', [PrInventoryController::class, 'store'])->name('inventory.store');
 
-//route for search
-Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
-Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
-;
 
 //tryout
 
@@ -281,8 +274,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('raw_materials', RawMaterialInventoryController::class);
 });
 
-//delete inventory
-Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
+
 
 //raw materials inventory
 //route for inventory
@@ -305,7 +297,7 @@ Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])-
 
 //delete item
 Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
-});
+
 
 //delivery routes
 Route::resource('delivery',DeliveryController::class);
@@ -467,35 +459,22 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
 });
 
 
-//plantmanager order
-Route::prefix('plantmanager')->middleware(['auth', 'role:plantmanager'])->group(function () {
-    Route::get('plant_manager/dashboard', [plantmanagerDashboardController::class, 'index'])->name('plantmanager.dashboard');
-    Route::get('/orders', [OrderController::class, 'orderHistory'])->name('plantmanager.orders');
-    Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plantmanager.order.dashboard');
-    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plantmanager.orders.show');
-    Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plantmanager.orders.approve');
-    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plantmanager.orders.reject');
-    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plantmanager.orders.ship');
-    Route::get('/orders/history', [OrderController::class, 'history'])->name('plantmanager.orders.history');
-    Route::get('/inventory', [plantmanagerInventoryController::class, 'index'])->name('plantmanager.inventory');
 //plant_manager order
 Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
     Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
+   
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders_history');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plant_manager.orders.show');
-    
-    Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plant_manager.order.dashboard');
     Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
     Route::post('/orders', [OrderController::class, 'storeOrder'])->name('plant_manager.orders.store');
     Route::patch('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
     Route::patch('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plant_manager.orders.reject');
     Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
-    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders.history');
     Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
-    Route::get('/plant_manager/orders', [OrderController::class, 'orderHistory'])
-  ->middleware(['auth', 'role:plant_manager']);
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
 });
+
+Route::get('plant_manager/orders', [OrderController::class, 'orderHistory'])->name('plant_manager.orders')->middleware(['auth', 'role:plant_manager']);
 
 
 //wholesaler order
@@ -528,7 +507,7 @@ Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(func
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('wholesaler.orders.history');
     // Route::get('/inventory', [wholesalerInventoryController::class, 'index'])->name('wholesaler.inventory');
-});
+
 
 // Inventory management contrller doesnot exist
     Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');

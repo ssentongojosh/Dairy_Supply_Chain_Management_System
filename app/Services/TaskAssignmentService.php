@@ -58,10 +58,7 @@ class TaskAssignmentService
             $relatedId = $related && isset($related->id) ? $related->id : 'N/A';
             Log::info("Task '{$type}' assigned to user ID: {$assignee->id} ({$assignee->name}) for related {$relatedClass}:{$relatedId}. Task ID: {$task->id}");
 
-            // TODO: Trigger in-app notification here
-            // Example: $assignee->notify(new NewTaskAssignedNotification($task));
-            // This assumes you have Laravel's Notification system set up and a Mailable/Notification class defined.
-            // Send in-app notification to the assigned user
+            
             $assignee->notify(new NewTaskAssignedNotification($task));
             Log::info("New task assigned notification dispatched for Task ID: {$task->id} to User ID: {$assignee->id}.");
             return $task;

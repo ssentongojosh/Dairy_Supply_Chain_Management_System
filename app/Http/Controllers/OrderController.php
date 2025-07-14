@@ -12,7 +12,7 @@ use App\Services\OrderWorkflowService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use App\Events\Order
+use App\Events\OrderApproved;
 
 class OrderController extends Controller
 {
@@ -36,7 +36,7 @@ class OrderController extends Controller
             return redirect()->route('wholesaler.orders');
         }
         elseif ($role === 'plant_manager') {
-            return redirect()->route('plant_manager.orders.history');
+            return redirect()->route('plant_manager.orders');
         }
 
         // Role configuration mapping
@@ -546,42 +546,137 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        // Check if user is authorized to approve this order
-        if ($order->seller_id !== $user->id) {
-            abort(403, 'Only the seller can approve this order.');
+        try {
+            // Check if user is authorized to approve this order
+            if ($order->seller_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only the seller can approve this order.'
+                ], 403);
+            }
+
+            if ($order->status !== 'pending' ) {
+              if ($order->status !== 'pending_review'){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending orders can be approved.'
+                ], 400);
+            }}
+
+            // Check inventory availability for each order item
+            $inventoryIssues = [];
+            foreach ($order->items as $item) {
+                $inventory = Inventory::where('user_id', $user->id)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if (!$inventory || $inventory->quantity < $item->quantity) {
+                    $availableQty = $inventory ? $inventory->quantity : 0;
+                    $inventoryIssues[] = "Insufficient stock for {$item->product->name}. Available: {$availableQty}, Required: {$item->quantity}";
+                }
+            }
+
+            if (!empty($inventoryIssues)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot approve order due to insufficient inventory: ' . implode('; ', $inventoryIssues)
+                ], 400);
+            }
+
+            // Update order status and reserve inventory
+            DB::beginTransaction();
+            
+            $order->update(['status' => 'approved']);
+
+            // Reserve inventory quantities
+            foreach ($order->items as $item) {
+                $inventory = Inventory::where('user_id', $user->id)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+                
+                if ($inventory) {
+                    $inventory->decrement('quantity', $item->quantity);
+                }
+            }
+
+            DB::commit();
+            OrderApproved::dispatch($order);
+
+            // Log the approval
+            Log::info("Order {$order->id} approved by user {$user->id}");
+
+            // Trigger events or notifications here if needed
+            // Event::dispatch(new OrderApproved($order));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order has been approved successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error approving order {$order->id}: " . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while approving the order. Please try again.'
+            ], 500);
         }
-
-        if ($order->status !== 'pending') {
-            return back()->with('error', 'Only pending orders can be approved.');
-        }
-
-        $order->update(['status' => 'approved']);
-
-        // You may want to trigger events or notifications here
-        // Event::dispatch(new OrderApproved($order));
-
-        return back()->with('success', 'Order has been approved.');
     }
 
     /**
      * Reject an order
      */
-    public function rejectOrder(Order $order)
+    public function rejectOrder(Order $order, Request $request)
     {
         $user = Auth::user();
 
-        // Check if user is authorized to reject this order
-        if ($order->seller_id !== $user->id) {
-            abort(403, 'Only the seller can reject this order.');
+        try {
+            // Check if user is authorized to reject this order
+            if ($order->seller_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only the seller can reject this order.'
+                ], 403);
+            }
+
+            if ($order->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending orders can be rejected.'
+                ], 400);
+            }
+
+            // Validate rejection reason if provided
+            $reason = $request->input('reason');
+            if (!$reason) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please provide a reason for rejection.'
+                ], 400);
+            }
+
+            // Update order status
+            $order->update([
+                'status' => 'rejected'
+            ]);
+
+            // Log the rejection
+            Log::info("Order {$order->id} rejected by user {$user->id} with reason: {$reason}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order has been rejected successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Error rejecting order {$order->id}: " . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while rejecting the order. Please try again.'
+            ], 500);
         }
-
-        if ($order->status !== 'pending') {
-            return back()->with('error', 'Only pending orders can be rejected.');
-        }
-
-        $order->update(['status' => 'rejected']);
-
-        return back()->with('success', 'Order has been rejected.');
     }
 
     /**
@@ -591,18 +686,42 @@ class OrderController extends Controller
     {
         $user = Auth::user();
 
-        // Check if user is authorized to mark this order as shipped
-        if ($order->seller_id !== $user->id) {
-            abort(403, 'Only the seller can mark this order as shipped.');
+        try {
+            // Check if user is authorized to mark this order as shipped
+            if ($order->seller_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only the seller can mark this order as shipped.'
+                ], 403);
+            }
+
+            if ($order->status !== 'approved' && $order->status !== 'processing') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only approved or processing orders can be marked as shipped.'
+                ], 400);
+            }
+
+            $order->update([
+                'status' => 'shipped'
+            ]);
+
+            // Log the shipping
+            Log::info("Order {$order->id} marked as shipped by user {$user->id}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order has been marked as shipped successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Error marking order {$order->id} as shipped: " . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the order. Please try again.'
+            ], 500);
         }
-
-        if ($order->status !== 'approved' && $order->status !== 'processing') {
-            return back()->with('error', 'Only approved or processing orders can be marked as shipped.');
-        }
-
-        $order->update(['status' => 'shipped']);
-
-        return back()->with('success', 'Order has been marked as shipped.');
     }
 }
 
