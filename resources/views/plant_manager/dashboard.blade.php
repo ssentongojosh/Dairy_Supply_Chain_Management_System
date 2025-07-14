@@ -24,18 +24,16 @@
                 </div>
             </div>
 
-            <!-- Raw Materials Statistics -->
-            <div class="col-md-3 col-sm-6 mb-4">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="avatar flex-shrink-0 bg-label-success me-3 d-flex align-items-center justify-content-center">
-                                <i class="ri-drop-line fs-3"></i>
-                            </div>
-                            <div>
-                                <h5 class="card-title mb-0">{{ $rawMaterials->count() ?? 0 }}</h5>
-                                <small class="text-muted">Raw Materials</small>
-                            </div>
+        <!-- 🧪 Card: Total Raw Materials -->
+        <div onclick="document.getElementById('rawMaterialsTable').scrollIntoView({ behavior: 'smooth' })" style="cursor: pointer;" class="col-md-3 col-sm-6 mb-4">
+                <div class="card h-100 border-start border-4 border-success">
+                    <div class="card-body d-flex align-items-center">
+                        <div class="avatar flex-shrink-0 bg-label-info me-3">
+                            <i class="ri-cup-line fs-3"></i>
+                        </div>
+                        <div>
+                            <h5 class="card-title mb-0">Raw Materials</h5>
+                            <h6 class="fw-bold">{{ $rawMaterials->count() }}</h6>
                         </div>
                     </div>
                 </div>
@@ -203,201 +201,117 @@
                         </a>
                     </div>
                 </div>
-            </div>
+        </div>
+
+        {{-- Table title / header --}}
+        <div class="card-header bg-primary text-white">
+            📦 Finished Products
+        </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                {{-- Table column titles --}}
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Stock</th>
+                        <th>Price</th>
+                        <th>Status</th>
+                        <th>Added on</th>
+                        <th>Actions</th> {{-- For buttons like "View" --}}
+                    </tr>
+                </thead>
+                {{-- Loop through each product and display in the table --}}
+                <tbody>
+                    @foreach($products as $product)grace.nakato@modernmilk.com
+                        <tr>
+                            <td>{{ $product->name }}</td>
+                            <td>{{ $product->quantity }}</td>
+                            <td>{{ $product->price }}</td>
+                            <td>
+                                @if ($product->quantity <= 150)
+                                   <span class="text-danger">Out of Stock</span>
+                                @elseif ($product->quantity <= 350)
+                                   <span class="text-warning">Limited</span>
+                                @else
+                                   <span class="text-success">Available</span>
+                                @endif
+                            </td>
+                            <td>{{ $product->manufacture_date }}</td>
+                            <td>
+                                {{-- Button to view product details --}}
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Orders Row -->
-    <div class="col-12 mb-4">
-        <div class="row">
-            <!-- Recent Incoming Orders (as Seller) -->
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0">Recent Incoming Orders</h5>
-                            <small class="text-muted">Orders from your customers</small>
-                        </div>
-                        <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-outline-primary btn-sm">
-                            <i class="ri-external-link-line me-1"></i>View All
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        @if(isset($incomingOrders) && $incomingOrders->count() > 0)
-                            <div class="list-group list-group-flush">
-                                @foreach($incomingOrders as $order)
-                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <div>
-                                            <h6 class="mb-0">Order #{{ $order->id }}</h6>
-                                            <small class="text-muted">{{ $order->buyer->name ?? 'Unknown Customer' }}</small>
-                                        </div>
-                                        <div class="text-end">
-                                            @php
-                                                $statusColors = [
-                                                    'pending' => 'warning',
-                                                    'approved' => 'info',
-                                                    'processing' => 'primary',
-                                                    'shipped' => 'success',
-                                                    'delivered' => 'success',
-                                                    'rejected' => 'danger'
-                                                ];
-                                            @endphp
-                                            <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
-                                                {{ ucfirst($order->status) }}
-                                            </span>
-                                            <small class="text-muted d-block">UGX {{ number_format($order->total_amount, 0) }}</small>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-3">
-                                <i class="ri-inbox-line fs-1 text-muted"></i>
-                                <p class="text-muted mb-0">No recent incoming orders</p>
-                            </div>
-                        @endif
-                    </div>
+    <div><br><br></div>
+
+    <!-- RAW MATERIALS TABLE -->
+    <div class="card">
+grace.nakato@modernmilk.com
+        <div class="card">
+            <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
+                <h5 class="card-title mb-0">Raw Material Management</h5>
+                <div class="d-flex align-items-center">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addRawMaterialModal">
+                        <i class="ri-add-line me-1"></i> Add Raw Material
+                    </button>
+
+                    <!-- button for product deliveries -->
+                    <a href="{{ route('delivery.index') }}" class="btn btn-outline-primary btn-sm ms-2">
+                       <i class="ri-truck-line"></i> Deliveries
+                    </a>
                 </div>
             </div>
 
-            <!-- Recent Outgoing Orders (as Buyer) -->
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <div>
-                            <h5 class="mb-0">Recent Outgoing Orders</h5>
-                            <small class="text-muted">Orders you have placed</small>
-                        </div>
-                        <a href="{{ route('plant_manager.orders.create') }}" class="btn btn-outline-primary btn-sm">
-                            <i class="ri-external-link-line me-1"></i>View All
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        @if(isset($outgoingOrders) && $outgoingOrders->count() > 0)
-                            <div class="list-group list-group-flush">
-                                @foreach($outgoingOrders as $order)
-                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <div>
-                                            <h6 class="mb-0">Order #{{ $order->id }}</h6>
-                                            <small class="text-muted">To: {{ $order->seller->name ?? 'Unknown Supplier' }}</small>
-                                        </div>
-                                        <div class="text-end">
-                                            @php
-                                                $statusColors = [
-                                                    'pending' => 'warning',
-                                                    'approved' => 'info',
-                                                    'processing' => 'primary',
-                                                    'shipped' => 'success',
-                                                    'delivered' => 'success',
-                                                    'rejected' => 'danger'
-                                                ];
-                                            @endphp
-                                            <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
-                                                {{ ucfirst($order->status) }}
-                                            </span>
-                                            <small class="text-muted d-block">UGX {{ number_format($order->total_amount, 0) }}</small>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-3">
-                                <i class="ri-inbox-line fs-1 text-muted"></i>
-                                <p class="text-muted mb-0">No recent outgoing orders</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
+        {{-- Table title / header --}}
+        <div id = "rawMaterialTable" class="card-header bg-success text-white">
+            🧪 Raw Materials
         </div>
-    </div>
-
-    <!-- Production Status Row -->
-    <div class="col-12 mb-4">
-        <div class="row">
-            <!-- Production Line Status -->
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5 class="mb-0">Production Line Status</h5>
-                        <small class="text-muted">Current production activities</small>
-                    </div>
-                    <div class="card-body">
-                        @if(isset($productionLines) && count($productionLines) > 0)
-                            <div class="list-group list-group-flush">
-                                @foreach($productionLines as $line)
-                                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
-                                        <div>
-                                            <h6 class="mb-0">{{ $line['name'] }}</h6>
-                                            <small class="text-muted">{{ $line['current_batch'] ?? 'No active batch' }}</small>
-                                        </div>
-                                        <div class="text-end">
-                                            @if($line['status'] === 'active')
-                                                <span class="badge bg-success">Active</span>
-                                            @elseif($line['status'] === 'maintenance')
-                                                <span class="badge bg-warning">Maintenance</span>
-                                            @else
-                                                <span class="badge bg-secondary">Idle</span>
-                                            @endif
-                                            <small class="text-muted d-block">{{ $line['efficiency'] }}% efficiency</small>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center py-3">
-                                <i class="ri-settings-line fs-1 text-muted"></i>
-                                <p class="text-muted mb-0">No production lines configured</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Quality Control Alerts -->
-            <div class="col-md-6 mb-4">
-                <div class="card h-100">
-                    <div class="card-header">
-                        <h5 class="mb-0">Quality Control Alerts</h5>
-                        <small class="text-muted">System alerts and checks</small>
-                    </div>
-                    <div class="card-body">
-                        @if(isset($qualityAlerts))
-                            <div class="row">
-                                <div class="col-6 mb-3">
-                                    <div class="d-flex justify-content-between">
-                                        <span>Temperature Alerts</span>
-                                        <span class="fw-bold text-warning">{{ $qualityAlerts['temperature_alerts'] ?? 0 }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="d-flex justify-content-between">
-                                        <span>Batch Tests Pending</span>
-                                        <span class="fw-bold text-info">{{ $qualityAlerts['batch_tests_pending'] ?? 0 }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-6 mb-3">
-                                    <div class="d-flex justify-content-between">
-                                        <span>Expired Products</span>
-                                        <span class="fw-bold text-danger">{{ $qualityAlerts['expired_products'] ?? 0 }}</span>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="d-flex justify-content-between">
-                                        <span>Compliance Checks</span>
-                                        <span class="fw-bold text-primary">{{ $qualityAlerts['compliance_checks'] ?? 0 }}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        @else
-                            <div class="text-center py-3">
-                                <i class="ri-shield-check-line fs-1 text-success"></i>
-                                <p class="text-muted mb-0">All quality checks passed</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
+        <div class="card-body">
+            <table class="table table-striped table-bordered">
+                {{-- Table column titles --}}
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Quantity</th>
+                        <th>Expiry</th>
+                        <th>Status</th>
+                        <th>Actions</th> {{-- For buttons like "View" --}}
+                    </tr>
+                </thead>
+                {{-- Loop through each raw material and display it --}}
+                <tbody>
+                    @foreach($rawMaterials as $material)
+                        <tr>
+                            <td>{{ $material->name }}</td>
+                            <td>{{ $material->quantity }}</td>
+                            <td>{{ $material->expiry ?? 'N/A' }}</td>
+                            <td>
+                                @if ($material->quantity <= 150)
+                                   <span class="text-danger">Out of Stock</span>
+                                @elseif ($material->quantity <= 350)
+                                   <span class="text-warning">Limited</span>
+                                @else
+                                   <span class="text-success">Available</span>
+                                @endif
+                            </td>
+                            <td>
+                                {{-- Button to view raw material details --}}
+                                <a href="{{ route('raw_materials.show', $material->id) }}" class="btn btn-sm btn-info">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

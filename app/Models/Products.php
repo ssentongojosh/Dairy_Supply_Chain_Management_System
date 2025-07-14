@@ -18,4 +18,16 @@ class Products extends Model
     protected $casts = [
         'manufacture_date' => 'date',
     ];
+
+    //relationship to the productions and product_usuage table
+    public function productions()
+    {
+        return $this->hasMany(Production::class);
+    }
+
+    public function usages()
+    {
+        return $this->hasMany(ProductUsage::class);
+    }
+
 }
