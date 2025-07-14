@@ -58,7 +58,13 @@ class RawMaterialInventoryController extends Controller
               $color = 'green';
             }
 
-        return view('inventory.details', compact('item', 'status', 'color'));
+            // assuming you have a Batch model related to RawMaterial
+            $batches = $item->batches()->with('supplier')->get();
+            
+            //for the usuage table
+            $usages = $item->usages()->orderBy('used_date', 'desc')->get();
+
+        return view('inventory.details', compact('item', 'status', 'color', 'batches', 'usages'));
         
     }
 
