@@ -57,6 +57,25 @@
   text-transform: uppercase;
   color: #a8b1bb;
   letter-spacing: 0.5px;
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chat-contacts-header .toggle-icon {
+  font-size: 1rem;
+  margin-left: 0.5rem;
+  transition: transform 0.2s;
+}
+
+.chat-contacts-group.collapsed .chat-contacts-items {
+  display: none;
+}
+
+.chat-contacts-group .toggle-icon.rotate {
+  transform: rotate(-90deg);
 }
 
 .chat-contacts-list {
@@ -527,22 +546,60 @@
           </div>
         </div>
 
-        <div class="chat-contacts-header">
-          Contacts
-        </div>
-
         <div class="chat-contacts-list">
-          @forelse($contacts as $c)
-            <button class="chat-contact-item" data-id="{{ $c->id }}" data-name="{{ $c->name }}">
-              <div class="contact-avatar bg-secondary">{{ strtoupper(substr($c->name, 0, 2)) }}</div>
-              <div class="contact-info">
-                <p class="contact-name">{{ $c->name }}</p>
-                <p class="contact-status">{{ $c->role->label() }}</p>
+          @php
+            // Group contacts by role label, preserving their order (already sorted by recent activity)
+            $groupedContacts = [];
+            foreach ($contacts as $c) {
+                $roleLabel = $c->role->label();
+                $groupedContacts[$roleLabel][] = $c;
+            }
+          @endphp
+
+          @php
+    // Example: $unreadContactIds is an array of contact IDs with unread messages, passed from the controller
+    $groupsWithUnread = [];
+    foreach ($groupedContacts as $roleLabel => $roleContacts) {
+        foreach ($roleContacts as $c) {
+            if (!empty($unreadContactIds) && in_array($c->id, $unreadContactIds)) {
+                $groupsWithUnread[$roleLabel] = true;
+                break;
+            }
+        }
+    }
+@endphp
+
+          @foreach($groupedContacts as $roleLabel => $roleContacts)
+            <div class="chat-contacts-group collapsed" data-group="{{ \Illuminate\Support\Str::slug($roleLabel) }}">
+              <div class="chat-contacts-header" tabindex="0">
+                <span>{{ $roleLabel }}
+                  @if(!empty($groupsWithUnread[$roleLabel]))
+          <span class="badge bg-success ms-2" style="font-size: 0.6rem;">●</span>
+        @endif
+                </span>
+                <i class="ri-arrow-down-s-line toggle-icon rotate"></i>
               </div>
-            </button>
-          @empty
-            <p class="text-center text-muted p-3">No contacts available.</p>
-          @endforelse
+              <div class="chat-contacts-items">
+                @foreach($roleContacts as $c)
+                  @php
+                    $avatarColors = ['bg-primary', 'bg-success', 'bg-danger', 'bg-warning', 'bg-info'];
+                    $colorClass = $avatarColors[$c->id % count($avatarColors)];
+                  @endphp
+                  <button class="chat-contact-item" data-id="{{ $c->id }}" data-name="{{ $c->name }}">
+                    <div class="contact-avatar {{$colorClass}}">{{ strtoupper(substr($c->name, 0, 2)) }}</div>
+
+                    <div class="contact-info">
+                      <p class="contact-name">{{ $c->name }}</p>
+                      <p class="contact-status">{{ $roleLabel }}</p>
+                      @if($c->last_message_at)
+                        <small class="text-muted">{{ $c->last_message_at->diffForHumans() }}</small>
+                      @endif
+                    </div>
+                  </button>
+                @endforeach
+              </div>
+            </div>
+          @endforeach
         </div>
       </div>
 
@@ -1050,6 +1107,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 searchInput.focus();
             }
         }
+    });
+
+    // Collapsible group headers
+    document.querySelectorAll('.chat-contacts-header').forEach(function(header) {
+        header.addEventListener('click', function() {
+            const group = header.closest('.chat-contacts-group');
+            const icon = header.querySelector('.toggle-icon');
+            group.classList.toggle('collapsed');
+            if (group.classList.contains('collapsed')) {
+                icon.classList.add('rotate');
+            } else {
+                icon.classList.remove('rotate');
+            }
+        });
+        // Optional: allow keyboard toggle
+        header.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                header.click();
+            }
+        });
     });
 
     console.log('DSCMS Chat App - Initialized successfully');

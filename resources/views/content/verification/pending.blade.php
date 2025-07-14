@@ -109,7 +109,7 @@
         @else
           <h4 class="card-title mb-3 text-warning">⏳ Verification Pending</h4>
           <p class="card-text mb-4">
-            Your business documents have been submitted and are being processed by our verification system.
+            Your business documents have been submitted and processed by our verification system.
           </p>
 
           @if(Auth::user()->verification_notes)
@@ -143,10 +143,9 @@
               <i class="ri-information-line me-2"></i>
               <strong>What happens next?</strong>
               <ul class="mb-0 mt-2">
-                <li>Our AI system processes your documents automatically</li>
-                <li>If automatic verification fails, our team reviews manually</li>
-                <li>You'll receive an email notification with the results</li>
-                <li>Typical processing time: 5 minutes (automatic) or 24-48 hours (manual)</li>
+
+                <li>You'll receive an in-app notification with the results</li>
+                <li><p style="color:red;">Verification failed</p> <p style="color:green;">Please click Upload New Document and try again</p> </li>
               </ul>
             </div>
           @endif
@@ -164,7 +163,7 @@
 
           <p class="text-muted small mt-3">
             <i class="ri-mail-line me-1"></i>
-            You will receive an email notification once your account is verified.
+            You will receive an in-app notification once your account is verified.
           </p>
         @endif
 

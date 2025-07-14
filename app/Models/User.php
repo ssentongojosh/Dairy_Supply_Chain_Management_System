@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 use Laravel\Sanctum\HasApiTokens;
 use App\Enums\Role;
 
@@ -99,6 +101,24 @@ public function childOrders()
 {
     return $this->hasMany(Order::class, 'parent_order_id');
 }
+
+public function tasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'user_id');
+    }
+
+    // You might also want to add a helper method to easily get active tasks count
+    public function getActiveTasksCount(): int
+    {
+        return $this->tasks()
+                    ->whereIn('status', [
+                        Task::STATUS_PENDING,
+                        Task::STATUS_ASSIGNED,
+                        Task::STATUS_IN_PROGRESS,
+                        Task::STATUS_OVERDUE
+                    ])
+                    ->count();
+    }
 }
 
 

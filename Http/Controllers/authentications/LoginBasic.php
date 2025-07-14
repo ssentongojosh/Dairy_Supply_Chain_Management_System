@@ -25,7 +25,7 @@ class LoginBasic extends Controller
       $request->session()->regenerate();
 
       $user = Auth::user();
-      
+
       // Check if user is verified first
       if (!$user->verified) {
         if (!$user->business_document_path) {
@@ -33,7 +33,7 @@ class LoginBasic extends Controller
         }
         return redirect()->route('verification.pending');
       }
-      
+
       // User is verified, redirect to appropriate dashboard
       $redirectUrl = $this->redirectBasedOnRole($user);
       return redirect($redirectUrl);

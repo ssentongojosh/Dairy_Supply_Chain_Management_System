@@ -236,10 +236,10 @@ class OrderController extends Controller
     public function createOrder()
     {
         $user = Auth::user();
-        
+
         // Get allowed sellers based on user role
         $allowedSellers = [];
-        
+
         switch ($user->role->value) {
             case 'retailer':
                 // Retailers can order from wholesalers
@@ -256,14 +256,14 @@ class OrderController extends Controller
             default:
                 abort(403, 'Order creation not allowed for this role.');
         }
-        
+
         // Get available products from allowed sellers
         $products = Product::whereHas('inventory', function($query) use ($allowedSellers) {
             $query->whereIn('user_id', $allowedSellers->pluck('id'));
         })->with(['inventory' => function($query) use ($allowedSellers) {
             $query->whereIn('user_id', $allowedSellers->pluck('id'));
         }])->get();
-        
+
         return view('orders.create', compact('allowedSellers', 'products'));
     }
 
@@ -454,32 +454,88 @@ class OrderController extends Controller
             'plant_manager' => 'plant_manager.order_history',
             default => 'orders.history',
         };
-        
+
 
         return view($view, compact('orders'));
     }
 
+    /**
+     * View order history (orders where user is the seller)
+     */
+    public function history()
+    {
+        $user = Auth::user();
+
+        // Apply filters if provided
+        $query = Order::where('seller_id', $user->id);
+
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        if (request('date_from')) {
+            $query->whereDate('created_at', '>=', request('date_from'));
+        }
+
+        if (request('date_to')) {
+            $query->whereDate('created_at', '<=', request('date_to'));
+        }
+
+        if (request('search')) {
+            $query->whereHas('buyer', function($q) {
+                $q->where('name', 'like', '%' . request('search') . '%');
+            });
+        }
+
+        $orders = $query->with(['buyer', 'items.product'])
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        // Calculate order statistics
+        $stats = [
+            'total_orders' => Order::where('seller_id', $user->id)->count(),
+            'pending_orders' => Order::where('seller_id', $user->id)->where('status', 'pending')->count(),
+            'completed_orders' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count(),
+            'total_revenue' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount'),
+        ];
+
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.orders',
+            'wholesaler' => 'wholesaler.order_history',
+            'plant_manager' => 'plant_manager.order_history',
+            default => 'orders.history',
+        };
+
+        return view($view, compact('orders', 'stats'));
+    }
+
+    public function getProductsForSeller($sellerId)
+    {
+        $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
+        return response()->json($products);
+    }
+
+    /**
+     * Show order details
+     */
     public function showOrder(Order $order)
     {
         $user = Auth::user();
-        
-        // Check if user has permission to view this order
+
+        // Check if user is authorized to view this order
         if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
-            abort(403, 'You do not have permission to view this order.');
+            abort(403, 'Unauthorized access to this order.');
         }
-        
-        // Load the order with relationships
-        $order->load(['buyer', 'seller', 'items.product']);
-        
+
+        $order->load(['seller', 'buyer', 'items.product']);
+
         $view = match($user->role->value) {
-            'retailer' => 'retailer.order-show',
-            'wholesaler' => 'wholesaler.order-show',
-            'plant_manager' => 'plant_manager.order_show',
-            'supplier' => 'supplier.order-show',
-            'farmer' => 'farmer.order-show',
+            'retailer' => 'retailer.order_detail',
+            'wholesaler' => 'wholesaler.order_detail',
+            'plant_manager' => 'plant_manager.order_detail',
             default => 'orders.show',
         };
-        
+
         return view($view, compact('order'));
     }
 
@@ -489,154 +545,65 @@ class OrderController extends Controller
     public function approveOrder(Order $order)
     {
         $user = Auth::user();
-        
-        // Check if user has permission to approve this order
+
+        // Check if user is authorized to approve this order
         if ($order->seller_id !== $user->id) {
-            return response()->json(['success' => false, 'message' => 'You do not have permission to approve this order.'], 403);
+            abort(403, 'Only the seller can approve this order.');
         }
-        
-        // Check if order can be approved
-        if (!in_array($order->status, ['pending', 'pending_review'])) {
-            return response()->json(['success' => false, 'message' => 'This order cannot be approved.'], 400);
-        }
-        
-        try {
-            DB::beginTransaction();
-            
-            // Check inventory availability
-            $canApprove = true;
-            $unavailableItems = [];
-            
-            foreach ($order->items as $item) {
-                $inventory = Inventory::where('user_id', $user->id)
-                    ->where('product_id', $item->product_id)
-                    ->first();
-                
-                if (!$inventory || $inventory->quantity < $item->quantity) {
-                    $canApprove = false;
-                    $unavailableItems[] = $item->product->name ?? 'Product ID ' . $item->product_id;
-                }
-            }
-            
-            if (!$canApprove) {
-                return response()->json([
-                    'success' => false, 
-                    'message' => 'Insufficient inventory for items: ' . implode(', ', $unavailableItems)
-                ], 400);
-            }
-            
-            // Reserve inventory and approve order
-            foreach ($order->items as $item) {
-                $inventory = Inventory::where('user_id', $user->id)
-                    ->where('product_id', $item->product_id)
-                    ->first();
-                
-                if ($inventory) {
-                    $inventory->decrement('quantity', $item->quantity);
-                }
-            }
-            
-            // Update order status
-            $order->update([
-                'status' => 'approved',
-                'approved_at' => now(),
-                'payment_due_date' => now()->addDays(3), // 3 days to pay
-            ]);
-            
-            DB::commit();
 
-            Log::info("Order ID {$order->id} approved by User ID: " . $user->id);
-
-            
-            return response()->json([
-                'success' => true, 
-                'message' => 'Order approved successfully!',
-                'order' => $order->fresh()
-            ]);
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Order approval failed: ' . $e->getMessage(), [
-                'order_id' => $order->id,
-                'user_id' => $user->id
-            ]);
-            
-            return response()->json([
-                'success' => false, 
-                'message' => 'Failed to approve order. Please try again.'
-            ], 500);
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Only pending orders can be approved.');
         }
+
+        $order->update(['status' => 'approved']);
+
+        // You may want to trigger events or notifications here
+        // Event::dispatch(new OrderApproved($order));
+
+        return back()->with('success', 'Order has been approved.');
     }
-    
+
     /**
      * Reject an order
      */
-    public function rejectOrder(Order $order, Request $request)
+    public function rejectOrder(Order $order)
     {
         $user = Auth::user();
-        
-        // Check if user has permission to reject this order
+
+        // Check if user is authorized to reject this order
         if ($order->seller_id !== $user->id) {
-            return response()->json(['success' => false, 'message' => 'You do not have permission to reject this order.'], 403);
+            abort(403, 'Only the seller can reject this order.');
         }
-        
-        // Check if order can be rejected
-        if (!in_array($order->status, ['pending', 'pending_review', 'approved'])) {
-            return response()->json(['success' => false, 'message' => 'This order cannot be rejected.'], 400);
+
+        if ($order->status !== 'pending') {
+            return back()->with('error', 'Only pending orders can be rejected.');
         }
-        
-        $validated = $request->validate([
-            'reason' => 'nullable|string|max:500',
-        ]);
-        
-        try {
-            DB::beginTransaction();
-            
-            // If order was already approved, restore inventory
-            if ($order->status === 'approved') {
-                foreach ($order->items as $item) {
-                    $inventory = Inventory::where('user_id', $user->id)
-                        ->where('product_id', $item->product_id)
-                        ->first();
-                    
-                    if ($inventory) {
-                        $inventory->increment('quantity', $item->quantity);
-                    }
-                }
-            }
-            
-            // Update order status
-            $order->update([
-                'status' => 'rejected',
-                'rejected_at' => now(),
-                'rejection_reason' => $validated['reason'] ?? 'No reason provided',
-            ]);
-            
-            DB::commit();
-            
-            return response()->json([
-                'success' => true, 
-                'message' => 'Order rejected successfully!',
-                'order' => $order->fresh()
-            ]);
-            
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error('Order rejection failed: ' . $e->getMessage(), [
-                'order_id' => $order->id,
-                'user_id' => $user->id
-            ]);
-            
-            return response()->json([
-                'success' => false, 
-                'message' => 'Failed to reject order. Please try again.'
-            ], 500);
-        }
+
+        $order->update(['status' => 'rejected']);
+
+        return back()->with('success', 'Order has been rejected.');
     }
 
-    public function getProductsForSeller($sellerId)
+    /**
+     * Mark an order as shipped
+     */
+    public function markShipped(Order $order)
     {
-        $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
-        return response()->json($products);
+        $user = Auth::user();
+
+        // Check if user is authorized to mark this order as shipped
+        if ($order->seller_id !== $user->id) {
+            abort(403, 'Only the seller can mark this order as shipped.');
+        }
+
+        if ($order->status !== 'approved' && $order->status !== 'processing') {
+            return back()->with('error', 'Only approved or processing orders can be marked as shipped.');
+        }
+
+        $order->update(['status' => 'shipped']);
+
+        return back()->with('success', 'Order has been marked as shipped.');
     }
 }
+
+
