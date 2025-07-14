@@ -8,7 +8,7 @@
     <div class="mb-4">
         <h5>Buyer Information</h5>
         <p><strong>Name:</strong> {{ $order->buyer->name }}</p>
-        <p><strong>Role:</strong> {{ ucfirst($order->buyer->role) }}</p>
+        <p><strong>Role:</strong> {{ ucfirst($order->buyer->role->value) }}</p>
         <p><strong>Email:</strong> {{ $order->buyer->email }}</p>
     </div>
 
@@ -78,7 +78,7 @@
             @endif
         @endif
 
-        <a href="{{ route('plantmanager.orders') }}" class="btn btn-secondary">Back to Orders</a>
+        <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-secondary">Back to Orders</a>
     </div>
 </div>
 @endsection

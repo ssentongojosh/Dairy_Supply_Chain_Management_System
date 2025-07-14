@@ -54,8 +54,8 @@ class HomeController extends Controller
             return redirect()->route('home')->with('error', 'Invalid user role configuration.');
         }
 
-        return $this->redirectBasedOnRoleValue($user);
-        return $this->redirectBasedOnRoleValue($user);
+        return $this->redirectBasedOnRoleValue($userRoleValue);
+
     }
   }
 

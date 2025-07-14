@@ -34,7 +34,7 @@ class OrderController extends Controller
             return redirect()->route('wholesaler.orders');
         }
         elseif ($role === 'plant_manager') {
-            return redirect()->route('plant_manager.dashboard');
+            return redirect()->route('plant_manager.orders');
         }
 
         // Role configuration mapping
