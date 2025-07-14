@@ -247,7 +247,8 @@ Route::get('/inventory', [PrInventoryController::class, 'index']);
 //tryout for supplier inventory
 Route::get('/supplier/inventory', function () {
     return view('supplier.inventory');
-});
+})->name('supplier.inventory');
+Route::get('/supplier/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
 
 
 //route to create a new inventory item

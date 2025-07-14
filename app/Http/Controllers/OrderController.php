@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 
 use App\Models\Product;
+use App\Models\RawMaterial;
+use Carbon\Carbon;
+use App\Models\Delivery;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 use App\Services\OrderWorkflowService;
@@ -77,7 +80,21 @@ class OrderController extends Controller
         ->where('quantity', '<=', $lowStockThreshold)
         ->get();
 
-    return view("{$role}.dashboard", compact('orders', 'recentOrders', 'topProducts', 'monthlyRevenue', 'lowStockItems'));
+    //for counting total low stock
+    $lowStockItems = Inventory::where('user_id', $user->id)
+    ->where('quantity', '<=', $lowStockThreshold)
+    ->get();
+
+    //for the products
+    $products = Product::all(); 
+    //for raw materials 
+    $rawMaterials = RawMaterial::all(); 
+    //for low stock 
+    $totalLowStock = $lowStockItems->count(); 
+    //for deliveries
+    $todayDeliveriesCount = Delivery::whereDate('created_at', Carbon::today())->count();
+
+    return view("{$role}.dashboard", compact('orders', 'recentOrders', 'topProducts', 'monthlyRevenue', 'lowStockItems', 'products', 'rawMaterials', 'totalLowStock', 'todayDeliveriesCount'));
     
 }
 
