@@ -526,6 +526,7 @@ Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(func
     // Route::get('wholesaler/dashboard', [WholesalerDashboardController::class, 'index'])->name('wholesaler.dashboard');
     Route::get('/orders', [OrderController::class, 'index'])->name('wholesaler.orders');
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('wholesaler.order.dashboard');
+    Route::post('/orders/store', [OrderController::class, 'storeOrder'])->name('wholesaler.orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('wholesaler.orders.show');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');

@@ -11,6 +11,8 @@ use Illuminate\Http\Request;
 use App\Services\OrderWorkflowService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Events\Order
 
 class OrderController extends Controller
 {
@@ -34,7 +36,7 @@ class OrderController extends Controller
             return redirect()->route('wholesaler.orders');
         }
         elseif ($role === 'plant_manager') {
-            return redirect()->route('plant_manager.orders');
+            return redirect()->route('plant_manager.orders.history');
         }
 
         // Role configuration mapping
@@ -307,7 +309,7 @@ class OrderController extends Controller
             $this->workflow->processNewOrder($order);
             DB::commit();
 
-            if (auth()->user()->role->value === 'retailer') {
+            if (Auth::user()->role->value === 'retailer') {
                 return redirect()->route('retailer.orders.history')->with('success', 'Order placed successfully!');
             }
             return back()->with('success', 'Order placed successfully.');
@@ -441,7 +443,7 @@ class OrderController extends Controller
 
     public function orderHistory()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $orders = Order::where('seller_id', $user->id)
             ->orderBy('created_at', 'asc')
             ->paginate(10);
@@ -479,6 +481,157 @@ class OrderController extends Controller
         };
         
         return view($view, compact('order'));
+    }
+
+    /**
+     * Approve an order
+     */
+    public function approveOrder(Order $order)
+    {
+        $user = Auth::user();
+        
+        // Check if user has permission to approve this order
+        if ($order->seller_id !== $user->id) {
+            return response()->json(['success' => false, 'message' => 'You do not have permission to approve this order.'], 403);
+        }
+        
+        // Check if order can be approved
+        if (!in_array($order->status, ['pending', 'pending_review'])) {
+            return response()->json(['success' => false, 'message' => 'This order cannot be approved.'], 400);
+        }
+        
+        try {
+            DB::beginTransaction();
+            
+            // Check inventory availability
+            $canApprove = true;
+            $unavailableItems = [];
+            
+            foreach ($order->items as $item) {
+                $inventory = Inventory::where('user_id', $user->id)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+                
+                if (!$inventory || $inventory->quantity < $item->quantity) {
+                    $canApprove = false;
+                    $unavailableItems[] = $item->product->name ?? 'Product ID ' . $item->product_id;
+                }
+            }
+            
+            if (!$canApprove) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Insufficient inventory for items: ' . implode(', ', $unavailableItems)
+                ], 400);
+            }
+            
+            // Reserve inventory and approve order
+            foreach ($order->items as $item) {
+                $inventory = Inventory::where('user_id', $user->id)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+                
+                if ($inventory) {
+                    $inventory->decrement('quantity', $item->quantity);
+                }
+            }
+            
+            // Update order status
+            $order->update([
+                'status' => 'approved',
+                'approved_at' => now(),
+                'payment_due_date' => now()->addDays(3), // 3 days to pay
+            ]);
+            
+            DB::commit();
+
+            Log::info("Order ID {$order->id} approved by User ID: " . $user->id);
+
+            
+            return response()->json([
+                'success' => true, 
+                'message' => 'Order approved successfully!',
+                'order' => $order->fresh()
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order approval failed: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'user_id' => $user->id
+            ]);
+            
+            return response()->json([
+                'success' => false, 
+                'message' => 'Failed to approve order. Please try again.'
+            ], 500);
+        }
+    }
+    
+    /**
+     * Reject an order
+     */
+    public function rejectOrder(Order $order, Request $request)
+    {
+        $user = Auth::user();
+        
+        // Check if user has permission to reject this order
+        if ($order->seller_id !== $user->id) {
+            return response()->json(['success' => false, 'message' => 'You do not have permission to reject this order.'], 403);
+        }
+        
+        // Check if order can be rejected
+        if (!in_array($order->status, ['pending', 'pending_review', 'approved'])) {
+            return response()->json(['success' => false, 'message' => 'This order cannot be rejected.'], 400);
+        }
+        
+        $validated = $request->validate([
+            'reason' => 'nullable|string|max:500',
+        ]);
+        
+        try {
+            DB::beginTransaction();
+            
+            // If order was already approved, restore inventory
+            if ($order->status === 'approved') {
+                foreach ($order->items as $item) {
+                    $inventory = Inventory::where('user_id', $user->id)
+                        ->where('product_id', $item->product_id)
+                        ->first();
+                    
+                    if ($inventory) {
+                        $inventory->increment('quantity', $item->quantity);
+                    }
+                }
+            }
+            
+            // Update order status
+            $order->update([
+                'status' => 'rejected',
+                'rejected_at' => now(),
+                'rejection_reason' => $validated['reason'] ?? 'No reason provided',
+            ]);
+            
+            DB::commit();
+            
+            return response()->json([
+                'success' => true, 
+                'message' => 'Order rejected successfully!',
+                'order' => $order->fresh()
+            ]);
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Order rejection failed: ' . $e->getMessage(), [
+                'order_id' => $order->id,
+                'user_id' => $user->id
+            ]);
+            
+            return response()->json([
+                'success' => false, 
+                'message' => 'Failed to reject order. Please try again.'
+            ], 500);
+        }
     }
 
     public function getProductsForSeller($sellerId)
