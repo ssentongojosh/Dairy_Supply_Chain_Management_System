@@ -125,10 +125,14 @@
                                             <button class="btn btn-sm btn-info me-2 btn-in-progress" data-task-id="{{ $task->id }}">Mark In Progress</button>
                                         @endif
                                         <button class="btn btn-sm btn-success btn-complete-task" data-task-id="{{ $task->id }}">Mark Completed</button>
+                                        @if($task->type === 'premises_inspection' && Auth::user()->role === \App\Enums\Role::INSPECTOR)
+    {{-- Check task type and current user role --}}
+    <button class="btn btn-sm btn-primary ms-2 btn-send-inspection-message mt-3 mb-3" data-task-id="{{ $task->id }}">Send Inspection Message</button>
+@endif
                                     @else
                                         <span class="text-success small">Task Completed!</span>
                                     @endif
-                                    <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-outline-primary float-end">View Details</a>
+                                    <a href="{{ route('tasks.show', $task->id) }}" class="btn btn-sm btn-outline-primary float-end mt-3">View Details</a>
                                 </div>
                             </div>
                         </div>
@@ -263,6 +267,33 @@
                         .catch(error => {
                             console.error('Error marking task as in progress:', error);
                             showToast('Error', 'Failed to mark task as in progress.', false);
+                        });
+                    });
+                });
+            });
+
+            // NEW: Send Inspection Message button logic
+            document.querySelectorAll('.btn-send-inspection-message').forEach(button => {
+                button.addEventListener('click', function () {
+                    const taskId = this.dataset.taskId;
+                    showConfirmation('Are you sure you want to send an initial inspection message to the user?', () => {
+                        fetch(`/tasks/${taskId}/send-inspection-message`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            showToast('Success', data.message, true);
+                            button.disabled = true;
+                            button.textContent = 'Message Sent!';
+                        })
+                        .catch(error => {
+                            console.error('Error sending inspection message:', error);
+                            showToast('Error', 'Failed to send inspection message.', false);
                         });
                     });
                 });

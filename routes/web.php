@@ -463,4 +463,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
     Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
     Route::post('/tasks/{task}/in-progress', [TaskController::class, 'inProgress'])->name('tasks.in-progress');
+    Route::post('/tasks/{task}/send-inspection-message', [TaskController::class, 'sendInspectionMessage'])->name('tasks.send-inspection-message');
 });
