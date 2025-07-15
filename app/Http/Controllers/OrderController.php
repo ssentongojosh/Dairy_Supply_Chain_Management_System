@@ -298,6 +298,7 @@ class OrderController extends Controller
         $view = match($user->role->value) {
             'retailer' => 'retailer.orders',
             'wholesaler' => 'wholesaler.orders',
+            'plant_manager' => 'plant_manager.orders',
             default => 'orders.outgoing',
         };
 
@@ -310,6 +311,19 @@ class OrderController extends Controller
     public function orderHistory()
     {
         $user = auth()->user();
+        if ($user->role->value === 'farmer' || $user->role->value === 'supplier') {
+            $receivedOrders = \App\Models\Order::where('seller_id', $user->id)
+                ->with(['buyer', 'items.product'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            $placedOrders = $user->role->value === 'farmer'
+                ? \App\Models\Order::where('buyer_id', $user->id)
+                    ->with(['seller', 'items.product'])
+                    ->orderBy('created_at', 'desc')
+                    ->get()
+                : collect();
+            return view('orders.history', compact('placedOrders', 'receivedOrders'));
+        }
         $orders = Order::where('seller_id', $user->id)
             ->orderBy('created_at', 'asc')
             ->paginate(10);
@@ -321,7 +335,6 @@ class OrderController extends Controller
             default => 'orders.history',
         };
         
-
         return view($view, compact('orders'));
     }
 
@@ -342,7 +355,7 @@ class OrderController extends Controller
             'wholesaler' => 'wholesaler.order-show',
             'plant_manager' => 'plant_manager.order_show',
             'supplier' => 'supplier.order-show',
-            'farmer' => 'farmer.order-show',
+            'farmer' => 'farmer.order_show',
             default => 'orders.show',
         };
         

@@ -36,6 +36,6 @@
         </tbody>
     </table>
 
-    <a href="{{ route('farmer.orders') }}" class="btn btn-secondary mt-3">Back to Orders</a>
+    <a href="{{ route('farmer.orders.history') }}" class="btn btn-secondary mt-3">Back to Orders</a>
 </div>
 @endsection

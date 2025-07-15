@@ -8,7 +8,7 @@
     <div class="mb-4">
         <h5>Buyer Information</h5>
         <p><strong>Name:</strong> {{ $order->buyer->name }}</p>
-        <p><strong>Role:</strong> {{ ucfirst($order->buyer->role) }}</p>
+        <p><strong>Role:</strong> {{ is_object($order->buyer->role) ? $order->buyer->role->label() : ucfirst($order->buyer->role) }}</p>
         <p><strong>Email:</strong> {{ $order->buyer->email }}</p>
     </div>
 
