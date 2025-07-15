@@ -8,17 +8,26 @@
     <!-- Summary -->
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card border-start border-4 border-primary">
+            <div class="card border-start border-4">
                 <div class="card-body">
-                    <h5 class="card-title">Current Stock</h5>
+                    <h5 class="card-title"><i class="ri-archive-line fs-3"></i>Current Stock</h5>
                     <p class="fw-bold">{{ $item->quantity }} {{ $item->unit }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- image of the product-->
+        <div class="col-md-4">
+            <div class="card border-start border-4">
+                <div class="card-body">
+                    <img src="{{ asset('images/products/' . $item->image) }}" alt="{{ $item->name }}" class="card-img-top" style="height: 100px; object-fit: cover;">
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Incoming Batches -->
-    <h5 class="mt-4">📦 Incoming Batches</h5>
+    <div class=" py-1 px-2 mb-3 w-100"><h5 class="mt-4">📦 Incoming Batches</h5></div>
     <div class="table-responsive mb-4">
         <table class="table table-bordered table-striped">
             <thead>
