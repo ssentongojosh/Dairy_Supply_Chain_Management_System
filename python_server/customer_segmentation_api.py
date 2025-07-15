@@ -8,7 +8,7 @@ app = Flask(__name__)
 
 # ============ Load Data & Train Model On Start =============
 
-DATA_PATH = "customer_segmentation_data.csv"  # or use full path if needed
+DATA_PATH = "../database/seeders/Dataset/customer_segmentation_data.csv"  # or use full path if needed
 df = pd.read_csv(DATA_PATH)
 
 # Encode gender (assuming it's needed)
@@ -50,6 +50,10 @@ def get_segment():
     }
     segment = cluster_labels.get(cluster, f"Cluster {cluster}")
     return jsonify({"segment": segment})
+
+# ====== API endpoint for demand prediction ======
+@app.route("/api/predict_demand", methods=["POST"])
+def predict_demand():
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)  # Runs at http://127.0.0.1:5000
