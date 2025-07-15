@@ -66,6 +66,7 @@ use App\Http\Controllers\SupplierOrderController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\SupplyController;
 
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
@@ -289,7 +290,8 @@ Route::get('/inventory', [PrInventoryController::class, 'index']);
 //tryout for supplier inventory
 Route::get('/supplier/inventory', function () {
     return view('supplier.inventory');
-});
+})->name('supplier.inventory');
+Route::get('/supplier/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
 
 
 //route to create a new inventory item
@@ -301,6 +303,9 @@ Route::post('/inventory', [PrInventoryController::class, 'store'])->name('invent
 Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
 Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
 ;
+
+//supply to show
+Route::get('/inventory/raw-materials', [SupplyController::class, 'index'])->name('inventory.raw_materials');
 
 //tryout
 

@@ -216,13 +216,13 @@
                         <th>Stock</th>
                         <th>Price</th>
                         <th>Status</th>
-                        <th>Added on</th>
+                        <th>Sale Unit</th>
                         <th>Actions</th> {{-- For buttons like "View" --}}
                     </tr>
                 </thead>
                 {{-- Loop through each product and display in the table --}}
                 <tbody>
-                    @foreach($products as $product)grace.nakato@modernmilk.com
+                    @foreach($products as $product)
                         <tr>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->quantity }}</td>
@@ -236,7 +236,7 @@
                                    <span class="text-success">Available</span>
                                 @endif
                             </td>
-                            <td>{{ $product->manufacture_date }}</td>
+                            <td>{{ $product->sale_unit }}</td>
                             <td>
                                 {{-- Button to view product details --}}
                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
@@ -254,7 +254,6 @@
 
     <!-- RAW MATERIALS TABLE -->
     <div class="card">
-grace.nakato@modernmilk.com
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
                 <h5 class="card-title mb-0">Raw Material Management</h5>

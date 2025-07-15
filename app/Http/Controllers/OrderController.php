@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\RawMaterial;
+use Carbon\Carbon;
+use App\Models\Delivery;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 // use Illuminate\Http\Request;
@@ -78,192 +81,57 @@ class OrderController extends Controller
             ->limit(5)
             ->get();
 
-        $orderStats = [
-            'total_orders' => Order::where($config['order_filter'])->count(),
-            'pending_orders' => Order::where($config['order_filter'])->where('status', 'pending')->count(),
-            'completed_orders' => Order::where($config['order_filter'])->where('status', 'completed')->count(),
-            'total_revenue' => Order::where($config['order_filter'])->sum('total_amount'),
-        ];
+        $topProducts = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->join('products', 'order_items.product_id', '=', 'products.id')
+        ->where('orders.seller_id', $user->id)
+        ->select(
+            'products.id',
+            'products.name',
+            DB::raw('SUM(order_items.quantity) as total_sold'),
+            DB::raw('SUM(order_items.quantity * order_items.unit_price) as total_revenue')
+        )
+        ->groupBy('products.id', 'products.name')
+        ->orderByDesc('total_sold')
+        ->limit(5)
+        ->get();
 
-        // Inventory
-        $inventories = Inventory::where('user_id', $user->id)->get();
-        $totalProducts = $inventories->count();
-        $lowStockThreshold = $config['inventory_threshold'];
-        $inventoryStats = [
-            'total_products' => $inventories->count(),
-            'low_stock_items' => $inventories->where('quantity', '<=', $lowStockThreshold)->count(),
-            'out_of_stock' => $inventories->where('quantity', '<=', 0)->count(),
-            'total_value' => $inventories->sum(function($inv) { return $inv->quantity * ($inv->selling_price ?? 0); }),
-        ];
-        $lowStockItems = $inventories->where('quantity', '<=', $lowStockThreshold);
-
-        $topProducts = collect();
-        $monthlyRevenue = collect();
-        $pendingOrdersCount = $orderStats['pending_orders'];
-        $newOrdersToday = 0;
-        $totalRevenueThisMonth = 0;
-        $salesGrowth = 0; // Default value for all roles
-        $outOfStockProductsCount = 0;
-        $lowStockProductsCount = 0;
-        $keyBuyers = collect();
-        if ($role === 'supplier') {
-            $today = now()->startOfDay();
-            $newOrdersToday = \App\Models\Order::where('seller_id', $user->id)
-                ->whereDate('created_at', $today)
-                ->count();
-            $totalRevenueThisMonth = Order::where('seller_id', $user->id)
-                ->whereIn('status', ['shipped', 'delivered', 'received'])
-                ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
-                ->with('items')
-                ->get()
-                ->reduce(function ($carry, $order) {
-                    return $carry + $order->items->sum(function ($item) {
-                        return $item->quantity * $item->unit_price;
-                    });
-                }, 0);
-            // Calculate last month's revenue
-            $lastMonthStart = now()->subMonth()->startOfMonth();
-            $lastMonthEnd = now()->subMonth()->endOfMonth();
-            $lastMonthRevenue = Order::where('seller_id', $user->id)
-                ->whereIn('status', ['shipped', 'delivered', 'received'])
-                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
-                ->with('items')
-                ->get()
-                ->reduce(function ($carry, $order) {
-                    return $carry + $order->items->sum(function ($item) {
-                        return $item->quantity * $item->unit_price;
-                    });
-                }, 0);
-            if ($lastMonthRevenue > 0) {
-                $salesGrowth = (($totalRevenueThisMonth - $lastMonthRevenue) / $lastMonthRevenue) * 100;
-            } else {
-                $salesGrowth = 0;
-            }
-            // Calculate out of stock and low stock products count
-            $outOfStockProductsCount = $inventories->where('quantity', '<=', 0)->count();
-            $lowStockProductsCount = $inventories->where('quantity', '>', 0)->where('quantity', '<=', $lowStockThreshold)->count();
-            // Calculate top buyers (keyBuyers)
-            $keyBuyers = Order::select('buyer_id', DB::raw('COUNT(*) as order_count'), DB::raw('SUM(total_amount) as total_spent'))
-                ->where('seller_id', $user->id)
-                ->whereNotNull('buyer_id')
-                ->groupBy('buyer_id')
-                ->orderByDesc('total_spent')
-                ->with('buyer')
-                ->limit(5)
-                ->get();
-            // Add productsToRestock for supplier dashboard
-            $productsToRestock = Inventory::where('user_id', $user->id)
-                ->where(function ($query) {
-                    $query->where('quantity', 0)
-                          ->orWhereRaw('quantity <= low_stock_threshold');
-                })
-                ->with('product')
-                ->orderBy('quantity', 'asc')
-                ->take(5)
-                ->get();
-            // Add chart data for the last 4 weeks
-            $salesChartData = [];
-            $ordersChartData = [];
-            $salesChartLabels = [];
-            $ordersChartLabels = [];
-            for ($i = 3; $i >= 0; $i--) {
-                $weekStart = now()->subWeeks($i)->startOfWeek();
-                $weekEnd = now()->subWeeks($i)->endOfWeek();
-                $weekLabel = 'Week ' . (4 - $i);
-                $salesChartLabels[] = $weekLabel;
-                $ordersChartLabels[] = $weekLabel;
-                // Weekly sales
-                $weeklySales = Order::where('seller_id', $user->id)
-                    ->whereIn('status', ['shipped', 'delivered', 'received'])
-                    ->whereBetween('created_at', [$weekStart, $weekEnd])
-                    ->with('items')
-                    ->get()
-                    ->reduce(function ($carry, $order) {
-                        return $carry + $order->items->sum(function ($item) {
-                            return $item->quantity * $item->unit_price;
-                        });
-                    }, 0);
-                $salesChartData[] = $weeklySales;
-                // Weekly orders count
-                $weeklyOrders = Order::where('seller_id', $user->id)
-                    ->whereBetween('created_at', [$weekStart, $weekEnd])
-                    ->count();
-                $ordersChartData[] = $weeklyOrders;
-            }
-        }
-
-        $viewData = compact(
-            'orders',
-            'recentOrders',
-            'orderStats',
-            'inventoryStats',
-            'lowStockItems',
-            'topProducts',
-            'monthlyRevenue',
-            'user',
-            'pendingOrdersCount',
-            'newOrdersToday',
-            'totalProducts',
-            'totalRevenueThisMonth',
-            'salesGrowth',
-            'outOfStockProductsCount',
-            'lowStockProductsCount',
-            'keyBuyers'
-        );
-        // Ensure $incomingOrders and $outgoingOrders are sent for wholesaler dashboard
-        if ($role === 'wholesaler') {
-            $viewData['incomingOrders'] = $orders;
-            $viewData['outgoingOrders'] = $orders;
-        }
-        if (isset($productsToRestock)) {
-            $viewData['productsToRestock'] = $productsToRestock;
-        }
-        if ($role === 'supplier') {
-            $viewData['salesChartData'] = $salesChartData;
-            $viewData['ordersChartData'] = $ordersChartData;
-            $viewData['salesChartLabels'] = $salesChartLabels;
-            $viewData['ordersChartLabels'] = $ordersChartLabels;
-        }
-        return view($config['dashboard'], $viewData);
-    }
-
-
-    /**
-     * Show order creation form
-     */
-    public function createOrder()
-    {
-        $user = Auth::user();
         
-        // Get allowed sellers based on user role
-        $allowedSellers = [];
-        
-        switch ($user->role->value) {
-            case 'retailer':
-                // Retailers can order from wholesalers
-                $allowedSellers = User::where('role', 'wholesaler')->get();
-                break;
-            case 'wholesaler':
-                // Wholesalers can order from plant managers
-                $allowedSellers = User::where('role', 'plant_manager')->get();
-                break;
-            case 'plant_manager':
-                // Plant managers can order from suppliers and farmers
-                $allowedSellers = User::whereIn('role', ['supplier', 'farmer'])->get();
-                break;
-            default:
-                abort(403, 'Order creation not allowed for this role.');
-        }
-        
-        // Get available products from allowed sellers
-        $products = Product::whereHas('inventory', function($query) use ($allowedSellers) {
-            $query->whereIn('user_id', $allowedSellers->pluck('id'));
-        })->with(['inventory' => function($query) use ($allowedSellers) {
-            $query->whereIn('user_id', $allowedSellers->pluck('id'));
-        }])->get();
-        
-        return view('orders.create', compact('allowedSellers', 'products'));
-    }
+
+    // Example: Calculate monthly revenue for the last 6 months
+    $monthlyRevenue = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->where('orders.seller_id', $user->id)
+        ->selectRaw('DATE_FORMAT(orders.created_at, "%Y-%m") as month, SUM(order_items.quantity * order_items.unit_price) as revenue')
+        ->groupBy('month')
+        ->orderBy('month')
+        ->limit(6)
+        ->get();
+
+   $lowStockThreshold = 5;  
+
+    $lowStockItems = Inventory::where('user_id', $user->id)
+        ->where('quantity', '<=', $lowStockThreshold)
+        ->get();
+
+    //for counting total low stock
+    $lowStockItems = Inventory::where('user_id', $user->id)
+    ->where('quantity', '<=', $lowStockThreshold)
+    ->get();
+
+    //for the products
+    $products = Product::all(); 
+    //for raw materials 
+    $rawMaterials = RawMaterial::all(); 
+    //for low stock 
+    $totalLowStock = $lowStockItems->count(); 
+    //for deliveries
+    $todayDeliveriesCount = Delivery::whereDate('created_at', Carbon::today())->count();
+
+    return view("{$role}.dashboard", compact('orders', 'recentOrders', 'topProducts', 'monthlyRevenue', 'lowStockItems', 'products', 'rawMaterials', 'totalLowStock', 'todayDeliveriesCount'));
+    
+}
+
 
     /**
      * Store new order from buyer to seller
