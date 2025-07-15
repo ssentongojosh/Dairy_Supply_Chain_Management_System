@@ -498,7 +498,7 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
 Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
     Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders');
-    
+
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plant_manager.order.dashboard');
     Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
     Route::post('/orders', [OrderController::class, 'storeOrder'])->name('plant_manager.orders.store');
@@ -507,7 +507,7 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
     Route::get('/orders/history', [OrderController::class, 'history'])->name('plant_manager.orders.history');
      Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
- 
+
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
 });
 
@@ -597,3 +597,11 @@ Route::post('/raw-materials', [RawMaterialInventoryController::class, 'store'])-
 // ... existing code ...
 Route::get('/wholesaler/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])->name('wholesaler.orders.pay');
 Route::get('/seller/{seller}/products', [OrderController::class, 'getProductsForSeller'])->name('seller.products');
+
+
+// Added by Victory🤗🤗
+// This route displays the customer segmentation summary table & charts pulled from the machine learning model via API.
+// Visit it at: http://127.0.0.1:8000/summary-page
+Route::get('/summary-page', function () {
+    return view('segment-summary');
+});
