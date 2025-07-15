@@ -462,7 +462,10 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
 //plant_manager order
 Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
     Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
-   
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders');
+
+    Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plant_manager.order.dashboard');
+
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders_history');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plant_manager.orders.show');
     Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
@@ -470,6 +473,9 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     Route::patch('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
     Route::patch('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('plant_manager.orders.reject');
     Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
+    Route::get('/orders/history', [OrderController::class, 'history'])->name('plant_manager.orders.history');
+     Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
+
     Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
 });
@@ -574,4 +580,28 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
     Route::post('/tasks/{task}/in-progress', [TaskController::class, 'inProgress'])->name('tasks.in-progress');
     Route::post('/tasks/{task}/send-inspection-message', [TaskController::class, 'sendInspectionMessage'])->name('tasks.send-inspection-message');
+});
+    // Change this name to avoid conflict
+    Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('farmer.orders.history');
+
+    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('farmer.orders.show');
+    Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('farmer.orders.approve');
+    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('farmer.orders.reject');
+    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('farmer.orders.ship');
+
+    // Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
+
+
+Route::post('/products', [ProductController::class, 'store'])->name('product.store')->middleware(['auth', 'role:plant_manager']);
+Route::post('/raw-materials', [RawMaterialInventoryController::class, 'store'])->name('raw_materials.store')->middleware(['auth', 'role:plant_manager']);
+// ... existing code ...
+Route::get('/wholesaler/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])->name('wholesaler.orders.pay');
+Route::get('/seller/{seller}/products', [OrderController::class, 'getProductsForSeller'])->name('seller.products');
+
+
+// Added by Victory🤗🤗
+// This route displays the customer segmentation summary table & charts pulled from the machine learning model via API.
+// Visit it at: http://127.0.0.1:8000/summary-page
+Route::get('/summary-page', function () {
+    return view('segment-summary');
 });

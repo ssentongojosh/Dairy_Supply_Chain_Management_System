@@ -148,9 +148,7 @@ summary.to_csv(os.path.join(OUTPUT_DIR, 'segment_summary.csv'))
 print(f"\nAll charts and summary table saved in: {os.path.abspath(OUTPUT_DIR)}\nYou can tweak groupings or plots by editing this script!\n")
 print(summary)
 
-# === END OF SCRIPT ===
-# You can comment out any section above to skip a plot or analysis.
-# All plots use seaborn/matplotlib only, and are saved as PNGs for easy review.
+
 
 # After clustering, decode Product column for visualization if label-encoded
 if 'Product' in df.columns and 'product_encoder' in locals():
