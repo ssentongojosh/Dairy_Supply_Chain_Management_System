@@ -30,8 +30,8 @@
 
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ $product->name }}</h5>
-            <!--p class="card-text text-muted">{{ Str::limit($product->description, 80) }}</p-->
-            <p class="card-text fw-bold">Price: UGX {{ number_format($product->price) }} / {{ $product->unit_type }}</p>
+            <p class="card-text text-muted">Quantity: {{ number_format($product->quantity) }} {{ $product->unit }}</p>
+            <p class="card-text fw-bold">Price: UGX {{ number_format($product->price) }} /</p>
             <!--a href="{{ route('delivery.create', ['product_id' => $product->id]) }}" class="btn btn-primary mt-auto">Order Now</a-->
             <button type="button" onclick="addToOrder({{ $product->id }}, '{{ $product->name }}')" class="btn btn-primary btn-sm">
               Order Now

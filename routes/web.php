@@ -65,6 +65,7 @@ use App\Http\Controllers\SupplierOrderController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\SupplyController;
 
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
@@ -260,6 +261,9 @@ Route::post('/inventory', [PrInventoryController::class, 'store'])->name('invent
 Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
 Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
 ;
+
+//supply to show
+Route::get('/inventory/raw-materials', [SupplyController::class, 'index'])->name('inventory.raw_materials');
 
 //tryout
 
