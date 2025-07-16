@@ -6,7 +6,11 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 # === 1. Load Data ===
+<<<<<<< HEAD
 DATA_PATH = 'C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/database/seeders/Dataset/customer_segmentation_data_business.csv'
+=======
+DATA_PATH = '../database/seeders/Dataset/customer_segmentation_data.csv'
+>>>>>>> origin/main
 df = pd.read_csv(DATA_PATH)
 
 # === 1b. Set output directory for graphs and summary ===

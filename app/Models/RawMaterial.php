@@ -6,19 +6,26 @@ use Illuminate\Database\Eloquent\Model;
 
 class RawMaterial extends Model
 {
-    //
+    //filled in from table
     protected $fillable = [
         'name',
         'quantity',
+        'unit',
         'expiry',
-        'user_id',
+        'reorder_threshold',
+        'image',
     ];
 
-    /**
-     * Get the user that owns the raw material
-     */
-    public function user()
+    //relation to batch model
+    public function batches()
     {
-        return $this->belongsTo(User::class);
+        return $this->hasMany(RawMaterialBatch::class);
     }
+
+    //relation to usuage model
+    public function usages()
+    {
+        return $this->hasMany(RawMaterialUsage::class);
+    }
+
 }

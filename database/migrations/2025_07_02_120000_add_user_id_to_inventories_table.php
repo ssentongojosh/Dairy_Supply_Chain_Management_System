@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+      if (Schema::hasColumn('inventories', 'user_id')) {
+        return; // Column already exists, no need to add it again
+      }
         Schema::table('inventories', function (Blueprint $table) {
            $table->unsignedBigInteger('user_id')->nullable()->after('id');
            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

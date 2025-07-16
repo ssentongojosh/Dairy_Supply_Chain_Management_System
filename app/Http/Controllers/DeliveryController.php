@@ -97,6 +97,12 @@ class DeliveryController extends Controller
     public function statusPage($id)
 {
     $delivery = Delivery::findOrFail($id);
+    //track supplier
+    $delivery = Delivery::with('sender')->find($id);
+    //gpt
+    if (!$delivery) {
+        abort(404, 'Delivery not found');
+    }
     return view('delivery.status', compact('delivery'));
 }
     //terminate delivery

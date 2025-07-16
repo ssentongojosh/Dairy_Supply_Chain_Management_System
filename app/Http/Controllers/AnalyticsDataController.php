@@ -13,7 +13,7 @@ class AnalyticsDataController extends Controller
      */
     public function getSegmentSummary()
     {
-        $path = storage_path('app/public/segment_summary.csv');
+        $path = storage_path('../python_server/database/pythonfiles/graphs/segment_summary.csv');
 
         if (!file_exists($path)) {
             return response()->json(['error' => 'Segment summary file not found.'], 404);
@@ -28,7 +28,7 @@ class AnalyticsDataController extends Controller
      */
     public function getProductSegmentCounts()
     {
-        $path = storage_path('app/public/product_segment_counts.csv');
+        $path = storage_path('../python_server/database/pythonfiles/graphs/product_segment_counts.csv');
 
         if (!file_exists($path)) {
             return response()->json(['error' => 'Product segment counts file not found.'], 404);

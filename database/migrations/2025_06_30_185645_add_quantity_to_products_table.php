@@ -11,6 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
+      if (Schema::hasColumn("products","quantity")) {
+        return; // Column already exists, no need to add it again
+      }
         Schema::table('products', function (Blueprint $table) {
             $table->integer('quantity')->default(0);
         });

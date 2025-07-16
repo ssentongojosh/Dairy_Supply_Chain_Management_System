@@ -10,6 +10,7 @@ use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Events\CustomerDocumentValidated;
 
 class DocumentVerificationController extends Controller
 {
@@ -121,6 +122,9 @@ class DocumentVerificationController extends Controller
                         'role' => $user->role
                     ]);
 
+                    // Now, dispatch the event
+                    CustomerDocumentValidated::dispatch($user);
+                    Log::info("DEBUG: CustomerDocumentValidated event DISPATCHED for user ID: {$user->id}.");
                     // Redirect directly to dashboard instead of pending page
                     return $this->redirectToDashboard($user);
                 } else {

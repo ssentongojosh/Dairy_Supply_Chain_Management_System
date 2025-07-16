@@ -1,15 +1,18 @@
 package com.dscms.java_server.Services;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.opencv.core.Mat;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.regex.Pattern;
 
 @Service
 public class IdService {
 
-    DocumentVerification documentVerification;
+    private final DocumentVerification documentVerification;
     public IdService(DocumentVerification documentVerification){
         this.documentVerification = documentVerification;
     }
@@ -34,7 +37,31 @@ public class IdService {
             //Check if the text generated contains a NIN
             final Pattern NIN = Pattern.compile(".*\\b(C[M|F])[A-Z0-9]{12}\\b.*");
 
-            if (NIN.matcher(text).matches()){
+            //Facial recognition
+            System.out.println("Starting facial verification...");
+
+            PDDocument doc = PDDocument.load(file);
+            File idFile = DocumentVerification.pdfToImage(doc, 0);
+
+
+            Mat idFace =  FacialRecognitionService.detectAndCropFace(idFile.getPath());
+
+            Mat liveFace = FacialRecognitionService.captureFaceViaExternalApp();
+
+            boolean faceMatches = FacialRecognitionService.compareFaces(idFace, liveFace);
+            if (faceMatches){
+
+              doc.close();
+              System.out.println("Faces match");
+
+            }else {
+
+              doc.close();
+              System.out.println("Faces don't match");
+            }
+
+
+            if (NIN.matcher(text).matches() && faceMatches){
 
               System.out.println("National ID verified successfully!\n");
 
@@ -44,15 +71,8 @@ public class IdService {
               return false;
             }
 
-        } finally {
-            // Clean up temporary PDF file
-            if (file != null && file.exists()) {
-                if (file.delete()) {
-                    System.out.println("Temporary PDF file cleaned up successfully.");
-                } else {
-                    System.out.println("Warning: Could not delete temporary PDF file: " + file.getPath());
-                }
-            }
+        } catch (IOException e) {
+          throw new RuntimeException(e);
         }
 
     }

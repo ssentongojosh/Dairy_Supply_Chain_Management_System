@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 print("🔹 Loading retail sales data...")
 
 # Load the dataset
-file_path = 'C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/database/seeders/Dataset/retail_sales.csv'
+file_path = '../database/seeders/Dataset/retail_sales.csv'
 df = pd.read_csv(file_path)
 
 print("🔹 Cleaning data...")

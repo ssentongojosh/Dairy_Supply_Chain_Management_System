@@ -5,8 +5,13 @@
 <!-- page heading -->
 <h1 class="text-center mb-4">Deliveries</h1>
 
+<!-- trying ut the blade for raw materials -->
+ <a href = "{{ route('inventory.raw_materials') }}">raw materials</a>
+
 <!-- table heading -->
-<div class="card-header bg-primary text-white">Incoming</div>
+<div class="card-header bg-primary text-white py-2"><h4 class="text-white">
+    <i class="ri-file-download-line me-2 fs-3"></i>Incoming</h4>
+</div>
 
 <!-- table for incoming -->
 
@@ -78,6 +83,13 @@
 
     </tbody>
  </table>
+ <!-- trying to see status -->
+  @foreach($delivery as $item)
+ <a href="{{ route('delivery.statusPage', ['id' => $item->id]) }}" class="btn btn-info">
+    View Delivery Status
+</a>
+@endforeach
+
  </div>
 
  @endsection

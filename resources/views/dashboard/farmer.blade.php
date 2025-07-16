@@ -225,14 +225,20 @@
                                         </span>
                                     </div>
                                     <div>
+                                      @if($item->product)
                                         <h6 class="mb-0">{{ $item->product->name }}</h6>
                                         <small class="text-muted">Current: {{ $item->quantity }}L</small>
+                                      @else
+                                      <h6 class="mb-0 text-danger">Product not found</h6>
+                                      <small class="text-muted">Current: {{ $item->quantity }}L</small>
+                                      @endif
                                     </div>
                                 </div>
                                 <div class="text-end">
                                     <small class="text-warning">Low Stock</small>
                                 </div>
                             </div>
+
                         @endforeach
                         <div class="mt-3">
                             <a href="{{ route('farmer.inventory') }}" class="btn btn-sm btn-outline-warning w-100">
