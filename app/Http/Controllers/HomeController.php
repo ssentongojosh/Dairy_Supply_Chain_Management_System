@@ -44,7 +44,9 @@ class HomeController extends Controller
         $userRole = $user->role;
 
         // Ensure $userRole is properly handled
-        if ($userRole instanceof Role) {
+        if ($userRole === null) {
+            return redirect()->route('home')->with('error', 'User role is not set.');
+        }
         if ($userRole instanceof Role) {
             $userRoleValue = $userRole->value;
         } elseif (is_string($userRole)) {
@@ -54,17 +56,17 @@ class HomeController extends Controller
             return redirect()->route('home')->with('error', 'Invalid user role configuration.');
         }
 
-        return $this->redirectBasedOnRoleValue($user);
-        return $this->redirectBasedOnRoleValue($user);
+        return $this->redirectBasedOnRoleValue($userRoleValue);
+
     }
-  }
+
 
     /**
      * Redirect to the specific route based on the user's role.
      * Redirect to the specific route based on the user's role.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $user
+     * @param  string  $roleValue
      * @return \Illuminate\Http\RedirectResponse
      */
     protected function redirectBasedOnRoleValue($roleValue){
@@ -80,14 +82,19 @@ class HomeController extends Controller
             case 'plant_manager':
                 return redirect()->route('plant_manager.dashboard');
             case 'driver':
-                return redirect()->route('driver.dashboard');
+                return redirect()->route('tasks.index');
             case 'supplier':
                 return redirect()->route('supplier.dashboard');
             case 'executive':
                 return redirect()->route('executive.dashboard');
+            case 'inspector':
+                return redirect()->route('tasks.index');
+            // Assuming this is the driver dashboard
             default:
                 return redirect()->route('home')->with('error', 'No dashboard available for your role.');
         }
     }
+
+
   }
 

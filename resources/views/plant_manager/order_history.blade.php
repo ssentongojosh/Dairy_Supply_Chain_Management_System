@@ -50,7 +50,7 @@
 
                         @if(request()->hasAny(['status', 'date_from', 'date_to', 'search']))
                             <div class="mb-3">
-                                <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-outline-secondary btn-sm">
+                                <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-outline-secondary btn-sm">
                                     <i class="ri-close-line"></i> Clear Filters
                                 </a>
                             </div>
@@ -206,7 +206,7 @@
                                                         <a class="dropdown-item" href="{{ route('plant_manager.orders.show', $order) }}">
                                                             <i class="ri-eye-line me-2"></i>View Details
                                                         </a>
-                                                        @if($order->status === 'pending')
+                                                        @if($order->status === 'pending' || $order->status === 'pending_review')
                                                             <button class="dropdown-item text-success" 
                                                                     onclick="approveOrder({{ $order->id }})">
                                                                 <i class="ri-check-line me-2"></i>Approve
@@ -254,7 +254,7 @@
                                     @endif
                                 </p>
                                 @if(request()->hasAny(['status', 'date_from', 'date_to', 'search']))
-                                    <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-outline-primary">
+                                    <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-outline-primary">
                                         <i class="ri-refresh-line me-2"></i>Clear Filters
                                     </a>
                                 @endif
@@ -300,7 +300,7 @@
 function approveOrder(orderId) {
     if (confirm('Are you sure you want to approve this order?')) {
         fetch(`/plant_manager/orders/${orderId}/approve`, {
-            method: 'POST',
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -338,7 +338,7 @@ function confirmRejectOrder() {
     }
 
             fetch(`/plant_manager/orders/${orderId}/reject`, {
-        method: 'POST',
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content

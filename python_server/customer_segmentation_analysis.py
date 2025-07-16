@@ -6,7 +6,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 # === 1. Load Data ===
-DATA_PATH = 'C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/database/seeders/Dataset/customer_segmentation_data.csv'
+DATA_PATH = '../database/seeders/Dataset/customer_segmentation_data.csv'
 df = pd.read_csv(DATA_PATH)
 
 # === 1b. Set output directory for graphs and summary ===
@@ -145,12 +145,32 @@ else:
 
 summary.to_csv(os.path.join(OUTPUT_DIR, 'segment_summary.csv'))
 
+# === Top 3 Products per Segment ===
+if 'Product' in df.columns:
+    # Decode products if label-encoded
+    if 'product_encoder' in locals():
+        df['Product_decoded'] = product_encoder.inverse_transform(df['Product'])
+    else:
+        df['Product_decoded'] = df['Product']
+
+    top_products = (
+        df.groupby('segment')['Product_decoded']
+        .apply(lambda x: x.value_counts().head(3).index.tolist())
+        .reset_index()
+    )
+
+    # Expand the top 3 into separate columns
+    top_products[['top1', 'top2', 'top3']] = pd.DataFrame(top_products['Product_decoded'].tolist(), index=top_products.index)
+    top_products = top_products.drop(columns=['Product_decoded'])
+
+    # Save to CSV
+    top_products.to_csv(os.path.join(OUTPUT_DIR, 'segment_top3_products.csv'), index=False)
+    print("\nTop 3 products per segment saved to:", os.path.join(OUTPUT_DIR, 'segment_top3_products.csv'))
+
 print(f"\nAll charts and summary table saved in: {os.path.abspath(OUTPUT_DIR)}\nYou can tweak groupings or plots by editing this script!\n")
 print(summary)
 
-# === END OF SCRIPT ===
-# You can comment out any section above to skip a plot or analysis.
-# All plots use seaborn/matplotlib only, and are saved as PNGs for easy review.
+
 
 # After clustering, decode Product column for visualization if label-encoded
 if 'Product' in df.columns and 'product_encoder' in locals():
