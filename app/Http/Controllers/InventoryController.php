@@ -35,11 +35,11 @@ class InventoryController extends Controller
 
             case 'wholesaler':
                 // Redirect wholesalers to their inventory page
-                return redirect()->route('wholesaler.inventory');
+                return redirect()->route('catalog.index');
 
             case 'farmer':
                 // Redirect farmers to their inventory page
-                return redirect()->route('plant_manager.inventory');
+                return redirect()->route('inventory.raw_materials');
 
             case 'plant_manager':
                 // Redirect plant managers to their inventory page
