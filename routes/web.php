@@ -599,9 +599,4 @@ Route::get('/wholesaler/orders/{order}/pay', [PaymentController::class, 'initiat
 Route::get('/seller/{seller}/products', [OrderController::class, 'getProductsForSeller'])->name('seller.products');
 
 
-// Added by Victory🤗🤗
-// This route displays the customer segmentation summary table & charts pulled from the machine learning model via API.
-// Visit it at: http://127.0.0.1:8000/summary-page
-Route::get('/summary-page', function () {
-    return view('segment-summary');
-});
+;

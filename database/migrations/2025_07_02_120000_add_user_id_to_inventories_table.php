@@ -12,8 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('inventories', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->nullable()->after('id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+           $table->unsignedBigInteger('user_id')->nullable()->after('id');
+           $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -27,4 +27,4 @@ return new class extends Migration
             $table->dropColumn('user_id');
         });
     }
-}; 
+};
