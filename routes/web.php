@@ -398,6 +398,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/retailer/dashboard', [OrderController::class, 'index'])->name('dashboard.retailer'); // Fixed: was '/dashboard'
 Route::get('/retailer/orders', [OrderController::class, 'outgoingOrders'])->name('retailer.orders');
 Route::post('/retailer/orders', [OrderController::class, 'storeOrder'])->name('retailer.orders.store');
+Route::get('/retailer/orders/create', [OrderController::class, 'createOrder'])->name('retailer.orders.create');
 Route::get('/retailer/orders/{order}', function (\App\Models\Order $order) {
     return view('retailer.order-show', compact('order'));
 })->middleware('auth')->name('retailer.orders.show');
