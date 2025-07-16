@@ -5,16 +5,13 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 import os
 import numpy as np
+import numpy as np
 
 app = Flask(__name__)
 
 # ============ Load Data & Train Model On Start =============
 
-<<<<<<< HEAD
-DATA_PATH = "C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/database/seeders/Dataset/customer_segmentation_data_business.csv"
-=======
 DATA_PATH = "../database/seeders/Dataset/customer_segmentation_data.csv"  # or use full path if needed
->>>>>>> origin/main
 df = pd.read_csv(DATA_PATH)
 
 # Encode categorical variables
@@ -36,11 +33,8 @@ kmeans = KMeans(n_clusters=5, random_state=42)
 kmeans.fit(scaled_features)
 
 # ============ Load Top 3 Products per Segment =============
-<<<<<<< HEAD
 TOP3_PATH = os.path.join(os.path.dirname(__file__), '../storage/app/public/business_segment_top3_products.csv')
-=======
 TOP3_PATH = os.path.join(os.path.dirname(__file__), '../python_server/database/pythonfiles/graphs/segment_top3_products.csv')
->>>>>>> origin/main
 if not os.path.exists(TOP3_PATH):
     # Try absolute path fallback
     TOP3_PATH = 'storage/app/public/business_segment_top3_products.csv'
@@ -50,7 +44,7 @@ segment_to_products = {
     for _, row in top3_df.iterrows()
 }
 
-# ====== API endpoint to segment a new business customer ======
+# ====== API endpoint to segment a new customer ======
 @app.route("/api/segment", methods=["POST"])
 def get_segment():
     """
@@ -147,21 +141,6 @@ def generate_features_for_day(current_date: datetime,
                               ohe_encoder # <--- Corrected line!
                               ) -> pd.DataFrame:
     """
-<<<<<<< HEAD
-    Expects JSON with: {"segment": "Medium Business"}
-    Returns: {"recommended_products": ["Product 1", "Product 2", "Product 3"]}
-    """
-    data = request.json
-    if not data:
-        return jsonify({"error": "No data provided"}), 400
-
-    segment = data.get("segment")
-    products = segment_to_products.get(segment)
-    if products:
-        return jsonify({"recommended_products": products})
-    else:
-        return jsonify({"recommended_products": []}), 404
-=======
     Generates a single row DataFrame of features for prediction for a given date, product, and mall,
     using provided historical context.
     """
@@ -358,7 +337,6 @@ def predict_single_demand():
 
 
 # ====== Run the Flask app ======
->>>>>>> origin/main
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)  # Runs at http://127.0.0.1:5000

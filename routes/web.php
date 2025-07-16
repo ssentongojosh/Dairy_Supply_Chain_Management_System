@@ -625,9 +625,6 @@ Route::get('/retailer/orders/history', [OrderController::class, 'orderHistory'])
     ->name('retailer.orders.history')
     ->middleware(['auth', 'role:retailer']);
 
-<<<<<<< HEAD
-;
-=======
 // Plant manager order history route
 Route::get('/plant_manager/orders/history', [OrderController::class, 'orderHistory'])
     ->name('plant_manager.orders.history')
@@ -637,4 +634,3 @@ Route::get('/plant_manager/orders/history', [OrderController::class, 'orderHisto
 Route::get('/supplier/orders/history', [OrderController::class, 'orderHistory'])
     ->name('supplier.orders.history')
     ->middleware(['auth', 'role:supplier']);
->>>>>>> origin/main
