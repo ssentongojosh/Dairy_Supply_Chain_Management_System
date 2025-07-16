@@ -77,6 +77,14 @@ class OrderController extends Controller
             ->with(['seller', 'buyer', 'items.product'])
             ->get();
 
+        // Always define orderStats for all roles
+        $orderStats = [
+            'pending_orders' => $orders->where('status', 'pending')->count(),
+            'completed_orders' => $orders->whereIn('status', ['delivered', 'received'])->count(),
+            'total_orders' => $orders->count(),
+            'total_revenue' => $orders->whereIn('status', ['delivered', 'received'])->sum('total_amount'),
+        ];
+
         $recentOrders = Order::where($config['order_filter'])
             ->with(['seller', 'buyer', 'items.product'])
             ->orderBy('created_at', 'asc')
@@ -450,6 +458,28 @@ class OrderController extends Controller
         return view($view, [
             'orders' => $orders,
             'outgoingOrders' => $orders
+        ]);
+    }
+
+    public function incomingOrders()
+    {
+        $user = Auth::user();
+        $orders = Order::where('buyer_id', $user->id)
+            ->where('status', '!=', 'cancelled') // Exclude cancelled orders
+            ->with(['seller', 'items.product'])
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        // Return appropriate view based on user role
+        $view = match($user->role->value) {
+            'wholesaler' => 'wholesaler.orders',
+            'plant_manager' => 'plant_manager.orders',
+            default => 'orders.incoming',
+        };
+
+        return view($view, [
+            'orders' => $orders,
+            'incomingOrders' => $orders
         ]);
     }
 
