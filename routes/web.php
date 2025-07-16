@@ -626,3 +626,15 @@ Route::get('/plant_manager/orders/history', [OrderController::class, 'orderHisto
 Route::get('/supplier/orders/history', [OrderController::class, 'orderHistory'])
     ->name('supplier.orders.history')
     ->middleware(['auth', 'role:supplier']);
+
+
+
+
+//i can see you this is important
+//dont touch
+Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+Route::get('/tasks/{task}/show/', [TaskController::class, 'show'])->name('tasks.show');
+Route::post('/tasks/{task}/complete',[TaskController::class, 'complete'])->name('tasks.complete');
+Route::post('/tasks/{task}/inprogress',[TaskController::class, 'inProgress'])->name('tasks.inprogress');
+Route::post('/tasks/{task}/send-inspection-message',[TaskController::class, 'sendInspectionMessage'])->name('tasks.sendInspectionMessage');
+
