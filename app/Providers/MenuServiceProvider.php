@@ -3,9 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\Facades\View;
-use Illuminate\Routing\Route;
-
 use Illuminate\Support\ServiceProvider;
+use App\Http\View\Composers\MenuComposer;
 
 class MenuServiceProvider extends ServiceProvider
 {
@@ -22,10 +21,10 @@ class MenuServiceProvider extends ServiceProvider
    */
   public function boot(): void
   {
-    $verticalMenuJson = file_get_contents(base_path('resources/menu/verticalMenu.json'));
-    $verticalMenuData = json_decode($verticalMenuJson);
-
-    // Share all menuData to all the views
-    $this->app->make('view')->share('menuData', [$verticalMenuData]);
+    // Register the MenuComposer for views that need menu data
+    View::composer([
+      'layouts.sections.menu.verticalMenu',
+      'layouts.*'
+    ], MenuComposer::class);
   }
 }

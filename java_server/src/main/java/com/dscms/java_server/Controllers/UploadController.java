@@ -3,6 +3,7 @@ package com.dscms.java_server.Controllers;
 import com.dscms.java_server.Requests.ValidationRequest;
 import com.dscms.java_server.Services.IdService;
 import com.dscms.java_server.Services.UrsbCertificateService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,12 +21,22 @@ public class UploadController {
     }
 
     @PostMapping("/verification")
-    public ResponseEntity<?> fileUpload(@ModelAttribute ValidationRequest request){
+    public ResponseEntity<?> fileUpload(@Valid @ModelAttribute ValidationRequest request){
 
-      if(idService.isVerified(request.getNationalId()) && ursbCertificateService.isVerified(request.getUrsbCertificate())){
+      // Run both verifications independently to ensure both are processed
+      boolean idVerified = idService.isVerified(request.getNationalId());
+      boolean ursbVerified = ursbCertificateService.isVerified(request.getUrsbCertificate());
+
+      if(idVerified && ursbVerified){
         return  ResponseEntity.ok("Verified successfully");
-      }else
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Verification failed! Please upload a file of a compatible type and the contents on must be clear");
+      }else {
+        String message = "Verification failed! ";
+        if (!idVerified) message += "National ID verification failed. ";
+        if (!ursbVerified) message += "URSB Certificate verification failed. ";
+        message += "Please upload files of compatible types with clear, readable content.";
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+      }
 
     }
 

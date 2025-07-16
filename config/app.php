@@ -180,6 +180,8 @@ return [
     App\Providers\EventServiceProvider::class,
     App\Providers\RouteServiceProvider::class, // <-- YOUR NEWLY ADDED PROVIDER
     // Add any other custom providers like App\Providers\FortifyServiceProvider if using Fortify, etc.
+    Barryvdh\DomPDF\ServiceProvider::class,
+    Maatwebsite\Excel\ExcelServiceProvider::class,
 
   ],
 
@@ -196,6 +198,7 @@ return [
 
   'aliases' => Facade::defaultAliases()->merge([ // Ensure use Illuminate\Support\Facades\Facade; is at the top
     // 'Example' => App\Facades\Example::class,
+    
   ])->toArray(),
 
 ];

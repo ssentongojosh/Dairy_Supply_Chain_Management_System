@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\Inventory;
 use App\Models\Product;
+use App\Models\ProductItem;
+use App\Models\RawMaterial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -15,6 +17,50 @@ class PlantManagerDashboard extends Controller
     public function index()
     {
         $user = Auth::user();
+
+        // Get user's product items (using new ProductItem model)
+        $productItems = ProductItem::where('user_id', $user->id)
+                                   ->with('product')
+                                   ->where('status', 'active')
+                                   ->get();
+
+        // Separate finished products from raw materials based on category
+       
+
+        // Raw materials - for now using both ProductItem and RawMaterial models
+        $rawMaterialsFromProducts = $productItems->filter(function($item) {
+            return !in_array($item->product->category, ['Milk', 'Yogurt', 'Cheese', 'Butter', 'Cream']);
+        });
+
+        // Legacy raw materials from RawMaterial model
+        $rawMaterialsFromModel = RawMaterial::where('user_id', $user->id)->get();
+
+        // Combine both sources
+        $products = $productItems->filter(function($item) {
+            return in_array($item->product->category, ['Milk', 'Yogurt', 'Cheese', 'Butter', 'Cream']);
+        });
+
+// And update the $rawMaterials section:
+$rawMaterials = $rawMaterialsFromModel->merge($rawMaterialsFromProducts->map(function($item) {
+    // Instead of creating stdClass, just return the item with additional properties
+    $item->setAttribute('name', $item->product->name);
+    $item->setAttribute('expiry_date', $item->expiry_date);
+    return $item;
+}));
+        // Calculate low stock items from ProductItems
+        $totalLowStock = $productItems->filter(function($item) {
+            return $item->quantity <= $item->minimum_stock;
+        })->count();
+
+        // Stats for delivery activity
+        $stats = [
+            'incoming_deliveries' => Order::where('buyer_id', Auth::id())
+                                          ->where('status', 'shipped')
+                                          ->count(),
+            'outgoing_deliveries' => Order::where('seller_id', Auth::id())
+                                          ->where('status', 'shipped')
+                                          ->count(),
+        ];
 
         // Production and Processing Statistics
         $productionStats = [
@@ -50,6 +96,20 @@ class PlantManagerDashboard extends Controller
                             ->orderBy('created_at', 'desc')
                             ->limit(5)
                             ->get();
+
+        // Recent Incoming Orders (as seller)
+        $incomingOrders = Order::where('seller_id', Auth::id())
+            ->with(['buyer', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Recent Outgoing Orders (as buyer)
+        $outgoingOrders = Order::where('buyer_id', Auth::id())
+            ->with(['seller', 'items.product'])
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
 
         // Order Statistics
         $orderStats = [
@@ -102,14 +162,27 @@ class PlantManagerDashboard extends Controller
             ],
         ];
 
+        // Today's Deliveries Count
+        $todayDeliveriesCount = Order::where('seller_id', Auth::id())
+            ->where('status', 'delivered')
+            ->whereDate('updated_at', today())
+            ->count();
+
         return view('plant_manager.dashboard', compact(
             'user',
+            'products',           // Added for the view
+            'rawMaterials',       // Added for the view
+            'totalLowStock',      // Added for the view
+            'stats',              // Added for the view
             'productionStats',
             'inventoryStats',
             'recentOrders',
             'orderStats',
             'qualityAlerts',
-            'productionLines'
+            'productionLines',
+            'incomingOrders',
+            'outgoingOrders',
+            'todayDeliveriesCount' // Pass to view
         ));
     }
 

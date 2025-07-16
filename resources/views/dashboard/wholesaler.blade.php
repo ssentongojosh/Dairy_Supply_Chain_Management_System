@@ -123,15 +123,16 @@
                             <tbody class="table-border-bottom-0">
                                 @forelse($recentOrders as $order)
                                     <tr>
-                                        <td><i class="ri-briefcase-line text-primary me-3"></i> <strong>#{{ $order->id }}</strong></td>
-                                        <td>{{ $order->customer_name }}</td>
-                                        <td>UGX {{ number_format($order->total_amount,2) }}</td>
+                                        <td><i class="ri-briefcase-line text-primary me-3"></i> <strong>#{{ $order->id ?? 'N/A' }}</strong></td>
+                                        <td>{{ optional($order->buyer)->name ?? 'N/A' }}</td>
+                                        <td>UGX {{ number_format($order->total_amount ?? 0, 2) }}</td>
                                         <td>
-                                            @if($order->status=='pending')<span class="badge bg-label-warning">Pending</span>
-                                            @elseif($order->status=='shipped')<span class="badge bg-label-info">Shipped</span>
-                                            @else<span class="badge bg-label-success">Delivered</span>@endif
+                                            @if(($order->status ?? '')=='pending')<span class="badge bg-label-warning">Pending</span>
+                                            @elseif(($order->status ?? '')=='shipped')<span class="badge bg-label-info">Shipped</span>
+                                            @elseif(($order->status ?? '')=='delivered')<span class="badge bg-label-success">Delivered</span>
+                                            @else<span class="badge bg-label-secondary">Unknown</span>@endif
                                         </td>
-                                        <td>{{ $order->created_at->format('M d, Y') }}</td>
+                                        <td>{{ $order->created_at ? $order->created_at->format('M d, Y') : 'N/A' }}</td>
                                         <td>
                                             <div class="dropdown">
                                                 <button class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="ri-more-2-line"></i></button>

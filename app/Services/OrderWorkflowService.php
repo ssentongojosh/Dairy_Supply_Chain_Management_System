@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Events\OrderApproved;
 use App\Models\Order;
 use App\Models\Inventory;
 use Illuminate\Support\Facades\DB;
@@ -70,6 +71,7 @@ class OrderWorkflowService
             'payment_due_date' => now()->addDays(3), // 3 days to pay
         ]);
 
+        OrderApproved::dispatch($order);
         // Reserve inventory (reduce quantities)
         foreach ($order->items as $item) {
             $inventory = Inventory::where('user_id', $order->seller_id)

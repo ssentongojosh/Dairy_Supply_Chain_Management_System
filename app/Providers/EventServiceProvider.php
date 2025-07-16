@@ -7,6 +7,16 @@ use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
 
+// my custom events
+use App\Events\OrderApproved;
+use App\Events\CustomerDocumentValidated;
+use App\Events\InventoryThresholdReached;
+
+// my custom listeners
+use App\Listeners\AssignProductDeliveryTask;
+use App\Listeners\AssignPremisesInspectionTask;
+use App\Listeners\AssignMilkPickupTask;
+
 class EventServiceProvider extends ServiceProvider
 {
     /**
@@ -15,14 +25,25 @@ class EventServiceProvider extends ServiceProvider
      * @var array<class-string, array<int, class-string>>
      */
     protected $listen = [
+
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        // Add your other event listeners here
+        //Add your other event listeners here
         // Example:
         // \App\Events\OrderShipped::class => [
         //     \App\Listeners\SendShipmentNotification::class,
         // ],
+         // Your custom event-listener mappings for task assignment
+        OrderApproved::class => [
+            AssignProductDeliveryTask::class,
+        ],
+        CustomerDocumentValidated::class => [
+            AssignPremisesInspectionTask::class,
+        ],
+        InventoryThresholdReached::class => [
+            AssignMilkPickupTask::class,
+        ],
     ];
 
     /**

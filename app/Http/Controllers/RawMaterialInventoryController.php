@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\RawMaterial;
 use App\Models\Inventory;
+use App\Models\Order;
 
 class RawMaterialInventoryController extends Controller
 {
@@ -25,7 +26,22 @@ class RawMaterialInventoryController extends Controller
 
     //store
     public function store(Request $request)
-{
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'quantity' => 'required|integer|min:1',
+        ]);
+
+        // Create a new Product as a raw material
+        $rawMaterial = new \App\Models\Product();
+        $rawMaterial->name = $validated['name'];
+        $rawMaterial->quantity = $validated['quantity'];
+        $rawMaterial->category = 'Raw Milk';
+        $rawMaterial->created_by = auth()->id(); // if you have such a column
+        $rawMaterial->save();
+
+        return redirect()->back()->with('success', 'Raw material added!');
+ 
     $data = $request->validate([
         'name' => 'required|string|max:15',
         'quantity' => 'required|integer|min:1',
@@ -108,5 +124,36 @@ class RawMaterialInventoryController extends Controller
         }
         return view('inventory.details', compact('item'));
     }
+
+    //for continuous update of raw material
+    public function updateQuantity(Request $request, $id)
+    {
+    $item = RawMaterial::findOrFail($id);
+    $item->quantity = $request->input('quantity');
+    $item->save();
+
+    // Auto-reorder logic
+    if ($item->quantity < $item->threshold) {
+        // Check if an order for this material already exists and is pending
+        $existingOrder = Order::where('raw_material_id', $item->id)
+                              ->where('status', 'pending')
+                              ->first();
+
+        if (!$existingOrder) {
+            // Create new auto-reorder
+            Order::create([
+                'raw_material_id' => $item->id,
+                'quantity' => $item->reorder_quantity ?? 100, // you can decide this
+                'status' => 'pending',
+                'type' => 'auto', // optional to indicate it's system-generated
+                'supplier_id' => $item->supplier_id, // if you track supplier per material
+            ]);
+
+            Log::info("Auto-reorder triggered for {$item->name}");
+        }
+    }
+
+    return redirect()->back()->with('success', 'Stock updated.');
+   }
 
 };   

@@ -3,9 +3,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use App\Enums\Role;
+// use App\Enums\Role;
 class HomeController extends Controller
 {
     /**
@@ -44,7 +44,10 @@ class HomeController extends Controller
         $userRole = $user->role;
 
         // Ensure $userRole is properly handled
-        if ($userRole instanceof \App\Enums\Role) {
+        if ($userRole === null) {
+            return redirect()->route('home')->with('error', 'User role is not set.');
+        }
+        if ($userRole instanceof Role) {
             $userRoleValue = $userRole->value;
         } elseif (is_string($userRole)) {
             $userRoleValue = $userRole;
@@ -54,16 +57,19 @@ class HomeController extends Controller
         }
 
         return $this->redirectBasedOnRoleValue($userRoleValue);
+
     }
 
+
     /**
-     * Redirect to the specific route based on the role value.
+     * Redirect to the specific route based on the user's role.
+     * Redirect to the specific route based on the user's role.
      *
+     * @param  \App\Models\User  $user
      * @param  string  $roleValue
      * @return \Illuminate\Http\RedirectResponse
      */
-    protected function redirectBasedOnRoleValue($roleValue)
-    {
+    protected function redirectBasedOnRoleValue($roleValue){
         switch ($roleValue) {
             case 'admin':
                 return redirect()->route('dashboard.analytics');
@@ -76,13 +82,19 @@ class HomeController extends Controller
             case 'plant_manager':
                 return redirect()->route('plant_manager.dashboard');
             case 'driver':
-                return redirect()->route('driver.dashboard');
+                return redirect()->route('tasks.index');
             case 'supplier':
                 return redirect()->route('supplier.dashboard');
             case 'executive':
                 return redirect()->route('executive.dashboard');
+            case 'inspector':
+                return redirect()->route('tasks.index');
+            // Assuming this is the driver dashboard
             default:
                 return redirect()->route('home')->with('error', 'No dashboard available for your role.');
         }
     }
-}
+
+
+  }
+

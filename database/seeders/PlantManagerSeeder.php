@@ -21,7 +21,7 @@ class PlantManagerSeeder extends Seeder
                 'password' => Hash::make('password'),
                 'role' => Role::PLANT_MANAGER,
                 'verified' => true,
-                
+                'business_document_path' => 'documents/james_okello_business.pdf',
              
             ],
             [

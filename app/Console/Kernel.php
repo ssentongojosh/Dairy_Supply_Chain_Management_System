@@ -25,8 +25,23 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
-        $schedule->command('products:check-thresholds')->hourly();
-        $schedule->command('rawmaterials:check-thresholds')->everyFiveMinutes();
+         // Schedule the command to run daily at a specific time
+        // We've set send_time in config as HH:MM, so let's run this AFTER that time
+        // For example, if users set reports for 08:00 AM, run the command at 08:05 AM.
+        $schedule->command('reports:send-scheduled')
+                 ->dailyAt('08:05') // Runs every day at 08:05 AM
+                 ->timezone('Africa/Kampala') // Set this to your application's timezone
+                 ->onSuccess(function () {
+                    // This callback is executed if the command runs successfully
+                    // Log::info('reports:send-scheduled command ran successfully.');
+                 })
+                 ->onFailure(function () {
+                    // This callback is executed if the command fails
+                    // Log::error('reports:send-scheduled command failed!');
+                 });
+
+        // You can add more schedules if needed, e.g., to clear old logs
+        // $schedule->command('log:clear')->daily();
     }
 
     /**

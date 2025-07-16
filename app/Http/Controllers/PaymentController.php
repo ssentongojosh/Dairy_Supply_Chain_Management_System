@@ -135,13 +135,8 @@ public function verifyPayment(Request $request, Order $order)
 protected function canVerifyPayment(Order $order): bool
 {
     $user = auth()->user();
-    return match($user->role) {
-        'retailer'   => $order->buyer_id === $user->id,
-        'wholesaler' => $order->seller_id === $user->id && $order->buyer->role === 'retailer',
-        'factory'    => $order->seller_id === $user->id && $order->buyer->role === 'wholesaler',
-        'supplier'   => $order->seller_id === $user->id && $order->buyer->role === 'factory',
-        default      => false
-    };
+    // Only the buyer of the order can verify/pay
+    return $order->buyer_id === $user->id;
 }
 
 protected function verifyPaymentForRole(Payment $payment, string $transactionId): bool

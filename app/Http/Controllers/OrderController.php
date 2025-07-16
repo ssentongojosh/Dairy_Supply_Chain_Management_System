@@ -3,16 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
-
+use App\Models\User;
 use App\Models\Product;
 use App\Models\RawMaterial;
 use Carbon\Carbon;
 use App\Models\Delivery;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
+// use Illuminate\Http\Request;
 use App\Services\OrderWorkflowService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Events\OrderApproved;
 
 class OrderController extends Controller
 {
@@ -26,26 +29,59 @@ class OrderController extends Controller
     /**
      * View all incoming orders for authenticated user based on role
      */
- public function index()
-{
-    $user = Auth::user();
-    $role = $user->role->value; // assuming enum Role
+    public function index()
+    {
+        $user = Auth::user();
+        $role = $user->role->value;
 
-    $orders = Order::where('seller_id', $user->id)
-        ->when($role === 'wholesaler', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'retailer')))
-        ->when($role === 'plantmanager', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'wholesaler')))
-        ->when($role === 'supplier', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'plantmanager
-        ')))
-        ->when($role === 'farmer', fn($q) => $q->whereHas('buyer', fn($q) => $q->where('role', 'supplier')))
-        ->with(['buyer', 'items.product'])
-        ->get();
+        // Redirect plant managers to their dedicated dashboard
+        if ($role === 'wholesaler') {
+            return redirect()->route('wholesaler.orders');
+        }
+        elseif ($role === 'plant_manager') {
+            return redirect()->route('plant_manager.orders');
+        }
 
-    // Prepare recent orders for supplier (limit 5, ordered by creation date desc)
-    $recentOrders = Order::where('seller_id', $user->id)
-        ->with(['buyer', 'items.product'])
-        ->orderBy('created_at', 'desc')
-        ->limit(5)
-        ->get();
+        // Role configuration mapping
+        $roleConfig = [
+            'retailer' => [
+                'dashboard' => 'retailer.dashboard',
+                'order_filter' => ['buyer_id' => $user->id],
+                'inventory_threshold' => 5,
+            ],
+            'wholesaler' => [
+                'dashboard' => 'wholesaler.dashboard',
+                'order_filter' => ['buyer_id' => $user->id],
+                'inventory_threshold' => 10,
+            ],
+            'supplier' => [
+                'dashboard' => 'supplier.dashboard',
+                'order_filter' => ['seller_id' => $user->id],
+                'inventory_threshold' => 10,
+            ],
+            'farmer' => [
+                'dashboard' => 'farmer.dashboard',
+                'order_filter' => ['seller_id' => $user->id],
+                'inventory_threshold' => 10,
+            ],
+        ];
+
+        if (!isset($roleConfig[$role])) {
+            return view('dashboard.under_construction', ['message' => 'Dashboard for your role is under construction.']);
+        }
+
+        $config = $roleConfig[$role];
+
+        // Orders
+        $orders = Order::where($config['order_filter'])
+            ->with(['seller', 'buyer', 'items.product'])
+            ->get();
+
+        $recentOrders = Order::where($config['order_filter'])
+            ->with(['seller', 'buyer', 'items.product'])
+            ->orderBy('created_at', 'asc')
+            ->limit(5)
+            ->get();
 
         $topProducts = DB::table('order_items')
         ->join('orders', 'order_items.order_id', '=', 'orders.id')
@@ -62,42 +98,185 @@ class OrderController extends Controller
         ->limit(5)
         ->get();
 
-        
+        // Inventory
+        $inventories = Inventory::where('user_id', $user->id)->get();
+        $totalProducts = $inventories->count();
+        $lowStockThreshold = $config['inventory_threshold'];
+        $inventoryStats = [
+            'total_products' => $inventories->count(),
+            'low_stock_items' => $inventories->where('quantity', '<=', $lowStockThreshold)->count(),
+            'out_of_stock' => $inventories->where('quantity', '<=', 0)->count(),
+            'total_value' => $inventories->sum(function($inv) { return $inv->quantity * ($inv->selling_price ?? 0); }),
+        ];
+        $lowStockItems = $inventories->where('quantity', '<=', $lowStockThreshold);
 
-    // Example: Calculate monthly revenue for the last 6 months
-    $monthlyRevenue = DB::table('order_items')
-        ->join('orders', 'order_items.order_id', '=', 'orders.id')
-        ->where('orders.seller_id', $user->id)
-        ->selectRaw('DATE_FORMAT(orders.created_at, "%Y-%m") as month, SUM(order_items.quantity * order_items.unit_price) as revenue')
-        ->groupBy('month')
-        ->orderBy('month')
-        ->limit(6)
-        ->get();
+        $topProducts = collect();
+        $monthlyRevenue = collect();
+        $pendingOrdersCount = $orderStats['pending_orders'];
+        $newOrdersToday = 0;
+        $totalRevenueThisMonth = 0;
+        $salesGrowth = 0; // Default value for all roles
+        $outOfStockProductsCount = 0;
+        $lowStockProductsCount = 0;
+        $keyBuyers = collect();
+        if ($role === 'supplier') {
+            $today = now()->startOfDay();
+            $newOrdersToday = \App\Models\Order::where('seller_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->count();
+            $totalRevenueThisMonth = Order::where('seller_id', $user->id)
+                ->whereIn('status', ['shipped', 'delivered', 'received'])
+                ->whereBetween('created_at', [now()->startOfMonth(), now()->endOfMonth()])
+                ->with('items')
+                ->get()
+                ->reduce(function ($carry, $order) {
+                    return $carry + $order->items->sum(function ($item) {
+                        return $item->quantity * $item->unit_price;
+                    });
+                }, 0);
+            // Calculate last month's revenue
+            $lastMonthStart = now()->subMonth()->startOfMonth();
+            $lastMonthEnd = now()->subMonth()->endOfMonth();
+            $lastMonthRevenue = Order::where('seller_id', $user->id)
+                ->whereIn('status', ['shipped', 'delivered', 'received'])
+                ->whereBetween('created_at', [$lastMonthStart, $lastMonthEnd])
+                ->with('items')
+                ->get()
+                ->reduce(function ($carry, $order) {
+                    return $carry + $order->items->sum(function ($item) {
+                        return $item->quantity * $item->unit_price;
+                    });
+                }, 0);
+            if ($lastMonthRevenue > 0) {
+                $salesGrowth = (($totalRevenueThisMonth - $lastMonthRevenue) / $lastMonthRevenue) * 100;
+            } else {
+                $salesGrowth = 0;
+            }
+            // Calculate out of stock and low stock products count
+            $outOfStockProductsCount = $inventories->where('quantity', '<=', 0)->count();
+            $lowStockProductsCount = $inventories->where('quantity', '>', 0)->where('quantity', '<=', $lowStockThreshold)->count();
+            // Calculate top buyers (keyBuyers)
+            $keyBuyers = Order::select('buyer_id', DB::raw('COUNT(*) as order_count'), DB::raw('SUM(total_amount) as total_spent'))
+                ->where('seller_id', $user->id)
+                ->whereNotNull('buyer_id')
+                ->groupBy('buyer_id')
+                ->orderByDesc('total_spent')
+                ->with('buyer')
+                ->limit(5)
+                ->get();
+            // Add productsToRestock for supplier dashboard
+            $productsToRestock = Inventory::where('user_id', $user->id)
+                ->where(function ($query) {
+                    $query->where('quantity', 0)
+                          ->orWhereRaw('quantity <= low_stock_threshold');
+                })
+                ->with('product')
+                ->orderBy('quantity', 'asc')
+                ->take(5)
+                ->get();
+            // Add chart data for the last 4 weeks
+            $salesChartData = [];
+            $ordersChartData = [];
+            $salesChartLabels = [];
+            $ordersChartLabels = [];
+            for ($i = 3; $i >= 0; $i--) {
+                $weekStart = now()->subWeeks($i)->startOfWeek();
+                $weekEnd = now()->subWeeks($i)->endOfWeek();
+                $weekLabel = 'Week ' . (4 - $i);
+                $salesChartLabels[] = $weekLabel;
+                $ordersChartLabels[] = $weekLabel;
+                // Weekly sales
+                $weeklySales = Order::where('seller_id', $user->id)
+                    ->whereIn('status', ['shipped', 'delivered', 'received'])
+                    ->whereBetween('created_at', [$weekStart, $weekEnd])
+                    ->with('items')
+                    ->get()
+                    ->reduce(function ($carry, $order) {
+                        return $carry + $order->items->sum(function ($item) {
+                            return $item->quantity * $item->unit_price;
+                        });
+                    }, 0);
+                $salesChartData[] = $weeklySales;
+                // Weekly orders count
+                $weeklyOrders = Order::where('seller_id', $user->id)
+                    ->whereBetween('created_at', [$weekStart, $weekEnd])
+                    ->count();
+                $ordersChartData[] = $weeklyOrders;
+            }
+        }
 
-   $lowStockThreshold = 5;  
+        $viewData = compact(
+            'orders',
+            'recentOrders',
+            'orderStats',
+            'inventoryStats',
+            'lowStockItems',
+            'topProducts',
+            'monthlyRevenue',
+            'user',
+            'pendingOrdersCount',
+            'newOrdersToday',
+            'totalProducts',
+            'totalRevenueThisMonth',
+            'salesGrowth',
+            'outOfStockProductsCount',
+            'lowStockProductsCount',
+            'keyBuyers'
+        );
+        // Ensure $incomingOrders and $outgoingOrders are sent for wholesaler dashboard
+        if ($role === 'wholesaler') {
+            $viewData['incomingOrders'] = $orders;
+            $viewData['outgoingOrders'] = $orders;
+        }
+        if (isset($productsToRestock)) {
+            $viewData['productsToRestock'] = $productsToRestock;
+        }
+        if ($role === 'supplier') {
+            $viewData['salesChartData'] = $salesChartData;
+            $viewData['ordersChartData'] = $ordersChartData;
+            $viewData['salesChartLabels'] = $salesChartLabels;
+            $viewData['ordersChartLabels'] = $ordersChartLabels;
+        }
+        return view($config['dashboard'], $viewData);
+    }
 
-    $lowStockItems = Inventory::where('user_id', $user->id)
-        ->where('quantity', '<=', $lowStockThreshold)
-        ->get();
 
-    //for counting total low stock
-    $lowStockItems = Inventory::where('user_id', $user->id)
-    ->where('quantity', '<=', $lowStockThreshold)
-    ->get();
+    /**
+     * Show order creation form
+     */
+    public function createOrder()
+    {
+        $user = Auth::user();
 
-    //for the products
-    $products = Product::all(); 
-    //for raw materials 
-    $rawMaterials = RawMaterial::all(); 
-    //for low stock 
-    $totalLowStock = $lowStockItems->count(); 
-    //for deliveries
-    $todayDeliveriesCount = Delivery::whereDate('created_at', Carbon::today())->count();
+        // Get allowed sellers based on user role
+        $allowedSellers = [];
 
-    return view("{$role}.dashboard", compact('orders', 'recentOrders', 'topProducts', 'monthlyRevenue', 'lowStockItems', 'products', 'rawMaterials', 'totalLowStock', 'todayDeliveriesCount'));
-    
-}
+        switch ($user->role->value) {
+            case 'retailer':
+                // Retailers can order from wholesalers
+                $allowedSellers = User::where('role', 'wholesaler')->get();
+                break;
+            case 'wholesaler':
+                // Wholesalers can order from plant managers
+                $allowedSellers = User::where('role', 'plant_manager')->get();
+                break;
+            case 'plant_manager':
+                // Plant managers can order from suppliers and farmers
+                $allowedSellers = User::whereIn('role', ['supplier', 'farmer'])->get();
+                break;
+            default:
+                abort(403, 'Order creation not allowed for this role.');
+        }
 
+        // Get available products from allowed sellers
+        $products = Product::whereHas('inventory', function($query) use ($allowedSellers) {
+            $query->whereIn('user_id', $allowedSellers->pluck('id'));
+        })->with(['inventory' => function($query) use ($allowedSellers) {
+            $query->whereIn('user_id', $allowedSellers->pluck('id'));
+        }])->get();
+
+        return view('orders.create', compact('allowedSellers', 'products'));
+    }
 
     /**
      * Store new order from buyer to seller
@@ -114,25 +293,36 @@ class OrderController extends Controller
         DB::beginTransaction();
 
         try {
+            // Calculate total amount
+            $total = 0;
+            foreach ($validated['items'] as $item) {
+                $product = Product::find($item['product_id']);
+                $total += ($product ? $product->price : 0) * $item['quantity'];
+            }
+
             $order = Order::create([
                 'buyer_id' => Auth::id(),
                 'seller_id' => $validated['seller_id'],
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
+                'total_amount' => $total,
             ]);
 
             foreach ($validated['items'] as $item) {
+                $product = Product::find($item['product_id']);
                 $order->items()->create([
                     'product_id' => $item['product_id'],
                     'quantity' => $item['quantity'],
-                    'unit_price' => 0,
+                    'unit_price' => $product ? $product->price : 0,
                 ]);
             }
 
             $this->workflow->processNewOrder($order);
             DB::commit();
 
-
+            if (Auth::user()->role->value === 'retailer') {
+                return redirect()->route('retailer.orders.history')->with('success', 'Order placed successfully!');
+            }
             return back()->with('success', 'Order placed successfully.');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -243,13 +433,321 @@ class OrderController extends Controller
     public function outgoingOrders()
     {
         $user = Auth::user();
-
         $orders = Order::where('buyer_id', $user->id)
+            ->where('status', '!=', 'cancelled') // Exclude cancelled orders
             ->with(['seller', 'items.product'])
             ->orderByDesc('created_at')
-            ->get();
+            ->paginate(10);
 
-        return view($user->role->value . '.orders', compact('orders'));
+        // Return appropriate view based on user role
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.orders',
+            'wholesaler' => 'wholesaler.orders',
+            'plant_manager' => 'plant_manager.orders',
+            default => 'orders.outgoing',
+        };
+
+        return view($view, [
+            'orders' => $orders,
+            'outgoingOrders' => $orders
+        ]);
     }
 
+    public function orderHistory()
+    {
+        $user = Auth::user();
+        if ($user->role->value === 'farmer' || $user->role->value === 'supplier') {
+            $receivedOrders = \App\Models\Order::where('seller_id', $user->id)
+                ->with(['buyer', 'items.product'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            $placedOrders = $user->role->value === 'farmer'
+                ? \App\Models\Order::where('buyer_id', $user->id)
+                    ->with(['seller', 'items.product'])
+                    ->orderBy('created_at', 'desc')
+                    ->get()
+                : collect();
+            return view('orders.history', compact('placedOrders', 'receivedOrders'));
+        }
+        $orders = Order::where('seller_id', $user->id)
+            ->orderBy('created_at', 'asc')
+            ->paginate(10);
+
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.orders',
+            'wholesaler' => 'wholesaler.order_history',
+            'plant_manager' => 'plant_manager.order_history',
+            default => 'orders.history',
+        };
+
+
+        return view($view, compact('orders'));
+    }
+
+    /**
+     * View order history (orders where user is the seller)
+     */
+    public function history()
+    {
+        $user = Auth::user();
+
+        // Apply filters if provided
+        $query = Order::where('seller_id', $user->id);
+
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        if (request('date_from')) {
+            $query->whereDate('created_at', '>=', request('date_from'));
+        }
+
+        if (request('date_to')) {
+            $query->whereDate('created_at', '<=', request('date_to'));
+        }
+
+        if (request('search')) {
+            $query->whereHas('buyer', function($q) {
+                $q->where('name', 'like', '%' . request('search') . '%');
+            });
+        }
+
+        $orders = $query->with(['buyer', 'items.product'])
+            ->orderByDesc('created_at')
+            ->paginate(10);
+
+        // Calculate order statistics
+        $stats = [
+            'total_orders' => Order::where('seller_id', $user->id)->count(),
+            'pending_orders' => Order::where('seller_id', $user->id)->where('status', 'pending')->count(),
+            'completed_orders' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count(),
+            'total_revenue' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount'),
+        ];
+
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.orders',
+            'wholesaler' => 'wholesaler.order_history',
+            'plant_manager' => 'plant_manager.order_history',
+            default => 'orders.history',
+        };
+
+        return view($view, compact('orders', 'stats'));
+    }
+
+    public function getProductsForSeller($sellerId)
+    {
+        $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
+        return response()->json($products);
+    }
+
+    /**
+     * Show order details
+     */
+    public function showOrder(Order $order)
+    {
+        $user = Auth::user();
+
+        // Check if user is authorized to view this order
+        if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
+            abort(403, 'Unauthorized access to this order.');
+        }
+
+        $order->load(['seller', 'buyer', 'items.product']);
+
+        $view = match($user->role->value) {
+            'retailer' => 'retailer.order_detail',
+            'wholesaler' => 'wholesaler.order_detail',
+            'plant_manager' => 'plant_manager.order_detail',
+            default => 'orders.show',
+        };
+
+        return view($view, compact('order'));
+    }
+
+    /**
+     * Approve an order
+     */
+    public function approveOrder(Order $order)
+    {
+        $user = Auth::user();
+
+        try {
+            // Check if user is authorized to approve this order
+            if ($order->seller_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only the seller can approve this order.'
+                ], 403);
+            }
+
+            if ($order->status !== 'pending' ) {
+              if ($order->status !== 'pending_review'){
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending orders can be approved.'
+                ], 400);
+            }}
+
+            // Check inventory availability for each order item
+            $inventoryIssues = [];
+            foreach ($order->items as $item) {
+                $inventory = Inventory::where('user_id', $user->id)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if (!$inventory || $inventory->quantity < $item->quantity) {
+                    $availableQty = $inventory ? $inventory->quantity : 0;
+                    $inventoryIssues[] = "Insufficient stock for {$item->product->name}. Available: {$availableQty}, Required: {$item->quantity}";
+                }
+            }
+
+            if (!empty($inventoryIssues)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cannot approve order due to insufficient inventory: ' . implode('; ', $inventoryIssues)
+                ], 400);
+            }
+
+            // Update order status and reserve inventory
+            DB::beginTransaction();
+
+            $order->update(['status' => 'approved']);
+
+            // Reserve inventory quantities
+            foreach ($order->items as $item) {
+                $inventory = Inventory::where('user_id', $user->id)
+                    ->where('product_id', $item->product_id)
+                    ->first();
+
+                if ($inventory) {
+                    $inventory->decrement('quantity', $item->quantity);
+                }
+            }
+
+            DB::commit();
+            OrderApproved::dispatch($order);
+
+            // Log the approval
+            Log::info("Order {$order->id} approved by user {$user->id}");
+
+            // Trigger events or notifications here if needed
+            // Event::dispatch(new OrderApproved($order));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order has been approved successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error approving order {$order->id}: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while approving the order. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Reject an order
+     */
+    public function rejectOrder(Order $order, Request $request)
+    {
+        $user = Auth::user();
+
+        try {
+            // Check if user is authorized to reject this order
+            if ($order->seller_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only the seller can reject this order.'
+                ], 403);
+            }
+
+            if ($order->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending orders can be rejected.'
+                ], 400);
+            }
+
+            // Validate rejection reason if provided
+            $reason = $request->input('reason');
+            if (!$reason) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Please provide a reason for rejection.'
+                ], 400);
+            }
+
+            // Update order status
+            $order->update([
+                'status' => 'rejected'
+            ]);
+
+            // Log the rejection
+            Log::info("Order {$order->id} rejected by user {$user->id} with reason: {$reason}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order has been rejected successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Error rejecting order {$order->id}: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while rejecting the order. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Mark an order as shipped
+     */
+    public function markShipped(Order $order)
+    {
+        $user = Auth::user();
+
+        try {
+            // Check if user is authorized to mark this order as shipped
+            if ($order->seller_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only the seller can mark this order as shipped.'
+                ], 403);
+            }
+
+            if ($order->status !== 'approved' && $order->status !== 'processing') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only approved or processing orders can be marked as shipped.'
+                ], 400);
+            }
+
+            $order->update([
+                'status' => 'shipped'
+            ]);
+
+            // Log the shipping
+            Log::info("Order {$order->id} marked as shipped by user {$user->id}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Order has been marked as shipped successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            Log::error("Error marking order {$order->id} as shipped: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while updating the order. Please try again.'
+            ], 500);
+        }
+    }
 }
+
+

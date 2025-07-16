@@ -23,22 +23,51 @@ class ChatController extends Controller
         $allowedRoles = [];
         switch ($user->role) {
             case Role::FARMER:
-                $allowedRoles = [Role::EXECUTIVE];
+                $allowedRoles = [Role::PLANT_MANAGER, Role::INSPECTOR, Role::DRIVER];
                 break;
-            case Role::EXECUTIVE:
-                $allowedRoles = [Role::FARMER, Role::WHOLESALER];
+            case Role::PLANT_MANAGER:
+                $allowedRoles = [Role::FARMER, Role::WHOLESALER, Role::DRIVER];
                 break;
             case Role::WHOLESALER:
-                $allowedRoles = [Role::EXECUTIVE, Role::RETAILER];
+                $allowedRoles = [Role::PLANT_MANAGER, Role::RETAILER, Role::INSPECTOR, Role::DRIVER];
                 break;
             case Role::RETAILER:
-                $allowedRoles = [Role::WHOLESALER];
+                $allowedRoles = [Role::WHOLESALER, Role::INSPECTOR];
+                break;
+            case Role::INSPECTOR:
+                $allowedRoles = [Role::FARMER, Role::ADMIN, Role::WHOLESALER, Role::RETAILER];
+                break;
+            case Role::ADMIN:
+                $allowedRoles = [ Role::INSPECTOR];
+                break;
+            case Role::DRIVER:
+                $allowedRoles = [Role::FARMER, Role::PLANT_MANAGER, Role::WHOLESALER];
                 break;
         }
         // Load contacts from database
         $contacts = User::whereIn('role', $allowedRoles)
                         ->select('id', 'name', 'role')
                         ->get();
+
+        // Attach last message timestamp for sorting
+        $contacts = $contacts->map(function($contact) use ($user) {
+            $lastMessage = \App\Models\Message::where(function($q) use ($user, $contact) {
+                    $q->where('sender_id', $user->id)->where('recipient_id', $contact->id);
+                })
+                ->orWhere(function($q) use ($user, $contact) {
+                    $q->where('sender_id', $contact->id)->where('recipient_id', $user->id);
+                })
+                ->orderBy('created_at', 'desc')
+                ->first();
+
+            $contact->last_message_at = $lastMessage ? $lastMessage->created_at : null;
+            return $contact;
+        });
+
+        // Sort contacts by last_message_at (most recent first), nulls last
+        $contacts = $contacts->sortByDesc(function($contact) {
+            return $contact->last_message_at ?: now()->subYears(100);
+        })->values();
 
         return view('content.apps.app-chat', [
             'user'     => $user,

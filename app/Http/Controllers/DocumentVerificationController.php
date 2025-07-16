@@ -9,7 +9,7 @@ use App\Enums\Role;
 use App\Models\User; // Import User model
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
-
+use App\Events\CustomerDocumentValidated;
 class DocumentVerificationController extends Controller
 {
     public function __construct()
@@ -94,8 +94,16 @@ class DocumentVerificationController extends Controller
                     $user->verification_notes = "Documents verified successfully via Java server on " . now()->format('Y-m-d H:i:s');
                     $user->save();
 
-                    return redirect()->route('verification.pending')
-                        ->with('success', 'Documents verified successfully! Your account has been approved.');
+                    // Now, dispatch the event
+
+                    CustomerDocumentValidated::dispatch($user);
+
+                    // Determine dashboard URL
+                    $dashboardUrl = $this->getDashboardUrl($user);
+
+                    return view('content.verification.success', [
+                        'dashboardUrl' => $dashboardUrl
+                    ]);
                 } else {
                     $user->verified = false;
                     $user->verification_notes = "Verification failed: " . $responseBody . " - Processed on " . now()->format('Y-m-d H:i:s');
@@ -164,4 +172,30 @@ class DocumentVerificationController extends Controller
                 return redirect()->route('home');
         }
     }
+
+    protected function getDashboardUrl(User $user)
+    {
+        $roleValue = $user->role instanceof Role ? $user->role->value : (string)$user->role;
+        switch ($roleValue) {
+            case 'admin':
+            return route('dashboard.analytics');
+        case 'retailer':
+            return route('retailer.dashboard');
+        case 'wholesaler':
+            return route('wholesaler.dashboard');
+        case 'farmer':
+            return route('farmer.dashboard');
+        case 'plant_manager':
+            return route('plant_manager.dashboard');
+        case 'driver':
+            return route('driver.dashboard');
+        case 'supplier':
+            return route('supplier.dashboard');
+        case 'inspector':
+            return route('tasks.index');
+        default:
+            return route('home');
+    }
 }
+}
+

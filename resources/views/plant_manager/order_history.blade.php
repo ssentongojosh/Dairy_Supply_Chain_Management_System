@@ -50,7 +50,7 @@
 
                         @if(request()->hasAny(['status', 'date_from', 'date_to', 'search']))
                             <div class="mb-3">
-                                <a href="{{ route('plantmanager.orders.history') }}" class="btn btn-outline-secondary btn-sm">
+                                <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-outline-secondary btn-sm">
                                     <i class="ri-close-line"></i> Clear Filters
                                 </a>
                             </div>
@@ -99,7 +99,7 @@
                                         <i class="ri-money-dollar-circle-line"></i>
                                     </div>
                                     <div>
-                                        <h6 class="mb-0">₱{{ number_format($stats['total_revenue'] ?? 0, 2) }}</h6>
+                                        <h6 class="mb-0">UGX {{ number_format($stats['total_revenue'] ?? 0, 2) }}</h6>
                                         <small class="text-muted">Total Revenue</small>
                                     </div>
                                 </div>
@@ -128,7 +128,7 @@
                                         @foreach($orders as $order)
                                         <tr>
                                             <td>
-                                                <a href="{{ route('plantmanager.orders.show', $order) }}" class="fw-semibold text-primary">
+                                                <a href="{{ route('plant_manager.orders.show', $order) }}" class="fw-semibold text-primary">
                                                     #{{ $order->id }}
                                                 </a>
                                             </td>
@@ -160,7 +160,7 @@
                                                 </div>
                                             </td>
                                             <td>
-                                                <span class="fw-semibold">₱{{ number_format($order->total_amount, 2) }}</span>
+                                                <span class="fw-semibold">UGX {{ number_format($order->total_amount, 2) }}</span>
                                             </td>
                                             <td>
                                                 @php
@@ -203,10 +203,10 @@
                                                         Actions
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('plantmanager.orders.show', $order) }}">
+                                                        <a class="dropdown-item" href="{{ route('plant_manager.orders.show', $order) }}">
                                                             <i class="ri-eye-line me-2"></i>View Details
                                                         </a>
-                                                        @if($order->status === 'pending')
+                                                        @if($order->status === 'pending' || $order->status === 'pending_review')
                                                             <button class="dropdown-item text-success" 
                                                                     onclick="approveOrder({{ $order->id }})">
                                                                 <i class="ri-check-line me-2"></i>Approve
@@ -223,10 +223,10 @@
                                                             </button>
                                                         @endif
                                                         <div class="dropdown-divider"></div>
-                                                        <a class="dropdown-item" href="{{ route('plantmanager.orders.show', $order) }}?print=true" target="_blank">
+                                                        <a class="dropdown-item" href="{{ route('plant_manager.orders.show', $order) }}?print=true" target="_blank">
                                                             <i class="ri-printer-line me-2"></i>Print Invoice
                                                         </a>
-                                                        <a class="dropdown-item" href="{{ route('plantmanager.orders.show', $order) }}?download=true">
+                                                        <a class="dropdown-item" href="{{ route('plant_manager.orders.show', $order) }}?download=true">
                                                             <i class="ri-download-line me-2"></i>Download PDF
                                                         </a>
                                                     </div>
@@ -254,7 +254,7 @@
                                     @endif
                                 </p>
                                 @if(request()->hasAny(['status', 'date_from', 'date_to', 'search']))
-                                    <a href="{{ route('plantmanager.orders.history') }}" class="btn btn-outline-primary">
+                                    <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-outline-primary">
                                         <i class="ri-refresh-line me-2"></i>Clear Filters
                                     </a>
                                 @endif
@@ -299,8 +299,8 @@
 <script>
 function approveOrder(orderId) {
     if (confirm('Are you sure you want to approve this order?')) {
-        fetch(`/plantmanager/orders/${orderId}/approve`, {
-            method: 'POST',
+        fetch(`/plant_manager/orders/${orderId}/approve`, {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -337,8 +337,8 @@ function confirmRejectOrder() {
         return;
     }
 
-    fetch(`/plantmanager/orders/${orderId}/reject`, {
-        method: 'POST',
+            fetch(`/plant_manager/orders/${orderId}/reject`, {
+        method: 'PATCH',
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
@@ -362,7 +362,7 @@ function confirmRejectOrder() {
 
 function markShipped(orderId) {
     if (confirm('Are you sure you want to mark this order as shipped?')) {
-        fetch(`/plantmanager/orders/${orderId}/ship`, {
+        fetch(`/plant_manager/orders/${orderId}/ship`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
