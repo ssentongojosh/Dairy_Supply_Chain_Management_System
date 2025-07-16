@@ -13,6 +13,7 @@ class RawMaterial extends Model
         'unit',
         'expiry',
         'reorder_threshold',
+        'image',
     ];
 
     //relation to batch model

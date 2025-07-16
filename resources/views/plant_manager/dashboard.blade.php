@@ -213,6 +213,108 @@
                 </div>
         </div>
 
+        <div class="row">
+    <div class="col-md-6 mb-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">Recent Incoming Orders</h5>
+                <small class="text-muted">Orders from your customers</small>
+            </div>
+            <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-outline-primary btn-sm">
+                <i class="ri-external-link-line me-1"></i>View All
+            </a>
+        </div>
+        <div class="card-body">
+            @if($incomingOrders->count() > 0)
+                <div class="list-group list-group-flush">
+                    @foreach($incomingOrders as $order)
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-0">Order #{{ $order->id }}</h6>
+                                <small class="text-muted">{{ $order->buyer->name ?? 'Unknown Customer' }}</small>
+                            </div>
+                            <div class="text-end">
+                                @php
+                                    $statusColors = [
+                                        'pending' => 'warning',
+                                        'approved' => 'info',
+                                        'processing' => 'primary',
+                                        'shipped' => 'success',
+                                        'delivered' => 'success',
+                                        'rejected' => 'danger'
+                                    ];
+                                @endphp
+                                <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                                <small class="text-muted d-block">UGX {{ number_format($order->total_amount, 0) }}</small>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-3">
+                    <i class="ri-inbox-line fs-1 text-muted"></i>
+                    <p class="text-muted mb-0">No recent incoming orders</p>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Recent Outgoing Orders (as Buyer) -->
+<div class="col-md-6 mb-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">Recent Outgoing Orders</h5>
+                <small class="text-muted">Orders you have placed</small>
+            </div>
+            <a href="{{ route('plant_manager.orders') }}" class="btn btn-outline-primary btn-sm">
+                <i class="ri-external-link-line me-1"></i>View All
+            </a>
+        </div>
+        <div class="card-body">
+            @if($outgoingOrders->count() > 0)
+                <div class="list-group list-group-flush">
+                    @foreach($outgoingOrders as $order)
+                        <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                            <div>
+                                <h6 class="mb-0">Order #{{ $order->id }}</h6>
+                                <small class="text-muted">To: {{ $order->seller->name ?? 'Unknown Supplier' }}</small>
+                            </div>
+                            <div class="text-end">
+                                @php
+                                    $statusColors = [
+                                        'pending' => 'warning',
+                                        'approved' => 'info',
+                                        'processing' => 'primary',
+                                        'shipped' => 'success',
+                                        'delivered' => 'success',
+                                        'rejected' => 'danger'
+                                    ];
+                                @endphp
+                                <span class="badge bg-{{ $statusColors[$order->status] ?? 'secondary' }}">
+                                    {{ ucfirst($order->status) }}
+                                </span>
+                                <small class="text-muted d-block">UGX {{ number_format($order->total_amount, 0) }}</small>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-3">
+                    <i class="ri-inbox-line fs-1 text-muted"></i>
+                    <p class="text-muted mb-0">No recent outgoing orders</p>
+                </div>
+            @endif
+        </div>
+    </div>
+</div>
+</div>
+
+
         {{-- Table title / header --}}
         <div class="card-header bg-primary text-white">
             📦 Finished Products
@@ -226,13 +328,13 @@
                         <th>Stock</th>
                         <th>Price</th>
                         <th>Status</th>
-                        <th>Added on</th>
+                        <th>Sale Unit</th>
                         <th>Actions</th> {{-- For buttons like "View" --}}
                     </tr>
                 </thead>
                 {{-- Loop through each product and display in the table --}}
                 <tbody>
-                    @foreach($products as $product)grace.nakato@modernmilk.com
+                    @foreach($products as $product)
                         <tr>
                             <td>{{ $product->name }}</td>
                             <td>{{ $product->quantity }}</td>
@@ -246,7 +348,7 @@
                                    <span class="text-success">Available</span>
                                 @endif
                             </td>
-                            <td>{{ $product->manufacture_date }}</td>
+                            <td>{{ $product->sale_unit }}</td>
                             <td>
                                 {{-- Button to view product details --}}
                                 <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
@@ -264,7 +366,6 @@
 
     <!-- RAW MATERIALS TABLE -->
     <div class="card">
-grace.nakato@modernmilk.com
         <div class="card">
             <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
                 <h5 class="card-title mb-0">Raw Material Management</h5>

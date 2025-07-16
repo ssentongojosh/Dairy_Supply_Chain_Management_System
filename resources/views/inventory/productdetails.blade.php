@@ -1,119 +1,76 @@
 @extends('layouts.contentNavbarLayout')
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Item Details</title>
-        <style>
-            body{
-                justify-content:center;
-                align-items:center;
-            }
-            .card{
-                background-color:#fffddo;
-                width:600px;
-                padding:30px;
-                border-radius:10px;
-                border: 2px solid black;
-                justify-content:center;
-                text-align:center;
-            }
 
-        </style>
-    </head>
-  
-<body>
+@section('content')
+<div class="container my-5">
 
-@section('content') 
+    <h3 class="mb-4">Product: {{ $item->name }}</h3>
 
-<h2 style="text-align:center; color:blue;">Products Details</h2>
-<div class="card" style="margin-left:200px;">
-@if(session('message'))
-     <div>{{ session('message') }}</div>
-@endif 
+    <!-- Summary -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-start border-4">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="ri-archive-line fs-3"></i>Current Stock</h5>
+                    <p class="fw-bold">{{ $item->quantity }} {{ $item->unit }}</p>
+                </div>
+            </div>
+        </div>
 
-<table>
-<form id="editForm" action="{{ route('inventory.update', $item->id ) }}" method="POST">
-    @csrf
-    @method('PUT')
-
-    <tr>
-        <td style="text-align:left;"><strong><label>ID:</label></strong></td>
-        <td style="text-align:right;"><span id="viewId">{{ $item->id }}</span>
-        <input type="text" name="id" id="inputId" value="{{ $item->id }}" style="display:none;"></td>
-    </tr>
-
-    <tr>
-        <td style="text-align:left;"><strong><label>Name:</label></strong></td>
-        <td style="text-align:right;"><span id="viewName">{{ $item->name }}</span>
-        <input type="text" name="name" id="inputName" value="{{ $item->name }}" style="display:none;"></td>
-    </tr>
-
-    <tr>
-        <td style="text-align:left;"><strong><label>Stock:</label></strong></td>
-        <td style="text-align:right;"><span id="viewQuantity">{{ $item->quantity }}</span>
-        <input type="number" name="quantity" id="inputQuantity" value="{{ $item->quantity }}" style="display:none;"></td>
-        </tr>
-
-    <tr>
-        <td style="text-align:left;"><strong><label>Price:</label></strong></td>
-        <td style="text-align:right;"><span id="viewPrice">{{ $item->price }}</span>
-        <input type="number" name="price" id="inputPrice" value="{{ $item->price }}" style="display:none;"></td>
-    </tr>
-
-     <tr>
-        <td style="text-align:left;"><strong><label>Added on:</label></strong></td>
-        <td style="text-align:right;"><span id="viewAdded">{{ $item->manufacture_date }}</span>
-        <input type="date" name="added" id="inputAdded" value="{{ $item->added }}" style="display:none;"></td>
-    </tr>
-
-    <tr>
-        <td style="text-align:left;"><strong><label>Status:</label></strong></td>
-        
-        <td style="text-align:right;"><span id="viewStatus" class="status" style="color: {{ $color }};">
-            {{ ucfirst($status) }}
-            @if ($item->is_reserved){
-              <span style="color:blue">(R)</span>
-             } 
-            @endif 
-        </span></td>
-    </tr>
-</table><br><br> 
-    
-    <div>
-    <button type="button" id="editButton">Edit</button>
-    <button type="submit" id="updateButton" style="display:none;">Update</button>
+        <!-- image of the product-->
+        <div class="col-md-4">
+            <div class="card border-start border-4">
+                <div class="card-body">
+                    <img src="{{ asset('images/products/' . $item->image) }}" alt="{{ $item->name }}" class="card-img-top" style="height: 100px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
     </div>
 
-</form>
-    
-</div><br>
+    <!-- Incoming Batches -->
+    <div class=" py-1 px-2 mb-3 w-100"><h5 class="mt-4">📦 Incoming Batches</h5></div>
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Batch ID</th>
+                    <th>Quantity Produced</th>
+                    <th>Manufacture Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($batches as $batch)
+                    <tr>
+                        <td>{{ $batch->batch_code }}</td>
+                        <td>{{ $batch->quantity_produced }} {{ $product->unit }}</td>
+                        <td>{{ \Carbon\Carbon::parse($batch->production_date)->format('M d, Y') }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
-<button type="button" style="margin-left:200px;"><a href="{{ route('plant_manager.inventory') }}">Back</a></button>
+    <!-- Usage History -->
+    <h5 class="mt-4">🧪 Usage History</h5>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Quantity</th>
+                    <th>Delivery Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($usages as $item)
+                    <tr>
+                        <td>{{ $item->order_id ?? 'Manual Task' }}</td>
+                        <td>{{ $item->quantity_used }} {{ $product->unit }}</td>
+                        <td>{{ \Carbon\Carbon::parse($item->used_on)->format('M d, Y') }}</td>
+                    </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 
-<script>
-    document.getElementById('editButton').addEventListener('click', function(){
-        //hide no edits
-        document.getElementById('viewId').style.display = 'none';
-        document.getElementById('viewName').style.display = 'none';
-        document.getElementById('viewQuantity').style.display = 'none';
-        document.getElementById('viewPrice').style.display = 'none';
-        document.getElementById('viewAdded').style.display = 'none';
-
-        //possible to edit
-        document.getElementById('inputId').style.display = 'inline';
-        document.getElementById('inputName').style.display = 'inline';
-        document.getElementById('inputQuantity').style.display = 'inline';
-        document.getElementById('inputPrice').style.display = 'inline';
-        document.getElementById('inputAdded').style.display = 'inline';
-
-        //buttons
-        document.getElementById('editButton').style.display = 'none';
-        document.getElementById('updateButton').style.display = 'inline';
-    });
-</script>
-
-</body>
-
+</div>
 @endsection
-
-</html>

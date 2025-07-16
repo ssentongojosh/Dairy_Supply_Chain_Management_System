@@ -8,13 +8,15 @@ import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
 import org.opencv.videoio.VideoCapture;
 
+import java.io.File;
+
 public class FaceCaptureApp {
 
   static {
     System.loadLibrary(Core.NATIVE_LIBRARY_NAME); // Load OpenCV native lib
   }
 
-  public static Mat captureFace() {
+  public static Mat captureFace(String cascadePath) {
     VideoCapture camera = new VideoCapture(0); // 0 = default webcam
 
     if (!camera.isOpened()) {
@@ -23,14 +25,7 @@ public class FaceCaptureApp {
     }else System.out.println("Camera opened");
 
 
-    // String cascadePath = "C:\\xampp\\htdocs\\Dairy_Supply_Chain_Management_System\\java_server\\Data\\haarcascade_frontalface_default.xml";
-
-    ClassLoader classloader = FaceCaptureApp.class.getClassLoader();
-    String cascadePath = classloader.getResource("Data/haarcascade_frontalface_default.xml").getPath();
-    if (cascadePath == null) {
-      System.err.println("❌ Cascade file not found in resources. Please check the path.");
-      return null;
-    }
+    //String cascadePath = "C:\\xampp\\htdocs\\Dairy_Supply_Chain_Management_System\\java_server\\face-capture\\Data\\haarcascade_frontalface_default.xml";
 
     CascadeClassifier faceDetector = new CascadeClassifier(cascadePath);
     if (faceDetector.empty()) {
@@ -98,10 +93,27 @@ public class FaceCaptureApp {
   }
 
   public static void main(String[] args) {
-    captureFace();
-    System.exit(0);
 
-    //System.out.println("Hello wold!!!!!");
+
+    if (args.length < 1) {
+      System.err.println("❌ Cascade path not provided as argument.");
+      System.exit(1);
+    }
+
+    String cascadePath = args[0];
+    Mat face = captureFace(cascadePath);
+
+    if (face == null) {
+      System.out.println("FAIL");
+      System.exit(1);
+    } else {
+      String outputPath = new File("captured_face.jpg").getAbsolutePath();
+      Imgcodecs.imwrite(outputPath, face);
+      System.out.println("SUCCESS:" + outputPath);
+      System.exit(0);
+    }
+
+
   }
 
 }

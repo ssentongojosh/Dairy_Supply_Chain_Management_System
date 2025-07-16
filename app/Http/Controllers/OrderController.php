@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
+use App\Models\RawMaterial;
+use Carbon\Carbon;
+use App\Models\Delivery;
 use App\Models\Inventory;
 use Illuminate\Http\Request;
 // use Illuminate\Http\Request;
@@ -80,12 +83,20 @@ class OrderController extends Controller
             ->limit(5)
             ->get();
 
-        $orderStats = [
-            'total_orders' => Order::where($config['order_filter'])->count(),
-            'pending_orders' => Order::where($config['order_filter'])->where('status', 'pending')->count(),
-            'completed_orders' => Order::where($config['order_filter'])->where('status', 'completed')->count(),
-            'total_revenue' => Order::where($config['order_filter'])->sum('total_amount'),
-        ];
+        $topProducts = DB::table('order_items')
+        ->join('orders', 'order_items.order_id', '=', 'orders.id')
+        ->join('products', 'order_items.product_id', '=', 'products.id')
+        ->where('orders.seller_id', $user->id)
+        ->select(
+            'products.id',
+            'products.name',
+            DB::raw('SUM(order_items.quantity) as total_sold'),
+            DB::raw('SUM(order_items.quantity * order_items.unit_price) as total_revenue')
+        )
+        ->groupBy('products.id', 'products.name')
+        ->orderByDesc('total_sold')
+        ->limit(5)
+        ->get();
 
         // Inventory
         $inventories = Inventory::where('user_id', $user->id)->get();
@@ -432,6 +443,7 @@ class OrderController extends Controller
         $view = match($user->role->value) {
             'retailer' => 'retailer.orders',
             'wholesaler' => 'wholesaler.orders',
+            'plant_manager' => 'plant_manager.orders',
             default => 'orders.outgoing',
         };
 
@@ -444,6 +456,19 @@ class OrderController extends Controller
     public function orderHistory()
     {
         $user = Auth::user();
+        if ($user->role->value === 'farmer' || $user->role->value === 'supplier') {
+            $receivedOrders = \App\Models\Order::where('seller_id', $user->id)
+                ->with(['buyer', 'items.product'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+            $placedOrders = $user->role->value === 'farmer'
+                ? \App\Models\Order::where('buyer_id', $user->id)
+                    ->with(['seller', 'items.product'])
+                    ->orderBy('created_at', 'desc')
+                    ->get()
+                : collect();
+            return view('orders.history', compact('placedOrders', 'receivedOrders'));
+        }
         $orders = Order::where('seller_id', $user->id)
             ->orderBy('created_at', 'asc')
             ->paginate(10);
@@ -585,7 +610,7 @@ class OrderController extends Controller
 
             // Update order status and reserve inventory
             DB::beginTransaction();
-            
+
             $order->update(['status' => 'approved']);
 
             // Reserve inventory quantities
@@ -593,7 +618,7 @@ class OrderController extends Controller
                 $inventory = Inventory::where('user_id', $user->id)
                     ->where('product_id', $item->product_id)
                     ->first();
-                
+
                 if ($inventory) {
                     $inventory->decrement('quantity', $item->quantity);
                 }
@@ -616,7 +641,7 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error approving order {$order->id}: " . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while approving the order. Please try again.'
@@ -671,7 +696,7 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Error rejecting order {$order->id}: " . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while rejecting the order. Please try again.'
@@ -716,7 +741,7 @@ class OrderController extends Controller
 
         } catch (\Exception $e) {
             Log::error("Error marking order {$order->id} as shipped: " . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'An error occurred while updating the order. Please try again.'

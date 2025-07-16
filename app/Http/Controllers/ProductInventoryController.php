@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Products;
+use App\Models\Production;
+use App\Models\ProductUsage;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -69,7 +71,13 @@ class ProductInventoryController extends Controller
               $color = 'green';
             }
 
-        return view('inventory.productdetails', compact('item', 'status', 'color'));
+            //for the production model
+            $batches = Production::where('product_id', $item->id)->orderByDesc('production_date')->get();
+
+            //for productusage model
+            $usages = ProductUsage::where('product_id', $item->id)->orderByDesc('used_on')->get();
+
+        return view('inventory.productdetails', compact('item', 'status', 'color', 'batches', 'usages'));
     }
 
     /**

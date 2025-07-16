@@ -2,27 +2,21 @@ package com.dscms.java_server.Services;
 
 import org.bytedeco.javacpp.DoublePointer;
 import org.bytedeco.javacpp.IntPointer;
-import org.bytedeco.javacv.CanvasFrame;
-import org.bytedeco.javacv.Frame;
-import org.bytedeco.javacv.Java2DFrameConverter;
-import org.bytedeco.javacv.OpenCVFrameGrabber;
 import org.bytedeco.opencv.global.opencv_core;
 import org.bytedeco.opencv.opencv_core.MatVector;
 import org.bytedeco.opencv.opencv_face.LBPHFaceRecognizer;
 import org.opencv.core.*;
-import org.opencv.highgui.HighGui;
 import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 import org.opencv.objdetect.CascadeClassifier;
-import org.opencv.videoio.VideoCapture;
-import org.opencv.videoio.Videoio;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
 
-
-import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+
+import static org.opencv.imgproc.Imgproc.*;
 
 @Service
 @ConditionalOnProperty(name = "facial.recognition.enabled", havingValue = "true", matchIfMissing = false)
@@ -65,7 +59,7 @@ public class FacialRecognitionService {
 
     Mat image = Imgcodecs.imread(imagePath);
     Mat gray = new Mat();
-    Imgproc.cvtColor(image, gray, Imgproc.COLOR_BGR2GRAY);
+    cvtColor(image, gray, COLOR_BGR2GRAY);
 
     MatOfRect faceDetections = new MatOfRect();
     faceDetector.detectMultiScale(gray, faceDetections);
@@ -76,77 +70,69 @@ public class FacialRecognitionService {
       //Imgproc.rectangle(frame, new Point(rect.x, rect.y), new Point(rect.x + rect.width, rect.y + rect.height), new Scalar(0, 255, 0),2);
       Mat frame = new Mat(gray, rect);
       //Imgcodecs.imwrite("ID image.jpg", frame);
-      System.out.println("Face detected");
+      System.out.println("Face extracted from ID");
       return frame; // Crop and return grayscale face
     }
 
     return null; // No face found
   }
 
-  public static Mat captureFace() {
-    System.out.println("Attempting to open camera");
-    VideoCapture camera = new VideoCapture(0, Videoio.CAP_DSHOW); // 0 = default webcam
-    System.out.println("Proceeding...");
+  public static Mat captureFaceViaExternalApp() {
+    try {
+      String cascadePath = "C:\\xampp\\htdocs\\Dairy_Supply_Chain_Management_System\\java_server\\Data\\haarcascade_frontalface_alt.xml";
 
-    /*if (!camera.isOpened()) {
-      System.out.println("❌ Cannot open the camera.");
-      return null;
-    }*/
+      ProcessBuilder builder = new ProcessBuilder(
+        "java", "-Djava.library.path=C:/opencv/build/java/x64", "-jar", "FaceCaptureApp.jar", cascadePath
+      );
+      builder.directory(new File("C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/java_server/face-capture/out/artifacts/face_capture_jar")); // optional
+      //builder.inheritIO(); // to show console output
 
-    CascadeClassifier faceDetector = new CascadeClassifier("Data/haarcascade_frontalface_default.xml");
+      Process process = builder.start();
 
-    Mat frame = new Mat();
-    boolean faceCaptured = false;
-
-    while (!faceCaptured) {
-      camera.read(frame); // Grab a frame
-
-      if (frame.empty()) continue;
-
-      Mat gray = new Mat();
-      Imgproc.cvtColor(frame, gray, Imgproc.COLOR_BGR2GRAY);
-
-      MatOfRect faces = new MatOfRect();
-      faceDetector.detectMultiScale(gray, faces);
-
-      for (Rect face : faces.toArray()) {
-        if (face.width > 100 && face.height > 100) {
-          // Crop and save grayscale face
-          Mat faceROI = new Mat(gray, face);
-          //Imgcodecs.imwrite("Capture.jpg", faceROI);
-          //System.out.println("✅ Face saved at: " + outputPath);
-          return faceROI;
+      String imagePath = null;
+      try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          if (line.startsWith("SUCCESS:")) {
+            imagePath = line.substring("SUCCESS:".length());
+            System.out.println("Image at: " + imagePath);
+          }
         }
       }
 
-      // Display live video in a popup window
-      HighGui.imshow("Live Camera Feed", frame);
-      if (HighGui.waitKey(30) == 27) break; // ESC key to manually exit
-    }
+      process.waitFor();
 
-    camera.release(); // Release webcam
-    return null;
-  }
+      if (imagePath == null) {
+        System.err.println("No success message received from external app");
+        return null;
+      }
 
-  public static boolean captureFaceViaExternalApp() {
-    try {
-      ProcessBuilder builder = new ProcessBuilder(
-        "java", "-Djava.library.path=C:/opencv/build/java/x64", "-jar", "FaceCaptureApp.jar"
-      );
-      builder.directory(new File("C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/java_server/face-capture/out/artifacts/face_capture_jar")); // optional
-      builder.inheritIO(); // to show console output
+      //Load image as Mat
+      Mat face;
+      File imgFile = new File(imagePath);
 
-      Process process = builder.start();
-      int exitCode = process.waitFor();
-      return exitCode == 0;
+      if (!imgFile.exists()){
+        System.err.println("Image file not found: " + imagePath);
+        return null;
+      }
+
+      face = Imgcodecs.imread(imagePath, Imgcodecs.IMREAD_GRAYSCALE);
+
+      //Delete image file
+      imgFile.delete();
+
+      return face;
     } catch (Exception e) {
       e.printStackTrace();
-      return false;
+      return null;
     }
   }
 
   public static boolean compareFaces(Mat idFace, Mat liveFace) {
     LBPHFaceRecognizer recognizer = LBPHFaceRecognizer.create();
+
+    Mat preprocessedIdFace = preprocessFace(idFace);
+    Mat preprocessedLiveFace = preprocessFace(liveFace);
 
     // Training with ID image
     MatVector images = new MatVector(1);
@@ -162,10 +148,22 @@ public class FacialRecognitionService {
 
     System.out.println("Label: " + label.get() + " Confidence: " + confidence.get());
     System.out.println(label.get() == 1 && confidence.get() < 60);
-    return label.get() == 1 && confidence.get() < 60;
+
+    if (label.get() == 1 && confidence.get() < 60){
+      System.out.println("Faces match");
+      return true;
+    }else{
+      System.out.println("Faces don't match");
+      return false;
+    }
   }
 
   private static org.bytedeco.opencv.opencv_core.Mat toBytedecoMat(Mat javaMat) {
+
+    if (javaMat == null || javaMat.empty()) {
+      throw new IllegalArgumentException("Input Mat is null or empty");
+    }
+
     byte[] data = new byte[(int) (javaMat.total() * javaMat.channels())];
     javaMat.get(0, 0, data);
     org.bytedeco.opencv.opencv_core.Mat bytedecoMat = new org.bytedeco.opencv.opencv_core.Mat(
@@ -173,6 +171,28 @@ public class FacialRecognitionService {
     );
     bytedecoMat.data().put(data);
     return bytedecoMat;
+  }
+
+  // Preprocessing function
+  private static Mat preprocessFace(Mat face) {
+    Mat processed = new Mat();
+
+    //Convert to grayscale if not already
+    if (face.channels() > 1) {
+      cvtColor(face, processed, COLOR_BGR2GRAY);
+    } else {
+      processed = face.clone();
+    }
+
+    //Histogram equalization (normalize lighting)
+    Mat equalized = new Mat();
+    equalizeHist(processed, equalized);
+
+    //Resize to consistent dimensions (200x200)
+    Mat resized = new Mat();
+    resize(equalized, resized, new Size(200, 200));
+
+    return resized;
   }
 
 }

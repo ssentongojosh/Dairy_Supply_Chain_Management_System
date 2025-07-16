@@ -8,10 +8,19 @@
     <!-- Summary -->
     <div class="row mb-4">
         <div class="col-md-4">
-            <div class="card border-start border-4 border-primary">
+            <div class="card border-start border-4">
                 <div class="card-body">
                     <h5 class="card-title">Current Stock</h5>
                     <p class="fw-bold">{{ $item->quantity }} {{ $item->unit }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- image of the product-->
+        <div class="col-md-4">
+            <div class="card border-start border-4">
+                <div class="card-body">
+                    <img src="{{ asset('images/raw_materials/' . $item->image) }}" alt="{{ $item->name }}" class="card-img-top" style="height: 100px; object-fit: cover;">
                 </div>
             </div>
         </div>

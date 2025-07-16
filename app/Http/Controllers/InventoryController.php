@@ -55,7 +55,7 @@ class InventoryController extends Controller
 
             case 'admin':
                 // TODO: Create admin inventory overview
-                return redirect()->route('dashboard')->with('info', 'Admin inventory overview coming soon!');
+                return redirect()->route('supplier.inventory')->with('info', 'Admin inventory overview coming soon!');
 
             default:
                 return redirect()->route('dashboard')->with('error', 'Access denied.');

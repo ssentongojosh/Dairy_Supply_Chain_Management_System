@@ -1,6 +1,7 @@
 package com.dscms.java_server.Requests;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,9 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class ValidationRequest {
 
-    @NotBlank(message = "Please upload a National ID")
+    @NotNull(message = "Please upload a National ID")
     private MultipartFile nationalId;
 
-    @NotBlank(message = "Please upload a URSB certificate")
+    @NotNull(message = "Please upload a URSB certificate")
     private MultipartFile ursbCertificate;
 }

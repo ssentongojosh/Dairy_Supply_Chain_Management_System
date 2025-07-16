@@ -65,6 +65,7 @@ use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\SupplyController;
 
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
@@ -258,15 +259,26 @@ Route::middleware(['auth'])->group(function () {
 
 //route for inventory
 Route::resource('inventoriess', \App\Http\Controllers\ProductInventoryController::class);
-
+//Route::get('/inventory', [PrInventoryController::class, 'index']);
 //tryout for supplier inventory
 Route::get('/supplier/inventory', function () {
     return view('supplier.inventory');
-});
+})->name('supplier.inventory');
+Route::get('/supplier/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
 
 
 //route to create a new inventory item
+// Route::get('/inventory', [PrInventoryController::class, 'index'])->name('inventory.index');
+// Route::get('/inventory/create', [PrInventoryController::class, 'create'])->name('inventory.create');
+// Route::post('/inventory', [PrInventoryController::class, 'store'])->name('inventory.store');
 
+//route for search
+// Route::get('/inventory/search',[PrInventoryController::class, 'search'])->name('inventory.search');
+// Route::get('/inventory/{id}/edit',[PrInventoryController::class, 'edit'])->name('inventory.edit');
+// ;
+
+//supply to show
+Route::get('/inventory/raw-materials', [SupplyController::class, 'index'])->name('inventory.raw_materials');
 
 //tryout
 
@@ -274,7 +286,8 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('raw_materials', RawMaterialInventoryController::class);
 });
 
-
+//delete inventory
+// Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
 
 //raw materials inventory
 //route for inventory
@@ -454,11 +467,15 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('supplier.orders.ship');
     Route::get('/orders/history', [OrderController::class, 'history'])->name('supplier.orders.history');
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('supplier.orders.history');
-        Route::get('/orders/index', [OrderController::class, 'index'])->name('supplier.orders.index');
+    Route::patch('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('supplier.orders.approve');
+    Route::patch('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('supplier.orders.reject');
+    Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('supplier.orders.ship');
+    Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('supplier.orders.updateStatus');
+    Route::get('/orders/index', [OrderController::class, 'index'])->name('supplier.orders.index');
     Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('supplier.inventory');
 });
-
-
+Route::get('/plant_manager/orders/create', [App\Http\Controllers\OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
+// Route::get('/plant_manager/standalone-test', function() { return 'Standalone works!'; });
 //plant_manager order
 Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->group(function () {
     Route::get('/dashboard', [PlantManagerDashboard::class, 'index'])->name('plant_manager.dashboard');
@@ -497,6 +514,8 @@ Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(func
     // Wildcard routes should come after specific routes
     Route::post('/orders/store', [OrderController::class, 'storeOrder'])->name('wholesaler.orders.store');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('wholesaler.orders.show');
+    Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('wholesaler.orders.create');
+        Route::post('/orders', [OrderController::class, 'storeOrder'])->name('wholesaler.orders.store');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
 
@@ -597,11 +616,20 @@ Route::post('/raw-materials', [RawMaterialInventoryController::class, 'store'])-
 // ... existing code ...
 Route::get('/wholesaler/orders/{order}/pay', [PaymentController::class, 'initiatePayment'])->name('wholesaler.orders.pay');
 Route::get('/seller/{seller}/products', [OrderController::class, 'getProductsForSeller'])->name('seller.products');
+Route::get('/plant_manager/orders', [App\Http\Controllers\OrderController::class, 'outgoingOrders'])->name('plant_manager.orders');
+Route::get('/farmer/inventory', [App\Http\Controllers\InventoryController::class, 'index'])->name('farmer.inventory');
 
+// Retailer order history route
+Route::get('/retailer/orders/history', [OrderController::class, 'orderHistory'])
+    ->name('retailer.orders.history')
+    ->middleware(['auth', 'role:retailer']);
 
-// Added by Victory🤗🤗
-// This route displays the customer segmentation summary table & charts pulled from the machine learning model via API.
-// Visit it at: http://127.0.0.1:8000/summary-page
-Route::get('/summary-page', function () {
-    return view('segment-summary');
-});
+// Plant manager order history route
+Route::get('/plant_manager/orders/history', [OrderController::class, 'orderHistory'])
+    ->name('plant_manager.orders.history')
+    ->middleware(['auth', 'role:plant_manager']);
+
+// Supplier order history route
+Route::get('/supplier/orders/history', [OrderController::class, 'orderHistory'])
+    ->name('supplier.orders.history')
+    ->middleware(['auth', 'role:supplier']);

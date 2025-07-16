@@ -3,6 +3,7 @@ package com.dscms.java_server.Controllers;
 import com.dscms.java_server.Requests.ValidationRequest;
 import com.dscms.java_server.Services.IdService;
 import com.dscms.java_server.Services.UrsbCertificateService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -20,7 +21,7 @@ public class UploadController {
     }
 
     @PostMapping("/verification")
-    public ResponseEntity<?> fileUpload(@ModelAttribute ValidationRequest request){
+    public ResponseEntity<?> fileUpload(@Valid @ModelAttribute ValidationRequest request){
 
       // Run both verifications independently to ensure both are processed
       boolean idVerified = idService.isVerified(request.getNationalId());
