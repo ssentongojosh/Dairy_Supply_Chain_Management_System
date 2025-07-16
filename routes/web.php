@@ -50,7 +50,7 @@ use App\Http\Controllers\dashboard\WholesalerDashboard;
 // use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\RetailInventoryController;
 use App\Http\Controllers\ReportHistoryController;
-use App\Http\Controllers\SupplierDashboardController;
+// use App\Http\Controllers\SupplierDashboardController;
 // use App\Http\Controllers\PlantManagerDashboard;
 use App\Http\Controllers\PlantManagerOrderController;
 use App\Http\Controllers\PlantManagerInventoryController;
@@ -459,7 +459,7 @@ Route::middleware(['auth'])->group(function () {
 
 //supplier order
 Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
-    Route::get('supplier/dashboard', [SupplierDashboardController::class, 'index'])->name('supplier.dashboard');
+    Route::get('supplier/dashboard', [SupplierDashboard::class, 'index'])->name('supplier.dashboard');
     Route::get('/orders', [OrderController::class, 'orderHistory'])->name('supplier.orders');
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('supplier.order.dashboard');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('supplier.orders.show');
