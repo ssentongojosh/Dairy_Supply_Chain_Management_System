@@ -314,6 +314,8 @@ Route::get('/delivery/{delivery}/status', function (App\Models\Delivery $deliver
 Route::get('/delivery/{id}/status-page', [DeliveryController::class, 'statusPage'])->name('delivery.statusPage');
 Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate'])->name('delivery.terminate');
 Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
+Route::put('/delivery/{id}/confirm-raw', [DeliveryController::class, 'confirmRawMaterialDelivery'])->name('delivery.confirmRaw');
+
 
 
 //catalog for inventory

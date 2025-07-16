@@ -15,6 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\IssueApiTokenCommand::class, // Add your command here
+        \App\Console\Commands\CheckProductThreshold::class,
+        \App\Console\Commands\CheckRawMaterialThresholds::class,
     ];
 
     /**
@@ -23,6 +25,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('products:check-thresholds')->hourly();
+        $schedule->command('rawmaterials:check-thresholds')->everyFiveMinutes();
     }
 
     /**
