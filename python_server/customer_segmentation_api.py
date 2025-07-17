@@ -11,7 +11,7 @@ app = Flask(__name__)
 
 # ============ Load Data & Train Model On Start =============
 
-DATA_PATH = "../database/seeders/Dataset/customer_segmentation_data.csv"  # or use full path if needed
+DATA_PATH = "../database/seeders/Dataset/customer_segmentation_data_business.csv"  # or use full path if needed
 df = pd.read_csv(DATA_PATH)
 
 # Encode categorical variables

@@ -50,40 +50,46 @@
 
 <!-- Business Segmentation Recommendations Popup -->
 <!-- Include jQuery (from CDN) if not already present -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Include SweetAlert2 (from CDN) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 $(document).ready(function() {
-  // Demo business data (replace with real data as needed)
-  var businessData = {
-    annual_revenue: 50000000,
-    order_frequency: 10,
-    total_quantity_purchased: 5000,
-    location: 'Kampala',
-    business_type: 'Wholesaler'
-  };
+    // Remove or comment out the alert after testing
+    // alert("JS is working!");
 
-  $.ajax({
-    url: '/api/business-segment',
-    method: 'POST',
-    contentType: 'application/json',
-    data: JSON.stringify(businessData),
-    success: function(response) {
-      if (response.recommendations && response.recommendations.length > 0) {
-        var productList = response.recommendations.join(', ');
-        Swal.fire({
-          title: 'Welcome!',
-          text: 'People in your segment have bought these products too: ' + productList,
-          icon: 'info',
-          confirmButtonText: 'OK'
-        });
-      }
-    },
-    error: function(xhr) {
-      // Optionally handle errors
-      // console.log(xhr.responseJSON);
-    }
-  });
+    var businessData = {
+        annual_revenue: 10000000,
+        order_frequency: 12,
+        total_quantity_purchased: 1200,
+        location: "Kampala",
+        business_type: "Wholesaler"
+    };
+
+    $.ajax({
+        url: '/api/business-segment',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(businessData),
+        success: function(response) {
+            let recs = response.recommendations ? response.recommendations.join(", ") : "No recommendations";
+            Swal.fire({
+                icon: 'info',
+                title: 'Welcome!',
+                html: '<b>People in your segment have bought these products too:</b><br><br><span style="font-size:1.1em;">' + recs + '</span>',
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'swal-wide'
+                }
+            });
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Could not fetch recommendations. Please try again later.'
+            });
+        }
+    });
 });
 </script>
