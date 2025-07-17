@@ -66,6 +66,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\SupplyController;
+use App\Http\Controllers\ProductInventoryController;
 
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
@@ -317,7 +318,11 @@ Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])-
 
 //delete item
 Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
-
+//show details of raw material
+Route::get('/inventory/raw-materials/{id}', [RawMaterialInventoryController::class, 'show'])->name('rawmaterials.show');
+//show details of products 
+Route::get('/inventory/products/{id}', [ProductInventoryController::class, 'show'])->name('products.show'); 
+      
 
 //delivery routes
 Route::resource('delivery',DeliveryController::class);

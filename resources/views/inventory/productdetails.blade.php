@@ -3,7 +3,13 @@
 @section('content')
 <div class="container my-5">
 
-    <h3 class="mb-4">Product: {{ $item->name }}</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-4">Product: {{ $item->name }}</h3>
+        <!-- back button -->
+        <a href="{{ route('plant_manager.inventory') }}" class="btn btn-primary">
+            <i class="ri-arrow-left-line me-1"></i> Back
+        </a>
+    </div>
 
     <!-- Summary -->
     <div class="row mb-4">

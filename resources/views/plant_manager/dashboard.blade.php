@@ -353,7 +353,7 @@
                             <td>{{ $product->sale_unit }}</td>
                             <td>
                                 {{-- Button to view product details --}}
-                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>
@@ -417,7 +417,7 @@
                             </td>
                             <td>
                                 {{-- Button to view raw material details --}}
-                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('rawmaterials.show', $material->id) }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>

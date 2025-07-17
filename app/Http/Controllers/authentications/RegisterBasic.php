@@ -30,7 +30,7 @@ class RegisterBasic extends Controller
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
                 'password' => ['required', 'confirmed'],
-                'role' => ['required', 'string', 'in:retailer,wholesaler,farmer,user'],
+                'role' => ['required', 'string', 'in:retailer,wholesaler,farmer,user,supplier'],
                 'terms' => ['required', 'accepted'],
             ]);
 
