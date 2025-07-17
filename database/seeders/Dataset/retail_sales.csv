@@ -1,4 +1,4 @@
-invoice_no,customer_id,age,gender,Product,quantity,price,payment_method,invoice_date,shopping_mall
+invoice_no,wholesaler_id,age,gender,Product,quantity,price,payment_method,invoice_date,shopping_mall
 I138884,C241288,28,Female,chocolate milk,5,1500.4,Credit Card,05/08/2022,Kanyon
 I317333,C111565,21,Male,Pasteurized milk 3.0% mg,3,1800.51,Debit Card,12/12/2021,Forum Istanbul
 I127801,C266599,20,Male,Pasteurized milk 2.5% mg,1,300.08,Cash,09/11/2021,Metrocity
