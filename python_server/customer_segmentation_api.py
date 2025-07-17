@@ -263,7 +263,7 @@ def forecast_demand_range():
         return jsonify({"error": f"An internal server error occurred: {str(e)}"}), 500
 
 # Original /predict_demand endpoint (can be kept or removed if /forecast_demand_range covers it)
-@app.route('/predict_demand', methods=['POST'])
+@app.route('/forecast_demand_range', methods=['POST'])
 def predict_single_demand():
     if model is None or encoder is None or feature_columns is None or recent_history_cache is None:
         return jsonify({"error": "ML components or recent history not loaded. Check server logs."}), 500
