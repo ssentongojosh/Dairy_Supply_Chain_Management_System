@@ -5,7 +5,7 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 import os
 import numpy as np
-import numpy as np
+
 
 app = Flask(__name__)
 
@@ -34,7 +34,6 @@ kmeans.fit(scaled_features)
 
 # ============ Load Top 3 Products per Segment =============
 TOP3_PATH = os.path.join(os.path.dirname(__file__), '../storage/app/public/business_segment_top3_products.csv')
-TOP3_PATH = os.path.join(os.path.dirname(__file__), '../python_server/database/pythonfiles/graphs/segment_top3_products.csv')
 if not os.path.exists(TOP3_PATH):
     # Try absolute path fallback
     TOP3_PATH = 'storage/app/public/business_segment_top3_products.csv'

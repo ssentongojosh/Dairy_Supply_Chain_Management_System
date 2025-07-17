@@ -7,7 +7,11 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 # === 1. Load Data ===
 <<<<<<< HEAD
+<<<<<<< HEAD
 DATA_PATH = 'C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/database/seeders/Dataset/customer_segmentation_data_business.csv'
+=======
+DATA_PATH = '../database/seeders/Dataset/customer_segmentation_data.csv'
+>>>>>>> origin/main
 =======
 DATA_PATH = '../database/seeders/Dataset/customer_segmentation_data.csv'
 >>>>>>> origin/main

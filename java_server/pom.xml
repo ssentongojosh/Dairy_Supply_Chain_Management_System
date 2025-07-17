@@ -92,7 +92,20 @@
             <version>1.4.0</version>
         </dependency>
 
+        <!-- <dependency>
+          <groupId>com.mysql</groupId>
+          <artifactId>mysql-connector-j</artifactId>
+          <scope>runtime</scope>
+        </dependency> -->
+
+<!--        <dependency>-->
+<!--            <groupId>org.mariadb.jdbc</groupId>-->
+<!--            <artifactId>mariadb-java-client</artifactId>-->
+<!--            <version>3.4.1</version>-->
+<!--        </dependency>-->
+
         <dependency>
+<<<<<<< HEAD
           <groupId>com.mysql</groupId>
           <artifactId>mysql-connector-j</artifactId>
           <scope>runtime</scope>
@@ -110,6 +123,13 @@
           <optional>true</optional>
         </dependency>
 
+=======
+          <groupId>org.projectlombok</groupId>
+          <artifactId>lombok</artifactId>
+          <optional>true</optional>
+        </dependency>
+
+>>>>>>> origin/main
         <dependency>
           <groupId>org.springframework.boot</groupId>
           <artifactId>spring-boot-starter-test</artifactId>

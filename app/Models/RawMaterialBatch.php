@@ -4,6 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+<<<<<<< HEAD
+=======
+use App\Models\Supplier;
+
+>>>>>>> origin/main
 
 class RawMaterialBatch extends Model
 {
@@ -23,4 +28,17 @@ class RawMaterialBatch extends Model
     {
         return $this->belongsTo(RawMaterial::class);
     }
+<<<<<<< HEAD
+=======
+
+    
+// ...existing code...
+
+public function supplier()
+{
+    return $this->belongsTo(Supplier::class);
+}
+
+// ...existing code...
+>>>>>>> origin/main
 }
