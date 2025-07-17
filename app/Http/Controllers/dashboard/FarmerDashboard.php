@@ -112,7 +112,7 @@ class FarmerDashboard extends Controller
             ->take(5)
             ->get();
 
-        return view('dashboard.farmer', [
+        return view('farmer.dashboard', [
             'user' => $user,
             'pendingOrdersCount' => $pendingOrdersCount,
             'lowStockProductsCount' => $lowStockProductsCount,

@@ -84,7 +84,7 @@
           <div class="card-info">
             <p class="card-text">Total Products</p>
             <div class="d-flex align-items-end mb-2">
-              <h4 class="card-title mb-0 me-2">{{ $totalProducts }}</h4>
+              <h4 class="card-title mb-0 me-2">{{ $inventoryStats['total_products'] ?? 0 }} </h4>
               <small class="text-info">In Inventory</small>
             </div>
           </div>
@@ -105,8 +105,8 @@
           <div class="card-info">
             <p class="card-text">Monthly Revenue</p>
             <div class="d-flex align-items-end mb-2">
-              <h4 class="card-title mb-0 me-2">${{ number_format($totalRevenueThisMonth, 2) }}</h4>
-              @if($salesGrowth > 0)
+              <h4 class="card-title mb-0 me-2">${{ number_format($totalSalesThisMonth, 2) }}</h4>
+              @if($salesGrowth = 0)
                 <small class="text-success">+{{ number_format($salesGrowth, 1) }}%</small>
               @elseif($salesGrowth < 0)
                 <small class="text-danger">{{ number_format($salesGrowth, 1) }}%</small>
@@ -164,11 +164,19 @@
             </div>
             <div>
               <p class="mb-0">In Stock</p>
-              <h6 class="mb-0">{{ $totalProducts - $outOfStockProductsCount - $lowStockProductsCount }}</h6>
+              <h6 class="mb-0">{{ $inventoryStats['total_products'] ?? 0  - $outOfStockProductsCount - $lowStockProductsCount }}</h6>
             </div>
           </div>
           <div class="user-progress">
-            <small class="fw-semibold">{{ $totalProducts > 0 ? round((($totalProducts - $outOfStockProductsCount - $lowStockProductsCount) / $totalProducts) * 100, 1) : 0 }}%</small>
+
+            <small class="fw-semibold">
+                {{ (
+                    ($inventoryStats['total_products'] ?? 0) > 0
+                        ? round((($inventoryStats['total_products'] - $outOfStockProductsCount - $lowStockProductsCount) / $inventoryStats['total_products']) * 100, 1)
+                        : 0
+                ) }}%
+            </small>
+
           </div>
         </div>
 
@@ -185,7 +193,13 @@
             </div>
           </div>
           <div class="user-progress">
-            <small class="fw-semibold">{{ $totalProducts > 0 ? round(($lowStockProductsCount / $totalProducts) * 100, 1) : 0 }}%</small>
+          <small class="fw-semibold">
+                {{ (
+                    ($inventoryStats['total_products'] ?? 0) > 0
+                        ? round((($inventoryStats['total_products'] - $outOfStockProductsCount - $lowStockProductsCount) / $inventoryStats['total_products']) * 100, 1)
+                        : 0
+                ) }}%
+            </small>
           </div>
         </div>
 
@@ -202,7 +216,13 @@
             </div>
           </div>
           <div class="user-progress">
-            <small class="fw-semibold">{{ $totalProducts > 0 ? round(($outOfStockProductsCount / $totalProducts) * 100, 1) : 0 }}%</small>
+          <small class="fw-semibold">
+                {{ (
+                    ($inventoryStats['total_products'] ?? 0) > 0
+                        ? round((($inventoryStats['total_products'] - $outOfStockProductsCount - $lowStockProductsCount) / $inventoryStats['total_products']) * 100, 1)
+                        : 0
+                ) }}%
+            </small>
           </div>
         </div>
 

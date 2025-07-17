@@ -228,7 +228,7 @@
             </a>
         </div>
         <div class="card-body">
-            @if($incomingOrders->count() > 0)
+            @if(isset($incomingOrders) && $incomingOrders->count() > 0)
                 <div class="list-group list-group-flush">
                     @foreach($incomingOrders as $order)
                         <div class="list-group-item d-flex justify-content-between align-items-center px-0">
@@ -278,8 +278,8 @@
             </a>
         </div>
         <div class="card-body">
-            @if($outgoingOrders->count() > 0)
-                <div class="list-group list-group-flush">
+        @if(isset($outgoingOrders) && $outgoingOrders->count() > 0)
+        <div class="list-group list-group-flush">
                     @foreach($outgoingOrders as $order)
                         <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <div>

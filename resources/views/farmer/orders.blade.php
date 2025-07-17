@@ -52,7 +52,7 @@
                                     </td>
                                     <td>{{ $order->created_at->format('Y-m-d') }}</td>
                                     <td>
-                                        <a href="{{ route('farmer.orders.show', $order->id) }}" class="btn btn-sm btn-outline-primary">
+                                        <a href="{{ route('farmer.orders', $order->id) }}" class="btn btn-sm btn-outline-primary">
                                             View
                                         </a>
                                     </td>

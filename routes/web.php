@@ -50,7 +50,7 @@ use App\Http\Controllers\dashboard\WholesalerDashboard;
 // use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\RetailInventoryController;
 use App\Http\Controllers\ReportHistoryController;
-use App\Http\Controllers\SupplierDashboardController;
+// use App\Http\Controllers\SupplierDashboardController;
 // use App\Http\Controllers\PlantManagerDashboard;
 use App\Http\Controllers\PlantManagerOrderController;
 use App\Http\Controllers\PlantManagerInventoryController;
@@ -461,7 +461,7 @@ Route::middleware(['auth'])->group(function () {
 
 //supplier order
 Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function () {
-    Route::get('supplier/dashboard', [SupplierDashboardController::class, 'index'])->name('supplier.dashboard');
+    Route::get('supplier/dashboard', [SupplierDashboard::class, 'index'])->name('supplier.dashboard');
     Route::get('/orders', [OrderController::class, 'orderHistory'])->name('supplier.orders');
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('supplier.order.dashboard');
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('supplier.orders.show');
@@ -585,31 +585,23 @@ Route::middleware(['auth'])->group(function () {
    Route::get('/reports/history', [ReportHistoryController::class, 'index'])->name('reports-history');
     // This route uses route model binding: {report} will automatically load the Report model by ID
     Route::get('/reports/history/{report}/download', [ReportHistoryController::class, 'download'])->name('reports.history.download');
+    Route::get('/reports/history/{report}/preview', [ReportHistoryController::class, 'preview'])->name('reports.history.preview');
 
-    // Catalog routes for browsing products
-    Route::get('/catalog', [CatalogController::class, 'index'])->name('catalog.index');
+    // Report configuration routes
+    Route::get('/reports/download-on-demand', [ReportConfigurationController::class, 'downloadOnDemand'])->name('reports.download-on-demand');
 });
 
-
-
-
-Route::middleware(['auth'])->group(function () {
-    // ... (your other authenticated routes) ...
-
-    // Routes for Tasks
-    Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
-    Route::get('/tasks/{task}', [TaskController::class, 'show'])->name('tasks.show');
-    Route::post('/tasks/{task}/complete', [TaskController::class, 'complete'])->name('tasks.complete');
-    Route::post('/tasks/{task}/in-progress', [TaskController::class, 'inProgress'])->name('tasks.in-progress');
-    Route::post('/tasks/{task}/send-inspection-message', [TaskController::class, 'sendInspectionMessage'])->name('tasks.send-inspection-message');
-});
+// Farmer Order Management
+Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
+    Route::get('/orders', [OrderController::class, 'index'])->name('farmer.orders.dashboard');
+    Route::get('/orders', [OrderController::class, 'orderHistory'])->name('farmer.orders');
     // Change this name to avoid conflict
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('farmer.orders.history');
-
     Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('farmer.orders.show');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('farmer.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('farmer.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('farmer.orders.ship');
+  });
 
     // Route::get('/inventory', [FarmerInventoryController::class, 'index'])->name('farmer.inventory');
 
@@ -636,3 +628,15 @@ Route::get('/plant_manager/orders/history', [OrderController::class, 'orderHisto
 Route::get('/supplier/orders/history', [OrderController::class, 'orderHistory'])
     ->name('supplier.orders.history')
     ->middleware(['auth', 'role:supplier']);
+
+
+
+
+//i can see you this is important
+//dont touch
+Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
+Route::get('/tasks/{task}/show/', [TaskController::class, 'show'])->name('tasks.show');
+Route::post('/tasks/{task}/complete',[TaskController::class, 'complete'])->name('tasks.complete');
+Route::post('/tasks/{task}/inprogress',[TaskController::class, 'inProgress'])->name('tasks.inprogress');
+Route::post('/tasks/{task}/send-inspection-message',[TaskController::class, 'sendInspectionMessage'])->name('tasks.sendInspectionMessage');
+
