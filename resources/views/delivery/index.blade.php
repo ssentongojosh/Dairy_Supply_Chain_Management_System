@@ -9,9 +9,17 @@
  <a href = "{{ route('inventory.raw_materials') }}">raw materials</a>
 
 <!-- table heading -->
-<div class="card-header bg-primary text-white py-2"><h4 class="text-white">
-    <i class="ri-file-download-line me-2 fs-3"></i>Incoming</h4>
+<div class="card-header border-primary d-flex justify-content-between align-items-center mb-4 py-2">
+    <h3 class="text-black">
+        <i class="ri-file-download-line me-2 fs-3"></i> INCOMING
+    </h3>
+
+    <!-- back button -->
+    <a href="{{ route('plant_manager.dashboard') }}" class="btn btn-outline-primary">
+        Back
+    </a>
 </div>
+
 
 <!-- table for incoming -->
 
@@ -19,14 +27,14 @@
  <table class="table table-striped table-bordered">
     <!-- table widths-->
     <colgroup>
-        <col style="width: 10%;">  <!-- Item Name -->
-        <col style="width: 5%;">   <!-- Quantity -->
+        <col style="width: 20%;">  <!-- Item Name -->
+        <col style="width: 10%;">   <!-- Quantity -->
         <col style="width: 10%;">  <!-- Order ID -->
         <col style="width: 10%;">  <!-- Sender -->
-        <col style="width: 15%;">  <!-- Status -->
-        <col style="width: 15%;">  <!-- Delivery Date -->
-        <col style="width: 25%;">  <!-- Notes -->
-        <col style="width: 10%;">  <!-- Actions -->
+        <col style="width: 20%;">  <!-- Status -->
+        <col style="width: 20%;">  <!-- Delivery Date -->
+        <!-- <col style="width: 25%;">
+        <col style="width: 10%;"> -->
     </colgroup>
     <thead>
         <tr>
@@ -36,8 +44,8 @@
             <th>Sender:</th>
             <th>Status:</th>
             <th>Date:</th>
-            <th>Notes:</th>
-            <th>Action:</th>
+            <!-- <th>Notes:</th>
+            <th>Action:</th> -->
         </tr>
     </thead>
     <tbody>
@@ -69,7 +77,7 @@
                 </form>
             </td>
             <td>{{ \Carbon\Carbon::parse($item->delivery_date)->format('Y-m-d') }}</td>
-            <td>{{ $item->notes ?? 'No notes' }}</td>
+            <!-- <td>{{ $item->notes ?? 'No notes' }}</td>
             <td>
                 <form method="POST" action="{{ route('delivery.confirm', $item->id) }}">
                    @csrf
@@ -77,18 +85,18 @@
                    <button name="action" value="confirm">✅</button>
                    <button name="action" value="reject">❌</button>
                 </form>
-            </td>
+            </td> -->
         </tr>
         @endforeach
 
     </tbody>
  </table>
  <!-- trying to see status -->
-  @foreach($delivery as $item)
+  <!-- @foreach($delivery as $item)
  <a href="{{ route('delivery.statusPage', ['id' => $item->id]) }}" class="btn btn-info">
     View Delivery Status
 </a>
-@endforeach
+@endforeach -->
 
  </div>
 

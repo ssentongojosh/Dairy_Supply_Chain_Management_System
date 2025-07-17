@@ -36,18 +36,27 @@ class ProductInventoryController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'name' => 'required|string|max:15',
+            'product_id' => 'required|exists:products,id',
             'quantity' => 'required|integer|min:1',
             'manufacture_date' => 'required|date',
-            'price' => 'required|numeric|min:0',
+            //'price' => 'required|numeric|min:0',
         ]);
-        
-        $data['supplier_id'] = Auth::id();
-        //save and store new item
-        $newItem = Products::create($data);
 
+        //log in the production batch
+         $production = Production::create([
+        'product_id' => $data['product_id'],
+        'quantity' => $data['quantity'],
+        'production_date' => $data['production_date'],
+        //'status' => 'done', // optional
+        ]);
+
+        //increase stock in the products table
+        $product = Products::find($data['product_id']);
+        $product->increment('quantity', $data['quantity']);
+
+        
         //new item exists so can now be stored
-        return redirect()->back()->with('success', 'Item added successfully!')->with('newItem', $newItem);
+        return redirect()->back()->with('success', 'Inventory updated successfully!');
     }
 
     /**
@@ -117,4 +126,13 @@ class ProductInventoryController extends Controller
 
         return redirect()->route('raw-material.index')->with('success', 'Raw material deleted.');
     }
+
+    //for stuff below threshold
+    public function lowStock()
+    {
+    $lowStock = Product::whereColumn('quantity', '<', 'threshold')->get();
+
+    return view('plant_manager.low_stock_products', compact('lowStock'));
+    }
+
 }
