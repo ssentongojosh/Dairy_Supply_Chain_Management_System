@@ -15,10 +15,7 @@ class Products extends Model
         'manufacture_date',
         'supplier_id',
         'sale_unit',
-<<<<<<< HEAD
-=======
         'threshold',
->>>>>>> origin/main
     ];
 
     protected $casts = [
@@ -36,9 +33,6 @@ class Products extends Model
         return $this->hasMany(ProductUsage::class);
     }
 
-<<<<<<< HEAD
-=======
     //for production
 
->>>>>>> origin/main
 }
