@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Delivery;
+use App\Models\RawMaterial;
+use App\Models\RawMaterialBatch;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
@@ -126,6 +128,31 @@ public function myDeliveries()
     $delivery = Delivery::where('sender_id', Auth::id())->latest()->get();
 
     return view('delivery.mine', compact('delivery'));
+}
+     
+    //when deliveries reach to enter rawMaterialBatch
+public function confirmDelivery(Request $request, $deliveryId)
+{
+    $delivery = RawMaterialDelivery::findOrFail($deliveryId);
+
+    if ($delivery->status !== 'confirmed') {
+        RawMaterialBatch::create([
+            'raw_material_id' => $delivery->raw_material_id,
+            'quantity' => $delivery->quantity,
+            'delivery_date' => now(),
+            'supplier_id' => $delivery->supplier_id
+        ]);
+
+        // Update total stock
+        $material = RawMaterial::find($delivery->raw_material_id);
+        $material->quantity += $delivery->quantity;
+        $material->save();
+
+        $delivery->status = 'confirmed';
+        $delivery->save();
+    }
+
+    return redirect()->back()->with('success', 'Delivery confirmed and stock updated.');
 }
 
 

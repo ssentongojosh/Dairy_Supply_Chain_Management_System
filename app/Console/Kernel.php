@@ -15,6 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\IssueApiTokenCommand::class, // Add your command here
+        \App\Console\Commands\CheckProductThreshold::class,
+        \App\Console\Commands\CheckRawMaterialThresholds::class,
     ];
 
     /**

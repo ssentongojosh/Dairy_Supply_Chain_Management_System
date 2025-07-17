@@ -39,7 +39,7 @@ class InventoryController extends Controller
 
             case 'farmer':
                 // Redirect farmers to their inventory page
-                return redirect()->route('inventory.raw_materials');
+                return redirect()->route('raw_material.index');
 
             case 'plant_manager':
                 // Redirect plant managers to their inventory page
@@ -51,7 +51,7 @@ class InventoryController extends Controller
 
             case 'supplier':
                 // Redirect suppliers to their inventory page
-                return redirect()->route('delivery.mine');
+                return redirect()->route('raw_material.index');
 
             case 'admin':
                 // TODO: Create admin inventory overview
