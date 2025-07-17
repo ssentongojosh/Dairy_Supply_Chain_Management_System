@@ -66,7 +66,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\SupplyController;
-
+use App\Http\Controllers\DemandForecastController;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\dashboard\UserController;
@@ -634,9 +634,15 @@ Route::get('/supplier/orders/history', [OrderController::class, 'orderHistory'])
 
 //i can see you this is important
 //dont touch
+
+
 Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
 Route::get('/tasks/{task}/show/', [TaskController::class, 'show'])->name('tasks.show');
 Route::post('/tasks/{task}/complete',[TaskController::class, 'complete'])->name('tasks.complete');
 Route::post('/tasks/{task}/inprogress',[TaskController::class, 'inProgress'])->name('tasks.inprogress');
 Route::post('/tasks/{task}/send-inspection-message',[TaskController::class, 'sendInspectionMessage'])->name('tasks.sendInspectionMessage');
 
+  // Routes for Demand Forecasting
+    Route::get('/demand-forecast', [DemandForecastController::class, 'index'])->name('demand.forecast.index');
+    Route::post('/demand-forecast', [DemandForecastController::class, 'forecast'])->name('demand.forecast.predict');
+    Route::post('/demand-forecast/generate-task', [DemandForecastController::class, 'generateTasksFromForecast'])->name('demand.forecast.generate_task');
