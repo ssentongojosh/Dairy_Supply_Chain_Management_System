@@ -286,8 +286,15 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('raw_materials', RawMaterialInventoryController::class);
 });
 
-//delete inventory
-// Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
+//retailer.inventory
+Route::get('/retailer/inventory', function () {
+    return view('retailer.inventory');
+})->name('retailer.inventory');
+
+//for side bar inventory for retailer
+Route::get('/catalog/retailer', [CatalogController::class, 'retailer'])->name('catalog.retailer');
+Route::get('/catalog/retailer', [CatalogController::class, 'retailers'])->name('catalog.retailer');
+
 
 //raw materials inventory
 //route for inventory

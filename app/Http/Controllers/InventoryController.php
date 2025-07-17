@@ -31,7 +31,7 @@ class InventoryController extends Controller
         switch ($role) {
             case 'retailer':
                 // Redirect retailers to their inventory page
-                return redirect()->route('catalog.index');
+                return redirect()->route('catalog.retailer');
 
             case 'wholesaler':
                 // Redirect wholesalers to their inventory page

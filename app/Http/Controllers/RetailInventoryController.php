@@ -99,7 +99,9 @@ class RetailInventoryController extends Controller
                                     ->sum(DB::raw('inventories.quantity * products.price')),
         ];
 
-        return view('retailer.inventory', compact('inventory', 'stats', 'categories'));
+        return view('retailer.inventory', ['inventory'=>$inventory,
+                                           'stats' => $stats,
+                                            'categories'=> $categories,]);
     }
 
     /**

@@ -17,9 +17,17 @@
 
 @section('content')
 <div class="container my-5">
-  <h2 class="mb-4 text-center font-bold text-xl">Products Available for Purchase</h2>
+    <div>
+        <h2 class="mb-4 text-center font-bold text-xl">Our Dairy Products</h2>
+            <form method="GET" action="{{ route('catalog.retailer') }}" class="mb-4">
+                <input type="text" name="search" placeholder="Search product by name..." value="{{ request('search') }}"class="border px-3 py-1 rounded w-1/2">
+                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">Search</button>
+            </form>
 
-  <div class="row">
+
+
+
+  <div class="row"> 
     @forelse ($products as $product)
       <div class="col-md-3 mb-4">
         <div class="card hover-lift h-100 shadow-sm" style="max-height: 350px; ">
@@ -30,9 +38,7 @@
 
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ $product->name }}</h5>
-            <p class="card-text text-muted">Quantity: {{ number_format($product->quantity) }} {{ $product->unit }}</p>
-            <p class="card-text fw-bold">Price: UGX {{ number_format($product->price) }} /</p>
-            <a href="{{ route('wholesaler.orders.create', ['product_id' => $product->id]) }}" class="btn btn-primary mt-auto">Order Now</a>
+            <a href="{{ route('retailer.orders.create', ['product_id' => $product->id]) }}" class="btn btn-primary mt-auto">Order Now</a>
             
           </div>
         </div>
