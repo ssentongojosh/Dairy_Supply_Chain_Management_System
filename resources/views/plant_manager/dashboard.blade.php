@@ -26,14 +26,16 @@
 
         <!-- 🧪 Card: Total Raw Materials -->
         <div onclick="document.getElementById('rawMaterialsTable').scrollIntoView({ behavior: 'smooth' })" style="cursor: pointer;" class="col-md-3 col-sm-6 mb-4">
-                <div class="card h-100 border-start border-4 border-success">
-                    <div class="card-body d-flex align-items-center">
-                        <div class="avatar flex-shrink-0 bg-label-info me-3">
+                <div class="card">
+                    <div class="card-body ">
+                        <div class="d-flex align-items-center">
+                        <div class="avatar flex-shrink-0 bg-label-info me-3 d-flex align-items-center justify-content-center">
                             <i class="ri-cup-line fs-3"></i>
                         </div>
                         <div>
-                            <h5 class="card-title mb-0">Raw Materials</h5>
-                            <h6 class="fw-bold">{{ $rawMaterials->count() }}</h6>
+                            <h5 class="card-title mb-0">{{ $rawMaterials->count() }}</h5>
+                            <small class="text-muted">Raw Materials</small>
+                        </div>
                         </div>
                     </div>
                 </div>
@@ -196,8 +198,8 @@
                         </a>
                     </div>
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
-                        <a href="{{ route('plant_manager.inventory') }}" class="btn btn-outline-warning w-100">
-                            <i class="ri-shopping-cart-line me-1"></i>View inventory
+                        <a href="{{ route('delivery.index') }}" class="btn btn-outline-warning w-100">
+                            <i class="ri-shopping-cart-line me-1"></i>View delivery
                         </a>
                     </div>
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
@@ -208,6 +210,13 @@
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
                         <a href="{{ route('app-chat') }}" class="btn btn-outline-secondary w-100">
                             <i class="ri-chat-3-line me-1"></i>Support
+                        </a>
+                    </div>
+
+                    <!-- for production -->
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <a href="{{ route('recipe.index') }}" class="btn btn-outline-secondary w-100">
+                            <i class="ri-chat-3-line me-1"></i>Production
                         </a>
                     </div>
                 </div>
@@ -360,7 +369,7 @@
                             <td>{{ $product->sale_unit }}</td>
                             <td>
                                 {{-- Button to view product details --}}
-                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>
@@ -424,7 +433,7 @@
                             </td>
                             <td>
                                 {{-- Button to view raw material details --}}
-                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('rawmaterials.show', $material->id) }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>

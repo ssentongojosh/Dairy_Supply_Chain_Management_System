@@ -24,5 +24,30 @@ class CatalogController extends Controller
     });
 
     return view('catalog.index', ['products' => $filtered]);
+    } 
+
+    //for the retailer
+    public function retailer()
+    {
+        $allProducts = Product::all();
+        $filtered = $allProducts->filter(function ($product){
+            $quantity = $product->quantity;
+            return $quantity > 0;
+        });
+
+        return view('catalog.retailer', ['products' => $filtered]);
+    }
+    
+    //for  searching for products
+    public function retailers(Request $request)
+    {
+        $query = $request->input('search');
+        $products = Product::query()
+            ->when($query, function ($q) use ($query) {
+                $q->where('name', 'LIKE', '%' . $query . '%');
+            })
+            ->get();
+
+        return view('catalog.retailer', compact('products', 'query'));    
     }
 }
