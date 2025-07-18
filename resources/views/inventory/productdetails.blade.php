@@ -47,7 +47,7 @@
                 @foreach ($batches as $batch)
                     <tr>
                         <td>{{ $batch->batch_code }}</td>
-                        <td>{{ $batch->quantity_produced }} {{ $product->unit }}</td>
+                        <td>{{ $batch->quantity_produced }} </td>
                         <td>{{ \Carbon\Carbon::parse($batch->production_date)->format('M d, Y') }}</td>
                     </tr>
                 @endforeach

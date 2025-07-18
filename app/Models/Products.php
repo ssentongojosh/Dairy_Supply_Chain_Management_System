@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Products extends Model
 {
+    //table to use in db
+    protected $table = 'products';
     //
     protected $fillable = [
         'name',
@@ -34,5 +36,14 @@ class Products extends Model
     }
 
     //for production
+    //public function recipeItems()
+    //{
+    //return $this->hasMany(ProductRecipe::class);
+    //}
+    //another sample
+    public function recipeItems() 
+    {
+    return $this->hasMany(ProductRecipe::class, 'product_id');
+    }
 
 }
