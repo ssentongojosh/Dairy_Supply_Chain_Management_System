@@ -72,7 +72,7 @@
             <ul class="navbar-nav flex-row align-items-center ms-md-auto">
 
               <!-- Language -->
-              <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+              {{-- <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                   <i class="icon-base ri ri-translate-2 icon-22px"></i>
                 </a>
@@ -98,7 +98,7 @@
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> --}}
               <!--/ Language -->
 
               <!-- Style Switcher -->
@@ -143,13 +143,13 @@
                   </div>
                   <div class="dropdown-shortcuts-list scrollable-container">
                     <div class="row row-bordered overflow-visible g-0">
-                      <div class="dropdown-shortcuts-item col">
+                      {{-- <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-calendar-line icon-26px text-heading"></i>
                         </span>
                         <a href="{{url('/app/calendar')}}" class="stretched-link">Calendar</a>
                         <small>Appointments</small>
-                      </div>
+                      </div> --}}
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-wechat-line icon-26px text-heading"></i>
@@ -158,7 +158,7 @@
                         <small>Team Communication</small>
                       </div>
                     </div>
-                    <div class="row row-bordered overflow-visible g-0">
+                    {{-- <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-user-line icon-26px text-heading"></i>
@@ -173,20 +173,20 @@
                         <a href="{{url('/roles')}}" class="stretched-link">Role Management</a>
                         <small>Permissions</small>
                       </div>
-                    </div>
+                    </div> --}}
                     <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-pie-chart-2-line icon-26px text-heading"></i>
                         </span>
-                        <a href="{{url('/')}}" class="stretched-link">Dashboard</a>
-                        <small>Analytics</small>
+                        <a href="{{url('/dashboard')}}" class="stretched-link">Dashboard</a>
+                        {{-- <small>Analytics</small> --}}
                       </div>
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-settings-4-line icon-26px text-heading"></i>
                         </span>
-                        <a href="{{url('/settings')}}" class="stretched-link">Settings</a>
+                        <a href="{{url('pages/account-settings-account')}}" class="stretched-link">Settings</a>
                         <small>Account Settings</small>
                       </div>
                     </div>
@@ -311,13 +311,13 @@
                       <span class="align-middle">My Profile</span>
                     </a>
                   </li>
-                  <li>
-                    <a class="dropdown-item waves-effect" href="javascript:void(0);">
+                  {{-- <li>
+                    <a class="dropdown-item waves-effect" href="">
                       <i class='icon-base ri ri-settings-4-line icon-22px me-2'></i>
                       <span class="align-middle">Settings</span>
                     </a>
-                  </li>
-                  <li>
+                  </li> --}}
+                  {{-- <li>
                     <a class="dropdown-item waves-effect" href="javascript:void(0);">
                       <span class="d-flex align-items-center align-middle">
                         <i class="flex-shrink-0 icon-base ri ri-file-text-line icon-22px me-2"></i>
@@ -325,7 +325,7 @@
                         <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger h-px-20 d-flex align-items-center justify-content-center">4</span>
                       </span>
                     </a>
-                  </li>
+                  </li> --}}
                   <li>
                     <div class="dropdown-divider my-1"></div>
                   </li>

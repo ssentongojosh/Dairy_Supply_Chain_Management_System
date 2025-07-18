@@ -105,8 +105,8 @@
                         <td>{{ $sale['date'] ?? 'N/A' }}</td>
                         <td>{{ $sale['product'] ?? 'N/A' }}</td>
                         <td>{{ $sale['quantity'] ?? 'N/A' }}</td>
-                        <td>${{ number_format($sale['price'] ?? 0, 2) }}</td>
-                        <td>${{ number_format($sale['total'] ?? 0, 2) }}</td>
+                        <td>${{ number_format((float)($sale['price'] ?? 0), 2) }}</td>
+                        <td>${{ number_format((float)($sale['total'] ?? 0), 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -186,7 +186,7 @@
                     <tr>
                         <td>{{ $customer['name'] ?? 'N/A' }}</td>
                         <td>{{ $customer['email'] ?? 'N/A' }}</td>
-                        <td>${{ number_format($customer['total_purchases'] ?? 0, 2) }}</td>
+                        <td>${{ number_format((float)($customer['total_purchases'] ?? 0), 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>

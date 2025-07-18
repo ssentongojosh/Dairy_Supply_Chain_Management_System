@@ -27,6 +27,9 @@ class Task extends Model
         'related_type',
         'assigned_at',
         'completed_at',
+        'wholesaler_id',
+        'forecast_start_date',
+        'forecast_end_date',
     ];
 
     /**
@@ -38,6 +41,8 @@ class Task extends Model
         'due_date' => 'date',
         'assigned_at' => 'datetime',
         'completed_at' => 'datetime',
+        'forecast_start_date' => 'datetime', // NEW: Cast to datetime
+        'forecast_end_date' => 'datetime',
     ];
 
     /**
@@ -69,4 +74,9 @@ class Task extends Model
     public const STATUS_FAILED = 'failed'; // Task could not be completed (e.g., delivery failed)
     public const STATUS_CANCELLED = 'cancelled';
     public const STATUS_OVERDUE = 'overdue';
+    public const STATUS_SUGGESTED = 'suggested';
+    public const STATUS_FOR_INSPECTION = 'for_inspection';
+    public const STATUS_APPROVED = 'approved';
+    public const STATUS_REJECTED = 'rejected';
+
 }

@@ -1028,6 +1028,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const previewCard = document.getElementById('settingsPreview').closest('.card');
         previewCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
+        
         // Add temporary highlight effect
         previewCard.style.border = '2px solid #007bff';
         setTimeout(() => {

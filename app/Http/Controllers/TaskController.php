@@ -248,4 +248,66 @@ class TaskController extends Controller
             return response()->json(['message' => 'Failed to send message: ' . $e->getMessage()], 500);
         }
     }
+
+    public function approveTask(Task $task)
+    {
+        $user = Auth::user();
+        $userRoleValue = is_object($user->role) && method_exists($user->role, 'value')
+                         ? $user->role->value
+                         : (string) $user->role;
+
+        if ($userRoleValue !== Role::PLANT_MANAGER->value) {
+            return response()->json(['message' => 'Unauthorized: Only Plant Managers can approve tasks.'], 403);
+        }
+
+        if ($task->status === Task::STATUS_SUGGESTED) {
+            // For suggested tasks, change to PENDING and assign to the required role
+            $task->status = Task::STATUS_PENDING;
+            // Optionally, you might re-assign if the initial assignment was just a placeholder
+            // For now, we'll assume TaskAssignmentService already assigned it correctly to the required_role
+            $task->save();
+            Log::info("Suggested Task '{$task->title}' (ID: {$task->id}) APPROVED by Plant Manager ID: {$user->id}. Status changed to PENDING.");
+            return response()->json(['message' => 'Suggested task approved and moved to pending tasks.'], 200);
+        } elseif ($task->status === Task::STATUS_FOR_INSPECTION) {
+            // For tasks that were completed by a worker and are now for inspection
+            $task->status = Task::STATUS_APPROVED;
+            $task->save();
+            Log::info("Task '{$task->title}' (ID: {$task->id}) APPROVED by Plant Manager ID: {$user->id}. Status changed to APPROVED.");
+            return response()->json(['message' => 'Task approved and marked as completed.'], 200);
+        }
+
+        return response()->json(['message' => 'Task cannot be approved from its current status.'], 400);
+    }
+
+    /**
+     * Reject a suggested or completed task.
+     * Only accessible by Plant Managers.
+     */
+    public function rejectTask(Task $task)
+    {
+        $user = Auth::user();
+        $userRoleValue = is_object($user->role) && method_exists($user->role, 'value')
+                         ? $user->role->value
+                         : (string) $user->role;
+
+        if ($userRoleValue !== Role::PLANT_MANAGER->value) {
+            return response()->json(['message' => 'Unauthorized: Only Plant Managers can reject tasks.'], 403);
+        }
+
+        if ($task->status === Task::STATUS_SUGGESTED) {
+            $task->status = Task::STATUS_REJECTED;
+            $task->save();
+            Log::info("Suggested Task '{$task->title}' (ID: {$task->id}) REJECTED by Plant Manager ID: {$user->id}. Status changed to REJECTED.");
+            return response()->json(['message' => 'Suggested task rejected.'], 200);
+        } elseif ($task->status === Task::STATUS_FOR_INSPECTION) {
+            // If a task is rejected after completion, it might revert to in_progress or be marked rejected
+            // For now, let's mark it as rejected. You can adjust this flow if needed (e.g., revert to in_progress for rework)
+            $task->status = Task::STATUS_REJECTED;
+            $task->save();
+            Log::info("Task '{$task->title}' (ID: {$task->id}) REJECTED by Plant Manager ID: {$user->id}. Status changed to REJECTED.");
+            return response()->json(['message' => 'Task rejected.'], 200);
+        }
+
+        return response()->json(['message' => 'Task cannot be rejected from its current status.'], 400);
+      }
 }

@@ -15,6 +15,7 @@ enum Role: string
     case EXECUTIVE = 'executive';
     case INSPECTOR = 'inspector';
     case QUALITY_ASSURANCE = 'quality_assurance';
+    case WORKER = 'worker'; // Adding a generic worker role
 
     public function label(): string
     {
@@ -30,6 +31,7 @@ enum Role: string
             self::EXECUTIVE => 'Executive',
             self::INSPECTOR => 'Field Inspector',
             self::QUALITY_ASSURANCE => 'Quality Assurance Manager',
+            self::WORKER => 'Worker',
         };
     }
 }

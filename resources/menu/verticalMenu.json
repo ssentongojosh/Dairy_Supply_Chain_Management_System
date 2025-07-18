@@ -1,19 +1,18 @@
 {
   "menu": [
     {
-      "url": "/",
-      "name": "Dashboards",
+      "url": "/dashboard",
+      "name": "Dashboard",
       "icon": "menu-icon tf-icons ri-home-smile-line",
       "slug": "dashboard",
-      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "executive"],
-      "submenu": [
-        {
-          "url": "/",
-          "name": "Analytics",
-          "slug": "dashboard-analytics",
-          "roles": ["admin", "executive"]
-        }
-      ]
+      "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier", "executive"]
+    },
+    {
+      "url": "/demand-forecast",
+      "name": "Analytics",
+      "icon": "menu-icon tf-icons ri-bar-chart-2-line",
+      "slug": "demand.forecast",
+      "roles": ["plant_manager"]
     },
     {
       "url": "app/chat",

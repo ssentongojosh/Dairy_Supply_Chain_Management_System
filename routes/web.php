@@ -78,7 +78,7 @@ use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\dashboard\PlantManagerDashboard;
 // Root route - Welcome page
 use App\Http\Controllers\PrInventoryController;
-
+use App\Http\Controllers\ReportConfigurationController; 
 // index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -589,6 +589,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Report configuration routes
     Route::get('/reports/download-on-demand', [ReportConfigurationController::class, 'downloadOnDemand'])->name('reports.download-on-demand');
+    Route::post('/report/store', [ReportConfigurationController::class, 'store'])->name('report-settings.store');
 });
 
 // Farmer Order Management
@@ -641,8 +642,13 @@ Route::get('/tasks/{task}/show/', [TaskController::class, 'show'])->name('tasks.
 Route::post('/tasks/{task}/complete',[TaskController::class, 'complete'])->name('tasks.complete');
 Route::post('/tasks/{task}/inprogress',[TaskController::class, 'inProgress'])->name('tasks.inprogress');
 Route::post('/tasks/{task}/send-inspection-message',[TaskController::class, 'sendInspectionMessage'])->name('tasks.sendInspectionMessage');
+Route::post('/tasks/{task}/approve', [TaskController::class, 'approveTask'])->name('tasks.approve');
+    Route::post('/tasks/{task}/reject', [TaskController::class, 'rejectTask'])->name('tasks.reject');
+
+
 
   // Routes for Demand Forecasting
     Route::get('/demand-forecast', [DemandForecastController::class, 'index'])->name('demand.forecast.index');
     Route::post('/demand-forecast', [DemandForecastController::class, 'forecast'])->name('demand.forecast.predict');
     Route::post('/demand-forecast/generate-task', [DemandForecastController::class, 'generateTasksFromForecast'])->name('demand.forecast.generate_task');
+Route::post('/demand-forecast/suggest-automated-tasks', [DemandForecastController::class, 'suggestAutomatedTasks'])->name('demand.forecast.suggest_automated_tasks');
