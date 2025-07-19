@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Delivery;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\RawMaterial;
 use App\Models\RawMaterialBatch;
 use App\Models\User;
@@ -154,6 +156,28 @@ public function confirmDelivery(Request $request, $deliveryId)
 
     return redirect()->back()->with('success', 'Delivery confirmed and stock updated.');
 }
+
+    //trying out the fill in order then the rest enters
+    public function autoCreate(Request $request)
+{
+    $orderId = $request->input('order_id');
+    $order = Order::with('items')->findOrFail($orderId);
+
+    foreach ($order->items as $item) {
+        Delivery::create([
+            'order_id'      => $order->id,
+            'raw_material_id'    => $item->raw_material_id,
+            'quantity'      => $item->quantity,
+            'recipient'     => $order->recipient_name ?? 'Plant Manager', // adjust based on your schema
+            'location'      => $order->delivery_location ?? 'Main Plant',
+            'delivery_date' => now(),
+            'status'        => 'pending',
+        ]);
+    }
+
+    return back()->with('success', 'Delivery created automatically from order.');
+}
+
 
 
     /**

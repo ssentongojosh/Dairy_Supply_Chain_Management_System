@@ -216,7 +216,7 @@
                     <!-- for production -->
                     <div class="col-md-2 col-sm-4 col-6 mb-2">
                         <a href="{{ route('recipe.index') }}" class="btn btn-outline-secondary w-100">
-                            <i class="ri-chat-3-line me-1"></i>Production
+                            <i>🛠️</i>Manual Production
                         </a>
                     </div>
                 </div>

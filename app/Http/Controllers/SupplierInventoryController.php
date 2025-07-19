@@ -15,6 +15,8 @@ class SupplierInventoryController extends Controller
      */
     public function index(Request $request)
     {
+        //for the user kedi repair
+        $userId = Auth::id();
         // Get search and filter parameters
         $search = $request->get('search');
         $category = $request->get('category');
@@ -99,11 +101,15 @@ class SupplierInventoryController extends Controller
                         ->filter()
                         ->sort()
                         ->values();
+        //try repairs
+        $rawMaterials = RawMaterial::where('user_id', $userId)->get();
+        $rawMaterials = RawMaterial::all();       
 
         return view('supplier.inventory', compact(
             'inventory',
             'inventoryStats',
-            'categories'
+            'categories',
+            'rawMaterials',
         ));
     }    /**
      * Store new inventory item

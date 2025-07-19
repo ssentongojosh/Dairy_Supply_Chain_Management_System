@@ -21,7 +21,14 @@
         <h2 class="mb-4 text-center font-bold text-xl">Our Dairy Products</h2>
             <form method="GET" action="{{ route('catalog.retailer') }}" class="mb-4">
                 <input type="text" name="search" placeholder="Search product by name..." value="{{ request('search') }}"class="border px-3 py-1 rounded w-1/2">
-                <button type="submit" class="bg-blue-500 text-white px-3 py-1 rounded">Search</button>
+                <button type="submit" class="bg-blue-500 text-black px-3 py-1 rounded">Search</button>
+
+                <!-- clear search -->
+                 @if(request('search'))
+                   <a href="{{ route('catalog.retailer') }}" class="btn btn-outline-secondary">
+                   <i class="ri-refresh-line"></i> Clear
+                   </a>
+                @endif
             </form>
 
 
