@@ -50,10 +50,21 @@
                     <label class="block font-semibold">Description:</label>
                     <textarea name="description" class="w-full border p-2 rounded" required></textarea>
                 </div>
-
+                  
+                <div class="d-flex justify-content-between align-items-center mb-4">
                 <button type="submit" id="submit-delivery" class="btn btn-success btn-lg d-flex align-items-center gap-2 shadow-sm">
                     <i class="ri-send-plane-line"></i>Send Delivery
                 </button>
+
+                  <!-- back buttons -->
+                 <span>  
+                    <a href="{{ route('inventory.raw_materials') }}" class="btn btn-warning">
+                    <i class="ri-arrow-left-line me-1"></i> Back to raw materials </a>
+
+                    <a href="{{ route('delivery.mine') }}" class="btn btn-warning">
+                    <i class="ri-arrow-left-line me-1"></i> Back to my deliveries </a>
+                 </span>  
+                </div>
             </form>
         
     </div>
