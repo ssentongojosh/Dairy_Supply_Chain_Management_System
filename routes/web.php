@@ -78,8 +78,8 @@ use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\dashboard\PlantManagerDashboard;
 // Root route - Welcome page
 use App\Http\Controllers\PrInventoryController;
-use App\Http\Controllers\ReportConfigurationController; 
-use App\Http\Controllers\ReportNotificationController; 
+use App\Http\Controllers\ReportConfigurationController;
+use App\Http\Controllers\ReportNotificationController;
 // index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -195,6 +195,16 @@ Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-account');
 Route::get('/pages/account-settings-notifications', [AccountSettingsNotifications::class, 'index'])->name('pages-account-settings-notifications');
 Route::get('/pages/account-settings-connections', [AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
+
+// Account settings functionality
+Route::middleware(['auth'])->group(function () {
+    Route::get('/account-settings', [\App\Http\Controllers\AccountSettingsController::class, 'account'])->name('account.settings');
+    Route::post('/account-settings/update', [\App\Http\Controllers\AccountSettingsController::class, 'updateAccount'])->name('account.update');
+    Route::post('/account-settings/upload-avatar', [\App\Http\Controllers\AccountSettingsController::class, 'uploadAvatar'])->name('account.upload-avatar');
+    Route::post('/account-settings/reset-avatar', [\App\Http\Controllers\AccountSettingsController::class, 'resetAvatar'])->name('account.reset-avatar');
+    Route::post('/account-settings/deactivate', [\App\Http\Controllers\AccountSettingsController::class, 'deactivateAccount'])->name('account.deactivate');
+});
+
 Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
 Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
 
@@ -591,7 +601,7 @@ Route::middleware(['auth'])->group(function () {
     // Report configuration routes
     Route::get('/reports/download-on-demand', [ReportConfigurationController::class, 'downloadOnDemand'])->name('reports.download-on-demand');
     Route::post('/report/store', [ReportConfigurationController::class, 'store'])->name('report-settings.store');
-    
+
     // Report notification routes
     Route::prefix('reports')->group(function () {
         Route::get('/notifications/recent', [ReportNotificationController::class, 'recent'])->name('reports.notifications.recent');

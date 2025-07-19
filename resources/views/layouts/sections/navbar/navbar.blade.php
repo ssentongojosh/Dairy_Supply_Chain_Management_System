@@ -344,7 +344,17 @@
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
                   <div class="avatar avatar-online">
-                    <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle">
+                    @auth
+                      @if(Auth::user()->avatar && Storage::disk('public')->exists(Auth::user()->avatar))
+                        <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                      @else
+                        <span class="avatar-initial rounded-circle bg-label-primary">
+                          {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}{{ strtoupper(substr(strstr(Auth::user()->name, ' '), 1, 1)) }}
+                        </span>
+                      @endif
+                    @else
+                      <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    @endauth
                   </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
@@ -353,7 +363,17 @@
                       <div class="d-flex align-items-center">
                         <div class="flex-shrink-0 me-2">
                           <div class="avatar avatar-online">
-                            <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="w-px-40 h-auto rounded-circle">
+                            @auth
+                              @if(Auth::user()->avatar && Storage::disk('public')->exists(Auth::user()->avatar))
+                                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                              @else
+                                <span class="avatar-initial rounded-circle bg-label-primary w-px-40 h-px-40 d-flex align-items-center justify-content-center">
+                                  <span class="fw-medium">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}{{ strtoupper(substr(strstr(Auth::user()->name, ' '), 1, 1)) }}</span>
+                                </span>
+                              @endif
+                            @else
+                              <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                            @endauth
                           </div>
                         </div>
                         <div class="flex-grow-1">
