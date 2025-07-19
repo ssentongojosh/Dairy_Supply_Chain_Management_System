@@ -28,4 +28,10 @@ class RawMaterial extends Model
         return $this->hasMany(RawMaterialUsage::class);
     }
 
+    public function supplier()
+    {
+    return $this->belongsToMany(Supplier::class, 'supplier_raw_material');
+    }
+
+
 }
