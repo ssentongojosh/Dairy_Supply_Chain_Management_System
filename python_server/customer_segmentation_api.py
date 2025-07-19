@@ -332,6 +332,32 @@ def predict_single_demand():
     except Exception as e:
         app.logger.error(f"Error during single prediction: {e}", exc_info=True)
         return jsonify({"error": f"An internal server error occurred: {str(e)}"}), 500
+    
+@app.route("/api/recommend", methods=["POST"])
+def recommend():
+    """
+    Expects JSON with: {"segment": "Medium Business"}
+    Returns: {"recommended_products": ["Product 1", "Product 2", ...]}
+    """
+    data = request.json
+    segment = data.get("segment")
+    if not segment:
+        return jsonify({"error": "No segment provided"}), 400
+
+    # Try to use your CSV mapping if possible (you already load segment_to_products at the top)
+    products = segment_to_products.get(segment)
+    if not products:
+        # Fallback: hardcoded defaults
+        fallback_recs = {
+            "Small Business": ["Cultured Milk", "Small Cheese", "Yogurt"],
+            "Medium Business": ["Powdered Milk", "Yogurt", "Butter"],
+            "Large Business": ["Bulk Milk", "Powdered Milk", "Butter"],
+            "High Frequency Business": ["Yogurt", "Bulk Milk", "Cultured Milk"],
+            "Premium Business": ["Imported Cheese", "Organic Yogurt", "Premium Butter"]
+        }
+        products = fallback_recs.get(segment, ["No recommendations found for this segment."])
+
+    return jsonify({"recommended_products": products})
 
 
 

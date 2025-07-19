@@ -52,7 +52,7 @@ class AnalyticsDataController extends Controller
         ]);
 
         // Step 1: Get segment from Python API
-        $segmentResponse = Http::post('http://127.0.0.1:5000/api/segment', $validated);
+        $segmentResponse = Http::asJson()->post('http://127.0.0.1:5000/api/segment', $validated);
         if (!$segmentResponse->ok()) {
             return response()->json(['error' => 'Failed to get segment', 'details' => $segmentResponse->json()], 400);
         }
