@@ -26,7 +26,7 @@ class RawMaterialBatch extends Model
         return $this->belongsTo(RawMaterial::class);
     }
 
-    
+
 // ...existing code...
 
 public function supplier()

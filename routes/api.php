@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Api\DocumentController;
 use App\Models\Inventory;
+use App\Http\Controllers\AnalyticsDataController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,8 +59,9 @@ Route::middleware('auth:sanctum')->prefix('v1')->name('api.v1.')->group(function
     Route::post('/users/{user}/verify-document', [DocumentController::class, 'updateVerificationStatus'])
         ->name('users.verify-document.update');
 });
-use App\Http\Controllers\AnalyticsDataController;
 
 // 🔓 Public routes (no login required)
 Route::get('/segment-summary', [AnalyticsDataController::class, 'getSegmentSummary']);
 Route::get('/product-segment-counts', [AnalyticsDataController::class, 'getProductSegmentCounts']);
+
+Route::post('/business-segment', [AnalyticsDataController::class, 'getBusinessSegment']);

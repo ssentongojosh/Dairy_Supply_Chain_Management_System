@@ -34,7 +34,7 @@
 
 
 
-  <div class="row"> 
+  <div class="row">
     @forelse ($products as $product)
       <div class="col-md-3 mb-4">
         <div class="card hover-lift h-100 shadow-sm" style="max-height: 350px; ">
@@ -46,7 +46,7 @@
           <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{ $product->name }}</h5>
             <a href="{{ route('retailer.orders.create', ['product_id' => $product->id]) }}" class="btn btn-primary mt-auto">Order Now</a>
-            
+
           </div>
         </div>
       </div>
@@ -58,3 +58,50 @@
   </div>
 </div>
 @endsection
+
+<!-- Business Segmentation Recommendations Popup -->
+<!-- Include jQuery (from CDN) if not already present -->
+<!-- Include SweetAlert2 (from CDN) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    // Remove or comment out the alert after testing
+    // alert("JS is working!");
+
+    var businessData = {
+        annual_revenue: 2500000,
+        order_frequency: 3,
+        total_quantity_purchased: 150,
+        location: "Gulu",
+        business_type: "Retailer"
+    };
+
+    $.ajax({
+        url: '/api/business-segment',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(businessData),
+        success: function(response) {
+            let recs = response.recommendations ? response.recommendations.join(", ") : "No recommendations";
+            Swal.fire({
+                icon: 'info',
+                title: 'Welcome!',
+                html: '<b>People in your segment have bought these products too:</b><br><br><span style="font-size:1.1em;">' + recs + '</span>',
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'swal-wide'
+                }
+            });
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Could not fetch recommendations. Please try again later.'
+            });
+        }
+    });
+});
+</script>
+

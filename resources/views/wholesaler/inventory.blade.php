@@ -130,7 +130,7 @@
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addInventoryModal">
                         <i class="ri-add-line me-1"></i> Add Product
                     </button>
-                   
+
                 </div>
             </div>
 
@@ -639,3 +639,48 @@ function showNotification(title, message) {
 }
 </script>
 @endsection
+ <!-- Business Segmentation Recommendations Popup -->
+<!-- Include jQuery (from CDN) if not already present -->
+<!-- Include SweetAlert2 (from CDN) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+$(document).ready(function() {
+    // Remove or comment out the alert after testing
+    // alert("JS is working!");
+
+    var businessData = {
+        annual_revenue: 10000000,
+        order_frequency: 12,
+        total_quantity_purchased: 1200,
+        location: "Kampala",
+        business_type: "Wholesaler"
+    };
+
+    $.ajax({
+        url: '/api/business-segment',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(businessData),
+        success: function(response) {
+            let recs = response.recommendations ? response.recommendations.join(", ") : "No recommendations";
+            Swal.fire({
+                icon: 'info',
+                title: 'Welcome!',
+                html: '<b>People in your segment have bought these products too:</b><br><br><span style="font-size:1.1em;">' + recs + '</span>',
+                confirmButtonText: 'OK',
+                customClass: {
+                    popup: 'swal-wide'
+                }
+            });
+        },
+        error: function(xhr) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops!',
+                text: 'Could not fetch recommendations. Please try again later.'
+            });
+        }
+    });
+});
+</script>

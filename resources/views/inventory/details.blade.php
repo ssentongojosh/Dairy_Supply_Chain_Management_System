@@ -49,7 +49,11 @@
                 @foreach ($batches as $batch)
                     <tr>
                         <td>{{ $batch->batch_id }}</td>
+<<<<<<< HEAD
+                        <td>{{ $batch->quantity_received }} {{ $rawMaterial->unit }}</td>
+=======
                         <td>{{ $batch->quantity_received }} </td>
+>>>>>>> origin/main
                         <td>{{ $batch->supplier->name ?? 'N/A' }}</td>
                         <td>{{ \Carbon\Carbon::parse($batch->delivered_on)->format('M d, Y') }}</td>
                         <td>{{ $batch->notes }}</td>
@@ -74,7 +78,11 @@
                 @foreach ($usages as $item)
                     <tr>
                         <td>{{ $item->production_id ?? 'Manual Task' }}</td>
+<<<<<<< HEAD
+                        <td>{{ $item->quantity_used }} {{ $rawMaterial->unit }}</td>
+=======
                         <td>{{ $item->quantity_used }} </td>
+>>>>>>> origin/main
                         <td>{{ \Carbon\Carbon::parse($item->used_on)->format('M d, Y') }}</td>
                     </tr>
                 @endforeach
