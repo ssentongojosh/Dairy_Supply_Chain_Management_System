@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
@@ -51,7 +52,6 @@ use App\Http\Controllers\dashboard\WholesalerDashboard;
 use App\Http\Controllers\RetailInventoryController;
 use App\Http\Controllers\ReportHistoryController;
 // use App\Http\Controllers\SupplierDashboardController;
-// use App\Http\Controllers\PlantManagerDashboard;
 use App\Http\Controllers\PlantManagerOrderController;
 use App\Http\Controllers\PlantManagerInventoryController;
 use App\Http\Controllers\MarketplaceController;
@@ -79,6 +79,7 @@ use App\Http\Controllers\dashboard\PlantManagerDashboard;
 // Root route - Welcome page
 use App\Http\Controllers\PrInventoryController;
 use App\Http\Controllers\ReportConfigurationController; 
+use App\Http\Controllers\ReportNotificationController; 
 // index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -590,6 +591,15 @@ Route::middleware(['auth'])->group(function () {
     // Report configuration routes
     Route::get('/reports/download-on-demand', [ReportConfigurationController::class, 'downloadOnDemand'])->name('reports.download-on-demand');
     Route::post('/report/store', [ReportConfigurationController::class, 'store'])->name('report-settings.store');
+    
+    // Report notification routes
+    Route::prefix('reports')->group(function () {
+        Route::get('/notifications/recent', [ReportNotificationController::class, 'recent'])->name('reports.notifications.recent');
+        Route::get('/notifications/unread-count', [ReportNotificationController::class, 'unreadCount'])->name('reports.notifications.unread-count');
+        Route::get('/download/{id}', [ReportNotificationController::class, 'download'])->name('reports.download');
+        Route::post('/notifications/{id}/mark-read', [ReportNotificationController::class, 'markAsRead'])->name('reports.notifications.mark-read');
+        Route::post('/notifications/mark-all-read', [ReportNotificationController::class, 'markAllAsRead'])->name('reports.notifications.mark-all-read');
+    });
 });
 
 // Farmer Order Management

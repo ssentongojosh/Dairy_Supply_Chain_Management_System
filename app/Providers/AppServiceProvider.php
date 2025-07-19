@@ -25,6 +25,7 @@ class AppServiceProvider extends ServiceProvider
     {
         View::composer('layouts.sections.navbar.navbar', function ($view) {
             if (Auth::check()) {
+                // Message notifications
                 $unreadMessagesCount = Message::where('recipient_id', Auth::id())
                     ->where('is_read', false)
                     ->count();
@@ -35,14 +36,34 @@ class AppServiceProvider extends ServiceProvider
                     ->orderBy('created_at', 'desc')
                     ->limit(5)
                     ->get();
+
+                // Report notifications
+                $unreadReportNotificationsCount = \App\Models\ReportNotification::where('user_id', Auth::id())
+                    ->where('is_read', false)
+                    ->count();
+
+                $unreadReportNotifications = \App\Models\ReportNotification::where('user_id', Auth::id())
+                    ->where('is_read', false)
+                    ->orderBy('generated_at', 'desc')
+                    ->limit(5)
+                    ->get();
+
+                // Total notifications count
+                $totalUnreadCount = $unreadMessagesCount + $unreadReportNotificationsCount;
             } else {
                 $unreadMessagesCount = 0;
                 $unreadMessages = collect();
+                $unreadReportNotificationsCount = 0;
+                $unreadReportNotifications = collect();
+                $totalUnreadCount = 0;
             }
 
             $view->with([
                 'unreadMessagesCount' => $unreadMessagesCount,
-                'unreadMessages' => $unreadMessages
+                'unreadMessages' => $unreadMessages,
+                'unreadReportNotificationsCount' => $unreadReportNotificationsCount,
+                'unreadReportNotifications' => $unreadReportNotifications,
+                'totalUnreadCount' => $totalUnreadCount
             ]);
         });
     }

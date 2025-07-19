@@ -57,7 +57,7 @@ class TaskAssignmentService
                 'related_type' => $related ? $related::class : null,
                 'assigned_at' => Carbon::now(),
                 'wholesaler_id' => $wholesalerId,
-                'forecast_start_date' => $forecastStartDate, 
+                'forecast_start_date' => $forecastStartDate,
                 'forecast_end_date' => $forecastEndDate,
             ]);
 
@@ -148,16 +148,7 @@ class TaskAssignmentService
                     ->count();
     }
 
-    /**
-     * Placeholder for more advanced conflict resolution or scheduling.
-     * This is where "assign on a different date" or "assign to a different inspector" logic
-     * would become more complex, potentially involving checking due date conflicts against
-     * existing tasks' due dates, or capacity planning.
-     *
-     * For now, the `getLeastBusyUserByRole` handles the primary assignment.
-     * If a user is "busy" as defined by their workload, they won't be picked.
-     * More advanced scheduling would be for a later phase if needed.
-     */
+   
     protected function handleAssignmentConflict(Task $task, User $user, Carbon $dueDate): void
     {
         // Logic for complex scheduling/reassignment if primary fails

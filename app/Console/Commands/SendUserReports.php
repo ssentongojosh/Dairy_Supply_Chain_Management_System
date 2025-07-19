@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\ReportConfiguration;
 use App\Models\Report;
 use App\Services\ReportGeneratorService; // Your new service
+use App\Services\ReportNotificationService; // Our new notification service
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log; // For logging
 use Illuminate\Support\Facades\Mail; // For sending emails
@@ -28,17 +29,20 @@ class SendUserReports extends Command
     protected $description = 'Sends scheduled reports to users based on their configurations.';
 
     protected $reportGeneratorService;
+    protected $reportNotificationService;
 
     /**
      * Create a new command instance.
      *
      * @param ReportGeneratorService $reportGeneratorService
+     * @param ReportNotificationService $reportNotificationService
      * @return void
      */
-    public function __construct(ReportGeneratorService $reportGeneratorService)
+    public function __construct(ReportGeneratorService $reportGeneratorService, ReportNotificationService $reportNotificationService)
     {
         parent::__construct();
         $this->reportGeneratorService = $reportGeneratorService;
+        $this->reportNotificationService = $reportNotificationService;
     }
 
     /**
@@ -269,10 +273,23 @@ class SendUserReports extends Command
                     Log::info("Email notification sent for report ID: {$report->id} to {$user->email}");
                 }
                 if ($channel === 'database') {
-                    // You'll need to set up a Notification system for in-app.
-                    // For example, using Laravel's built-in Notifications:
-                    // $user->notify(new ReportGeneratedNotification($report));
+                    // Legacy database notification
                     Log::info("Database notification logged for report ID: {$report->id} for user {$user->id}");
+                }
+                if ($channel === 'system') {
+                    // New system notification with navbar integration
+                    $reportNotification = $this->reportNotificationService->createNotification(
+                        $user,
+                        $report->report_name,
+                        $report->report_types,
+                        $report->format,
+                        $report->file_path,
+                        $report->file_name,
+                        $report->file_size
+                    );
+                    
+                    $this->reportNotificationService->sendSystemNotification($reportNotification);
+                    Log::info("System notification sent for report ID: {$report->id} to user {$user->id}, notification ID: {$reportNotification->id}");
                 }
             } catch (\Exception $e) {
                 Log::error("Failed to send notification via {$channel} for report ID: {$report->id}. Error: " . $e->getMessage());
