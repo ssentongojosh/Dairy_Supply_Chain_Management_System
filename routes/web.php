@@ -68,7 +68,7 @@ use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\SupplyController;
 use App\Http\Controllers\ProductInventoryController;
 use App\Http\Controllers\ProductionController;
-
+use App\Http\Controllers\SupplierSelectionController;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\dashboard\UserController;
@@ -359,6 +359,11 @@ Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate']
 Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
 Route::put('/delivery/{id}/confirm-raw', [DeliveryController::class, 'confirmRawMaterialDelivery'])->name('delivery.confirmRaw');
 
+//for supplier to selectproducts
+Route::middleware(['auth', 'role:supplier'])->group(function () {
+    Route::get('/supplier/select-materials', [SupplierSelectionController::class, 'index'])->name('supplier.selection');
+    Route::post('/supplier/select-materials', [SupplierSelectionController::class, 'store'])->name('supplier.selection.store');
+});
 
 
 //catalog for inventory

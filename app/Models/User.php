@@ -97,6 +97,12 @@ public function parentOrder()
     return $this->belongsTo(Order::class, 'parent_order_id');
 }
 
+//for supplier selection 
+public function rawMaterials()
+{
+    return $this->belongsToMany(RawMaterial::class, 'supplier_raw_material', 'supplier_id', 'raw_material_id');
+}
+
 public function childOrders()
 {
     return $this->hasMany(Order::class, 'parent_order_id');

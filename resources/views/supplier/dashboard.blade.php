@@ -269,7 +269,7 @@
         <div class="text-center py-4">
           <i class="bx bx-cart bx-lg text-muted"></i>
           <p class="text-muted mt-2">No recent orders found</p>
-          <a href="{{ route('supplier.inventory') }}" class="btn btn-primary">Add Products to Sell</a>
+          <a href="{{ route('supplier.selection') }}" class="btn btn-primary">Add Products to Sell</a>
         </div>
         @endforelse
       </div>
