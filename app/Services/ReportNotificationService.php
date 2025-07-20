@@ -100,7 +100,7 @@ class ReportNotificationService
     {
         try {
             $user = $reportNotification->user;
-            
+
             if (!$user) {
                 Log::warning('Cannot send notification - user not found', [
                     'report_notification_id' => $reportNotification->id
@@ -138,7 +138,7 @@ class ReportNotificationService
             }
 
             $notification->markAsRead();
-            
+
             Log::info('Report notification marked as read', [
                 'notification_id' => $notificationId,
                 'user_id' => $userId
@@ -205,16 +205,16 @@ class ReportNotificationService
     {
         try {
             $cutoffDate = now()->subDays($daysToKeep);
-            
+
             $oldNotifications = ReportNotification::where('generated_at', '<', $cutoffDate)->get();
-            
+
             $deletedCount = 0;
             foreach ($oldNotifications as $notification) {
                 // Delete the file if it exists
                 if ($notification->file_path && Storage::exists($notification->file_path)) {
                     Storage::delete($notification->file_path);
                 }
-                
+
                 // Delete the notification record
                 $notification->delete();
                 $deletedCount++;

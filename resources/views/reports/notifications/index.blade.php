@@ -67,13 +67,13 @@
                                         <div class="col-3 text-end">
                                             @if($notification->status === 'success')
                                                 <div class="btn-group-vertical">
-                                                    <a href="{{ route('reports.download', $notification->id) }}" 
+                                                    <a href="{{ route('reports.download', $notification->id) }}"
                                                        class="btn btn-success btn-sm mb-1"
                                                        onclick="markAsRead({{ $notification->id }})">
                                                         <i class="fas fa-download me-1"></i> Download
                                                     </a>
                                                     @if(!$notification->is_read)
-                                                        <button class="btn btn-outline-secondary btn-sm" 
+                                                        <button class="btn btn-outline-secondary btn-sm"
                                                                 onclick="markAsRead({{ $notification->id }})">
                                                             <i class="fas fa-check me-1"></i> Mark Read
                                                         </button>

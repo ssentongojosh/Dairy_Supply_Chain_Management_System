@@ -37,7 +37,7 @@ class TestReportNotifications extends Command
     public function handle()
     {
         $userId = $this->argument('user_id');
-        
+
         /** @var User|null $user */
         $user = User::find($userId);
         if (!$user) {

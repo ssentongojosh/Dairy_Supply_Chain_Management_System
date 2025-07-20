@@ -20,7 +20,7 @@
       <!-- Account -->
       <div class="card-body">
         <div class="d-flex align-items-start align-items-sm-center gap-6">
-          <img src="{{ Auth::user()->avatar ? Storage::url(Auth::user()->avatar) : asset('assets/img/avatars/1.png') }}" 
+          <img src="{{ Auth::user()->avatar ? Storage::url(Auth::user()->avatar) : asset('assets/img/avatars/1.png') }}"
                alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar" />
           <div class="button-wrapper">
             <label for="upload" class="btn btn-sm btn-primary me-3 mb-4" tabindex="0">
@@ -43,21 +43,21 @@
           <div class="row mt-1 g-5">
             <div class="col-md-6">
               <div class="form-floating form-floating-outline">
-                <input class="form-control" type="text" id="email" name="email" 
+                <input class="form-control" type="text" id="email" name="email"
                        value="{{ Auth::user()->email }}" placeholder="john.doe@example.com" />
                 <label for="email">E-mail</label>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-floating form-floating-outline">
-                <input type="text" class="form-control" id="organization" name="name" 
+                <input type="text" class="form-control" id="organization" name="name"
                        value="{{ Auth::user()->name }}" />
                 <label for="organization">Name/Business Name</label>
               </div>
             </div>
             <div class="col-md-6">
               <div class="form-floating form-floating-outline">
-                <input type="text" class="form-control" id="address" name="address" 
+                <input type="text" class="form-control" id="address" name="address"
                        value="{{ Auth::user()->address }}" placeholder="Address" />
                 <label for="address">Address</label>
               </div>
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Enable/disable deactivate button based on checkbox
     const accountActivationCheckbox = document.getElementById('accountActivation');
     const deactivateButton = document.querySelector('.deactivate-account');
-    
+
     accountActivationCheckbox.addEventListener('change', function() {
         deactivateButton.disabled = !this.checked;
     });
@@ -104,7 +104,7 @@ document.addEventListener('DOMContentLoaded', function() {
     uploadInput.addEventListener('change', function(e) {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-            
+
             // Validate file size (800KB = 819200 bytes)
             if (file.size > 819200) {
                 showModal('error', 'File Size Error', 'File size must be less than 800KB');
@@ -157,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Handle avatar reset
     resetButton.addEventListener('click', function() {
         showConfirmModal(
-            'Reset Avatar', 
+            'Reset Avatar',
             'Are you sure you want to reset your avatar to default?',
             'Reset',
             'btn-outline-danger',
@@ -189,11 +189,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const accountForm = document.getElementById('formAccountSettings');
     accountForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         const formData = new FormData(this);
         const submitButton = this.querySelector('button[type="submit"]');
         const originalText = submitButton.textContent;
-        
+
         submitButton.disabled = true;
         submitButton.textContent = 'Saving...';
 
@@ -238,7 +238,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const deactivationForm = document.getElementById('formAccountDeactivation');
     deactivationForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        
+
         if (!accountActivationCheckbox.checked) {
             showModal('error', 'Confirmation Required', 'Please confirm account deactivation by checking the checkbox');
             return;
@@ -253,10 +253,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const formData = new FormData();
                 formData.append('confirmation', '1');
                 formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
-                
+
                 const submitButton = deactivateButton;
                 const originalText = submitButton.textContent;
-                
+
                 submitButton.disabled = true;
                 submitButton.textContent = 'Deactivating...';
 
@@ -299,9 +299,9 @@ document.addEventListener('DOMContentLoaded', function() {
             ${message}
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         `;
-        
+
         document.body.appendChild(toast);
-        
+
         // Auto remove after 5 seconds
         setTimeout(() => {
             if (toast && toast.parentNode) {
@@ -312,8 +312,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Custom modal function
     function showModal(type, title, message) {
-        const iconClass = type === 'error' ? 'ri-error-warning-line text-danger' : 
-                         type === 'success' ? 'ri-check-line text-success' : 
+        const iconClass = type === 'error' ? 'ri-error-warning-line text-danger' :
+                         type === 'success' ? 'ri-check-line text-success' :
                          'ri-information-line text-info';
 
         const modalId = 'customModal_' + Date.now();
@@ -341,12 +341,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         const modal = new bootstrap.Modal(document.getElementById(modalId));
-        
+
         // Clean up modal after it's hidden
         document.getElementById(modalId).addEventListener('hidden.bs.modal', function() {
             this.remove();
         });
-        
+
         modal.show();
     }
 
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         const modal = new bootstrap.Modal(document.getElementById(modalId));
-        
+
         // Handle confirm button click
         document.getElementById(`confirmBtn_${modalId}`).addEventListener('click', function() {
             modal.hide();
@@ -386,12 +386,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 onConfirm();
             }
         });
-        
+
         // Clean up modal after it's hidden
         document.getElementById(modalId).addEventListener('hidden.bs.modal', function() {
             this.remove();
         });
-        
+
         modal.show();
     }
 });

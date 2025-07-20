@@ -219,7 +219,7 @@
                       </div>
                     </div>
                   </li>
-                  
+
                   <!-- Report Notifications Section -->
                   @if($unreadReportNotifications->count() > 0)
                     <li class="dropdown-notifications-list scrollable-container">
@@ -947,16 +947,16 @@ document.addEventListener('DOMContentLoaded', function() {
 // Handle "Mark all as read" functionality
 document.addEventListener('DOMContentLoaded', function() {
     const markAllReadBtn = document.querySelector('.dropdown-notifications-all');
-    
+
     if (markAllReadBtn) {
         markAllReadBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             // Show loading state
             const icon = this.querySelector('i');
             const originalClass = icon.className;
             icon.className = 'fa fa-spinner fa-spin';
-            
+
             // Make API call to mark all notifications as read
             fetch('{{ route("reports.notifications.mark-all-read") }}', {
                 method: 'POST',
@@ -973,7 +973,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (notificationBadge) {
                         notificationBadge.style.display = 'none';
                     }
-                    
+
                     // Reload the page to refresh the notification dropdown
                     setTimeout(() => {
                         window.location.reload();

@@ -52,7 +52,7 @@ class ReportNotificationController extends Controller
                     'file_path' => $notification->file_path,
                     'user_id' => Auth::id()
                 ]);
-                
+
                 if ($request->expectsJson()) {
                     return response()->json(['error' => 'Report file not available'], 404);
                 }

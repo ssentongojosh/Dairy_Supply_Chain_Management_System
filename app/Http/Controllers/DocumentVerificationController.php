@@ -60,7 +60,7 @@ class DocumentVerificationController extends Controller
         $request->validate([
             'national_id' => ['required', 'file', 'mimes:pdf', 'max:10240'],
             'ursb_certificate' => ['required', 'file', 'mimes:pdf', 'max:10240'],
-            'business_description' => 'required|string|max:1000'
+            // 'business_description' => ['required', 'string', 'max:1000'], // Uncomment if you want to use this field
         ]);
 
         // Store both files

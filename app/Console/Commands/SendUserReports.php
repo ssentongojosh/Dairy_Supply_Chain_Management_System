@@ -287,7 +287,7 @@ class SendUserReports extends Command
                         $report->file_name,
                         $report->file_size
                     );
-                    
+
                     $this->reportNotificationService->sendSystemNotification($reportNotification);
                     Log::info("System notification sent for report ID: {$report->id} to user {$user->id}, notification ID: {$reportNotification->id}");
                 }

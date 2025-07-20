@@ -61,6 +61,15 @@
               @enderror
             </div>
 
+            <div class="form-floating form-floating-outline mb-5">
+              <input type="text" class="form-control @error('address') is-invalid @enderror"
+                     id="address" name="address" value="{{ old('address') }}" placeholder="Enter your Business address">
+              <label for="address">Address</label>
+              @error('address')
+                <div class="invalid-feedback">{{ $message }}</div>
+              @enderror
+            </div>
+
             <div class="mb-5 form-password-toggle">
               <div class="input-group input-group-merge">
                 <div class="form-floating form-floating-outline">

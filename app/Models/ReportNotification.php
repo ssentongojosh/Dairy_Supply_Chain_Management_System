@@ -52,14 +52,14 @@ class ReportNotification extends Model
     public function getFormattedFileSizeAttribute(): string
     {
         if (!$this->file_size) return 'Unknown';
-        
+
         $bytes = $this->file_size;
         $units = ['B', 'KB', 'MB', 'GB'];
-        
+
         for ($i = 0; $bytes > 1024 && $i < count($units) - 1; $i++) {
             $bytes /= 1024;
         }
-        
+
         return round($bytes, 2) . ' ' . $units[$i];
     }
 
@@ -69,7 +69,7 @@ class ReportNotification extends Model
     public function getFormattedReportTypesAttribute(): string
     {
         if (!$this->report_types) return 'No reports';
-        
+
         return collect($this->report_types)
             ->map(fn($type) => ucfirst(str_replace('_', ' ', $type)))
             ->join(', ');
