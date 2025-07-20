@@ -32,13 +32,16 @@
         "executive"
       ]
     },
+    
     {
       "url": "/app/order",
       "name": "Orders",
       "icon": "menu-icon tf-icons ri-shopping-cart-2-line",
       "slug": "app-order",
       "roles": ["admin", "retailer", "wholesaler", "farmer", "plant_manager", "supplier"]
+      
     },
+
     {
       "url": "/app/inventory",
       "name": "Inventory",
