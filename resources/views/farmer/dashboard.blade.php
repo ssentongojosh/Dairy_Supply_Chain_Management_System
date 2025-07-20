@@ -34,8 +34,10 @@
     </div>
   </div>
 
+  <div class="row">
   <!-- Statistics Cards -->
   <div class="col-lg-3 col-md-6 col-12 mb-4">
+    <a href="{{ route('farmer.orders', ['status' => 'pending']) }}">
     <div class="card">
       <div class="card-body">
         <div class="d-flex justify-content-between">
@@ -54,9 +56,10 @@
         </div>
       </div>
     </div>
+    </a>
   </div>
-
   <div class="col-lg-3 col-md-6 col-12 mb-4">
+    <a href="{{ route('farmer.orders', ['status' => 'pending']) }}">
     <div class="card">
       <div class="card-body">
         <div class="d-flex justify-content-between">
@@ -75,8 +78,8 @@
         </div>
       </div>
     </div>
+    </a>
   </div>
-
   <div class="col-lg-3 col-md-6 col-12 mb-4">
     <div class="card">
       <div class="card-body">
@@ -101,7 +104,6 @@
       </div>
     </div>
   </div>
-
   <div class="col-lg-3 col-md-6 col-12 mb-4">
     <div class="card">
       <div class="card-body">
@@ -132,6 +134,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </div>
 

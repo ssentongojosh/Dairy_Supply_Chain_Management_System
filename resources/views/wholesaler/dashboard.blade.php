@@ -10,6 +10,7 @@
         <div class="row">
             <!-- Order Statistics -->
             <div class="col-md-3 col-sm-6 mb-4">
+                <a href="{{ route('wholesaler.orders', ['status' => 'all']) }}">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -23,8 +24,10 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-md-3 col-sm-6 mb-4">
+                <a href="{{ route('wholesaler.orders', ['status' => 'pending']) }}">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -38,8 +41,10 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-md-3 col-sm-6 mb-4">
+                <a href="{{ route('wholesaler.orders', ['status' => 'completed']) }}">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -53,8 +58,10 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
             <div class="col-md-3 col-sm-6 mb-4">
+                <a href="{{ route('wholesaler.orders', ['status' => 'all']) }}">
                 <div class="card">
                     <div class="card-body">
                         <div class="d-flex align-items-center">
@@ -68,6 +75,7 @@
                         </div>
                     </div>
                 </div>
+                </a>
             </div>
         </div>
     </div>
