@@ -57,7 +57,7 @@ class PlantManagerInventoryController extends Controller
             'price' => $validated['price'],
             'category' => 'Finished Product',
             'supplier_id' => Auth::id(),
-            'added_on' => $validated['manufacture_date']
+            //'added_on' => $validated['manufacture_date']
         ]);
 
         // Create corresponding inventory entry

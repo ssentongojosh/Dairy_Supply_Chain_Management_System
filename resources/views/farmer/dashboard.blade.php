@@ -16,6 +16,9 @@
 @endsection
 
 @section('content')
+@php
+    if (!isset($salesGrowth)) $salesGrowth = 0;
+@endphp
 <div class="row">
   <!-- Welcome Section -->
   <div class="col-12 mb-4">
@@ -34,8 +37,10 @@
     </div>
   </div>
 
+  <div class="row">
   <!-- Statistics Cards -->
   <div class="col-lg-3 col-md-6 col-12 mb-4">
+    <a href="{{ route('farmer.orders', ['status' => 'pending']) }}">
     <div class="card">
       <div class="card-body">
         <div class="d-flex justify-content-between">
@@ -54,9 +59,10 @@
         </div>
       </div>
     </div>
+    </a>
   </div>
-
   <div class="col-lg-3 col-md-6 col-12 mb-4">
+    <a href="{{ route('farmer.orders', ['status' => 'pending']) }}">
     <div class="card">
       <div class="card-body">
         <div class="d-flex justify-content-between">
@@ -75,8 +81,8 @@
         </div>
       </div>
     </div>
+    </a>
   </div>
-
   <div class="col-lg-3 col-md-6 col-12 mb-4">
     <div class="card">
       <div class="card-body">
@@ -97,7 +103,6 @@
       </div>
     </div>
   </div>
-
   <div class="col-lg-3 col-md-6 col-12 mb-4">
     <div class="card">
       <div class="card-body">
@@ -105,8 +110,8 @@
           <div class="card-info">
             <p class="card-text">Monthly Revenue</p>
             <div class="d-flex align-items-end mb-2">
-              <h4 class="card-title mb-0 me-2">${{ number_format($totalSalesThisMonth, 2) }}</h4>
-              @if($salesGrowth = 0)
+            <h4 class="card-title mb-0 me-2">${{ number_format($totalSalesThisMonth, 2) }}</h4>
+              @if($salesGrowth > 0)
                 <small class="text-success">+{{ number_format($salesGrowth, 1) }}%</small>
               @elseif($salesGrowth < 0)
                 <small class="text-danger">{{ number_format($salesGrowth, 1) }}%</small>
@@ -123,6 +128,7 @@
         </div>
       </div>
     </div>
+  </div>
   </div>
 </div>
 

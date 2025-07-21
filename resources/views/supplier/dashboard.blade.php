@@ -35,90 +35,93 @@
   </div>
 
   <!-- Statistics Cards -->
-  <div class="col-lg-3 col-md-6 col-12 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div class="card-info">
-            <p class="card-text">Pending Orders</p>
-            <div class="d-flex align-items-end mb-2">
-              <h4 class="card-title mb-0 me-2">{{ $pendingOrdersCount }}</h4>
-              <small class="text-warning">Awaiting Action</small>
+  <div class="row">
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <div class="card">
+        <a href="{{ route('supplier.orders', ['status' => 'pending']) }}">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div class="card-info">
+                <p class="card-text">Pending Orders</p>
+                <div class="d-flex align-items-end mb-2">
+                  <h4 class="card-title mb-0 me-2">{{ $pendingOrdersCount }}</h4>
+                  <small class="text-warning">Awaiting Action</small>
+                </div>
+              </div>
+              <div class="card-icon">
+                <span class="badge bg-label-warning rounded p-2">
+                  <i class="bx bx-time-five bx-sm"></i>
+                </span>
+              </div>
             </div>
           </div>
-          <div class="card-icon">
-            <span class="badge bg-label-warning rounded p-2">
-              <i class="bx bx-time-five bx-sm"></i>
-            </span>
+        </a>
+      </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <a href="{{ route('supplier.orders', ['status' => 'all']) }}">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div class="card-info">
+                <p class="card-text">New Orders Today</p>
+                <div class="d-flex align-items-end mb-2">
+                  <h4 class="card-title mb-0 me-2">{{ $newOrdersToday }}</h4>
+                  <small class="text-success">Fresh Orders</small>
+                </div>
+              </div>
+              <div class="card-icon">
+                <span class="badge bg-label-success rounded p-2">
+                  <i class="bx bx-cart bx-sm"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div class="card-info">
+              <p class="card-text">Total Products</p>
+              <div class="d-flex align-items-end mb-2">
+                <h4 class="card-title mb-0 me-2">{{ $totalProducts }}</h4>
+                <small class="text-info">In Inventory</small>
+              </div>
+            </div>
+            <div class="card-icon">
+              <span class="badge bg-label-info rounded p-2">
+                <i class="bx bx-package bx-sm"></i>
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-
-  <div class="col-lg-3 col-md-6 col-12 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div class="card-info">
-            <p class="card-text">New Orders Today</p>
-            <div class="d-flex align-items-end mb-2">
-              <h4 class="card-title mb-0 me-2">{{ $newOrdersToday }}</h4>
-              <small class="text-success">Fresh Orders</small>
+    <div class="col-lg-3 col-md-6 col-12 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <div class="card-info">
+              <p class="card-text">Monthly Revenue</p>
+              <div class="d-flex align-items-end mb-2">
+                <h4 class="card-title mb-0 me-2">${{ number_format($totalRevenueThisMonth, 2) }}</h4>
+                @if($salesGrowth > 0)
+                  <small class="text-success">+{{ number_format($salesGrowth, 1) }}%</small>
+                @elseif($salesGrowth < 0)
+                  <small class="text-danger">{{ number_format($salesGrowth, 1) }}%</small>
+                @else
+                  <small class="text-muted">0%</small>
+                @endif
+              </div>
             </div>
-          </div>
-          <div class="card-icon">
-            <span class="badge bg-label-success rounded p-2">
-              <i class="bx bx-cart bx-sm"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-lg-3 col-md-6 col-12 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div class="card-info">
-            <p class="card-text">Total Products</p>
-            <div class="d-flex align-items-end mb-2">
-              <h4 class="card-title mb-0 me-2">{{ $totalProducts }}</h4>
-              <small class="text-info">In Inventory</small>
+            <div class="card-icon">
+              <span class="badge bg-label-primary rounded p-2">
+                <i class="bx bx-dollar bx-sm"></i>
+              </span>
             </div>
-          </div>
-          <div class="card-icon">
-            <span class="badge bg-label-info rounded p-2">
-              <i class="bx bx-package bx-sm"></i>
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="col-lg-3 col-md-6 col-12 mb-4">
-    <div class="card">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <div class="card-info">
-            <p class="card-text">Monthly Revenue</p>
-            <div class="d-flex align-items-end mb-2">
-              <h4 class="card-title mb-0 me-2">${{ number_format($totalRevenueThisMonth, 2) }}</h4>
-              @if($salesGrowth > 0)
-                <small class="text-success">+{{ number_format($salesGrowth, 1) }}%</small>
-              @elseif($salesGrowth < 0)
-                <small class="text-danger">{{ number_format($salesGrowth, 1) }}%</small>
-              @else
-                <small class="text-muted">0%</small>
-              @endif
-            </div>
-          </div>
-          <div class="card-icon">
-            <span class="badge bg-label-primary rounded p-2">
-              <i class="bx bx-dollar bx-sm"></i>
-            </span>
           </div>
         </div>
       </div>
@@ -269,7 +272,7 @@
         <div class="text-center py-4">
           <i class="bx bx-cart bx-lg text-muted"></i>
           <p class="text-muted mt-2">No recent orders found</p>
-          <a href="{{ route('supplier.inventory') }}" class="btn btn-primary">Add Products to Sell</a>
+          <a href="{{ route('supplier.selection') }}" class="btn btn-primary">Add Products to Sell</a>
         </div>
         @endforelse
       </div>

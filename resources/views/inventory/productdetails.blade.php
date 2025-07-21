@@ -3,7 +3,13 @@
 @section('content')
 <div class="container my-5">
 
-    <h3 class="mb-4">Product: {{ $item->name }}</h3>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-4">Product: {{ $item->name }}</h3>
+        <!-- back button -->
+        <a href="{{ route('plant_manager.inventory') }}" class="btn btn-primary">
+            <i class="ri-arrow-left-line me-1"></i> Back
+        </a>
+    </div>
 
     <!-- Summary -->
     <div class="row mb-4">
@@ -41,7 +47,7 @@
                 @foreach ($batches as $batch)
                     <tr>
                         <td>{{ $batch->batch_code }}</td>
-                        <td>{{ $batch->quantity_produced }} {{ $product->unit }}</td>
+                        <td>{{ $batch->quantity_produced }} </td>
                         <td>{{ \Carbon\Carbon::parse($batch->production_date)->format('M d, Y') }}</td>
                     </tr>
                 @endforeach

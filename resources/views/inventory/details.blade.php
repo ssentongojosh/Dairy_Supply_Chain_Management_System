@@ -2,8 +2,14 @@
 
 @section('content')
 <div class="container my-5">
-
-    <h3 class="mb-4">Raw Material: {{ $item->name }}</h3>
+   <div class="d-flex justify-content-between align-items-center mb-4">
+       <h3 class="mb-4">Raw Material: {{ $item->name }}</h3>
+       <!-- back button -->
+        <a href="{{ route('plant_manager.inventory') }}" class="btn btn-primary">
+            <i class="ri-arrow-left-line me-1"></i> Back
+        </a>
+   </div>
+    
 
     <!-- Summary -->
     <div class="row mb-4">
@@ -43,7 +49,11 @@
                 @foreach ($batches as $batch)
                     <tr>
                         <td>{{ $batch->batch_id }}</td>
+<<<<<<< HEAD
+                        <td>{{ $batch->quantity_received }} {{ $rawMaterial->unit }}</td>
+=======
                         <td>{{ $batch->quantity_received }} </td>
+>>>>>>> origin/main
                         <td>{{ $batch->supplier->name ?? 'N/A' }}</td>
                         <td>{{ \Carbon\Carbon::parse($batch->delivered_on)->format('M d, Y') }}</td>
                         <td>{{ $batch->notes }}</td>
@@ -68,7 +78,11 @@
                 @foreach ($usages as $item)
                     <tr>
                         <td>{{ $item->production_id ?? 'Manual Task' }}</td>
+<<<<<<< HEAD
+                        <td>{{ $item->quantity_used }} {{ $rawMaterial->unit }}</td>
+=======
                         <td>{{ $item->quantity_used }} </td>
+>>>>>>> origin/main
                         <td>{{ \Carbon\Carbon::parse($item->used_on)->format('M d, Y') }}</td>
                     </tr>
                 @endforeach

@@ -212,6 +212,13 @@
                             <i class="ri-chat-3-line me-1"></i>Support
                         </a>
                     </div>
+
+                    <!-- for production -->
+                    <div class="col-md-2 col-sm-4 col-6 mb-2">
+                        <a href="{{ route('recipe.index') }}" class="btn btn-outline-secondary w-100">
+                            <i>🛠️</i>Manual Production
+                        </a>
+                    </div>
                 </div>
         </div>
 
@@ -353,7 +360,7 @@
                             <td>{{ $product->sale_unit }}</td>
                             <td>
                                 {{-- Button to view product details --}}
-                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>
@@ -417,7 +424,7 @@
                             </td>
                             <td>
                                 {{-- Button to view raw material details --}}
-                                <a href="{{ route('plant_manager.inventory') }}" class="btn btn-sm btn-info">
+                                <a href="{{ route('rawmaterials.show', $material->id) }}" class="btn btn-sm btn-info">
                                     View
                                 </a>
                             </td>

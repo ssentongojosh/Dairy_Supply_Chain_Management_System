@@ -66,6 +66,9 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\SupplyController;
+use App\Http\Controllers\ProductInventoryController;
+use App\Http\Controllers\ProductionController;
+use App\Http\Controllers\SupplierSelectionController;
 use App\Http\Controllers\DemandForecastController;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
@@ -297,8 +300,30 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('raw_materials', RawMaterialInventoryController::class);
 });
 
-//delete inventory
-// Route::delete('/inventory/{id}', [PrInventoryController::class, 'destroy'])->name('inventory.destroy');
+//retailer.inventory
+Route::get('/retailer/inventory', function () {
+    return view('retailer.inventory');
+})->name('retailer.inventory');
+
+//for side bar inventory for retailer
+Route::get('/catalog/retailer', [CatalogController::class, 'retailer'])->name('catalog.retailer');
+Route::get('/catalog/retailer', [CatalogController::class, 'retailers'])->name('catalog.retailer');
+
+//production of products
+Route::get('/recipe', [ProductionController::class, 'index'])->name('recipe.index');
+Route::get('/recipe/{product}/create', [ProductionController::class, 'edit'])->name('recipe.create');
+Route::put('/recipe/{product}', [ProductionController::class, 'update'])->name('recipes.update');
+Route::get('/production/create/{product}', [ProductionController::class, 'create'])->name('production.create');
+// checkout worth for production
+Route::get('/check-production/{product}', [ProductionController::class, 'checkProduction']);
+// submit production
+Route::post('/production/store', [ProductionController::class, 'store'])->name('production.store');
+Route::put('/recipe/{recipe}', [ProductionController::class, 'update'])->name('recipes.update');
+Route::get('/production/create/{product}', [ProductionController::class, 'create'])->name('production.create');
+Route::post('/production', [ProductionController::class, 'store'])->name('production.store');
+Route::post('/recipes', [ProductionController::class, 'store'])->name('recipe.store');
+
+
 
 //raw materials inventory
 //route for inventory
@@ -321,6 +346,10 @@ Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])-
 
 //delete item
 Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
+//show details of raw material
+Route::get('/inventory/raw-materials/{id}', [RawMaterialInventoryController::class, 'show'])->name('rawmaterials.show');
+//show details of products
+Route::get('/inventory/products/{id}', [ProductInventoryController::class, 'show'])->name('products.show');
 
 
 //delivery routes
@@ -342,6 +371,11 @@ Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate']
 Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
 Route::put('/delivery/{id}/confirm-raw', [DeliveryController::class, 'confirmRawMaterialDelivery'])->name('delivery.confirmRaw');
 
+//for supplier to selectproducts
+Route::middleware(['auth', 'role:supplier'])->group(function () {
+    Route::get('/supplier/select-materials', [SupplierSelectionController::class, 'index'])->name('supplier.selection');
+    Route::post('/supplier/select-materials', [SupplierSelectionController::class, 'store'])->name('supplier.selection.store');
+});
 
 
 //catalog for inventory
@@ -580,7 +614,7 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
 
     // Inventory management
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
-    Route::post('/inventory', [PlantManagerInventoryController::class, 'store'])->name('plant_manager.inventory.store');
+    Route::post('/inventory', [PlantManagerInventoryController::class, 'storeProduct'])->name('plant_manager.inventory.store');
     Route::put('/inventory/{inventory}/update-quantity', [PlantManagerInventoryController::class, 'updateQuantity'])->name('plant_manager.inventory.update-quantity');
     Route::put('/inventory/{inventory}/threshold', [PlantManagerInventoryController::class, 'updateThreshold'])->name('plant_manager.inventory.threshold');
     Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');

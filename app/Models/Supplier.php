@@ -10,4 +10,10 @@ class Supplier extends Model
     protected $fillable = [
         'name','goods_type','telephone',
     ];
+
+    //relationships
+    public function rawMaterial()
+    {
+    return $this->belongsToMany(RawMaterial::class, 'supplier_raw_material');
+    }
 }

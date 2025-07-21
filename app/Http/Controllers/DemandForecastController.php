@@ -142,6 +142,12 @@ class DemandForecastController extends Controller
     public function generateTasksFromForecast(Request $request)
     {
 
+      set_time_limit(300);
+
+    // ✅ Increase memory limit if needed
+    ini_set('memory_limit', '512M');
+
+
 $user = Auth::user();
 
 if (!$user) {
@@ -270,7 +276,7 @@ try {
 
         // --- Rule 1: Production Adjustment (General Product Forecast) ---
         // Threshold is now in multiplied units
-        $productionAdjustmentThreshold = 500;
+        $productionAdjustmentThreshold = 50;
         Log::info("Checking for Production Adjustment suggestions (General Forecast)...");
         foreach ($products as $product) {
             $payload = [
@@ -279,7 +285,7 @@ try {
                 'end_date' => $forecastEndDate->format('d/m/Y'),
             ];
             try {
-                $response = Http::post("{$this->flaskApiUrl}/forecast_general_demand_range", $payload);
+                $response = Http::timeout(300)->retry(3,2000)->post("{$this->flaskApiUrl}/forecast_general_demand_range", $payload);
                 if ($response->successful()) {
                     $forecastData = $response->json();
                     // Apply multiplier to individual predicted_demand values before summing
@@ -290,7 +296,7 @@ try {
                     if ($totalPredictedDemand > $productionAdjustmentThreshold) {
                         $taskData = [
                             'task_type' => 'production_adjustment',
-                            'product' => $product['name'],
+                            'product' => $product,
                             'wholesaler_id' => null,
                             'start_date' => $forecastStartDate->format('Y-m-d'),
                             'end_date' => $forecastEndDate->format('Y-m-d'),
@@ -308,22 +314,22 @@ try {
 
                         if ($response->getStatusCode() === 200) {
                             $suggestedCount++;
-                            Log::info("Suggested Production Adjustment for {$product['name']}. Total Demand: {$totalPredictedDemand}");
+                            Log::info("Suggested Production Adjustment for {$product}. Total Demand: {$totalPredictedDemand}");
                         } else {
-                            Log::error("Failed to suggest Production Adjustment for {$product['name']}. Response: " . $response->getContent());
+                            Log::error("Failed to suggest Production Adjustment for {$product}. Response: " . $response->getContent());
                         }
                     }
                 } else {
-                    Log::error("Flask API Error for general forecast (Product: {$product['name']}): " . $response->body());
+                    Log::error("Flask API Error for general forecast (Product: {$product}): " . $response->body());
                 }
             } catch (\Exception $e) {
-                Log::error("Error fetching general forecast for {$product['name']}: " . $e->getMessage());
+                Log::error("Error fetching general forecast for {$product}: " . $e->getMessage());
             }
         }
 
         // --- Rule 2: Raw Material Order (Wholesaler-Specific Forecast) ---
         // Threshold is now in multiplied units
-        $rawMaterialOrderThreshold = 100;
+        $rawMaterialOrderThreshold = 10;
         Log::info("Checking for Raw Material Order suggestions (Wholesaler-Specific Forecast)...");
         foreach ($products as $product) {
             foreach ($wholesalers as $wholesaler) {
@@ -363,13 +369,13 @@ try {
 
                             if ($response->getStatusCode() === 200) {
                                 $suggestedCount++;
-                                Log::info("Suggested Raw Material Order for {$product['name']} (Wholesaler: {$wholesaler['name']}). Total Demand: {$totalPredictedDemand}");
+                                Log::info("Suggested Raw Material Order for {$product} (Wholesaler: {$wholesaler['name']}). Total Demand: {$totalPredictedDemand}");
                             } else {
-                                Log::error("Failed to suggest Raw Material Order for {$product['name']} (Wholesaler: {$wholesaler['name']}). Response: " . $response->getContent());
+                                Log::error("Failed to suggest Raw Material Order for {$product} (Wholesaler: {$wholesaler['name']}). Response: " . $response->getContent());
                             }
                         }
                     } else {
-                        Log::error("Flask API Error for wholesaler-specific forecast (Product: {$product['name']}, Wholesaler: {$wholesaler['id']}): " . $response->body());
+                        Log::error("Flask API Error for wholesaler-specific forecast (Product: {$product}, Wholesaler: {$wholesaler['id']}): " . $response->body());
                     }
                 } catch (\Exception $e) {
                     Log::error("Error fetching wholesaler-specific forecast for {$product} (Wholesaler: {$wholesaler['id']}): " . $e->getMessage());

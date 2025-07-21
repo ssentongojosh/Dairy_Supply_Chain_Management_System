@@ -78,7 +78,7 @@
                             </div>
                         </div>
                         <span class="fw-semibold d-block mb-1">Total Items</span>
-                        <h3 class="card-title mb-2">{{ $stats['total_items'] }}</h3>
+                        
                         <small class="text-muted">Different products in stock</small>
                     </div>
                 </div>
@@ -94,7 +94,7 @@
                             </div>
                         </div>
                         <span class="fw-semibold d-block mb-1">Total Quantity</span>
-                        <h3 class="card-title mb-2">{{ number_format($stats['total_quantity']) }}</h3>
+                        {{-- <!--<h3 class="card-title mb-2">{{ number_format($stats['total_quantity']) }}</h3>--> --}}
                         <small class="text-muted">Units in inventory</small>
                     </div>
                 </div>
@@ -110,7 +110,7 @@
                             </div>
                         </div>
                         <span class="fw-semibold d-block mb-1">Low Stock</span>
-                        <h3 class="card-title mb-2">{{ $stats['low_stock_items'] }}</h3>
+                        {{-- <!-- <h3 class="card-title mb-2">{{ $stats['low_stock_items'] }}</h3> --> --}}
                         <small class="text-muted">Items with ≤10 units</small>
                     </div>
                 </div>
@@ -126,7 +126,7 @@
                             </div>
                         </div>
                         <span class="fw-semibold d-block mb-1">Out of Stock</span>
-                        <h3 class="card-title mb-2">{{ $stats['out_of_stock_items'] }}</h3>
+                        {{-- <!-- <h3 class="card-title mb-2">{{ ['out_of_stock_items'] }}</h3> --> --}}
                         <small class="text-muted">Items with 0 units</small>
                     </div>
                 </div>
@@ -157,7 +157,7 @@
                             </div>
                             <div>
                                 <h6 class="mb-0">Items Below Threshold</h6>
-                                <small class="text-muted">{{ $stats['low_stock_items'] }} items need reordering</small>
+                                {{-- <small class="text-muted">{{ $stats['low_stock_items'] }} items need reordering</small> --}}
                             </div>
                         </div>
                     </div>
@@ -183,7 +183,7 @@
                             </div>
                             <div>
                                 <h6 class="mb-0">Well Stocked</h6>
-                                <small class="text-muted">{{ $stats['total_items'] - $stats['low_stock_items'] }} items above threshold</small>
+                                {{-- <small class="text-muted">{{ $stats['total_items'] - $stats['low_stock_items'] }} items above threshold</small> --}}
                             </div>
                         </div>
                     </div>
@@ -211,11 +211,11 @@
                         <label class="form-label">Category</label>
                         <select name="category" class="form-select">
                             <option value="">All Categories</option>
-                            @foreach($categories as $category)
+                            {{-- @foreach($categories as $category)
                                 <option value="{{ $category }}" {{ request('category') === $category ? 'selected' : '' }}>
                                     {{ ucfirst($category) }}
                                 </option>
-                            @endforeach
+                            @endforeach --}}
                         </select>
                     </div>
                     <div class="col-md-3">
@@ -280,7 +280,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($inventory as $item)
+                        {{-- @forelse($inventory as $item)
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -401,7 +401,7 @@
                                     </div>
                                 </td>
                             </tr>
-                        @endforelse
+                        @endforelse --}}
                     </tbody>
                 </table>
             </div>
@@ -409,7 +409,7 @@
             <!-- Card View -->
             <div id="cardViewContent" class="d-none">
                 <div class="row">
-                    @forelse($inventory as $item)
+                    {{-- @forelse($inventory as $item)
                         <div class="col-md-6 col-lg-4 mb-3">
                             <div class="card h-100">
                                 <div class="card-body">
@@ -517,12 +517,12 @@
                                 <p class="text-muted">Start by adding some products to your inventory.</p>
                             </div>
                         </div>
-                    @endforelse
+                    @endforelse --}}
                 </div>
             </div>
 
             <!-- Pagination -->
-            @if($inventory->hasPages())
+            {{-- @if($inventory->hasPages())
                 <div class="card-footer">
                     <div class="d-flex justify-content-between align-items-center">
                         <small class="text-muted">
@@ -531,7 +531,7 @@
                         {{ $inventory->withQueryString()->links() }}
                     </div>
                 </div>
-            @endif
+            @endif --}}
         </div>
     </div>
 </div>
@@ -544,7 +544,7 @@
                 <h5 class="modal-title">Add Inventory Item</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="{{ route('retailer.inventory.store') }}" method="POST">
+            {{-- <form action="{{ route('retailer.inventory.store') }}" method="POST"> --}}
                 @csrf
                 <div class="modal-body">
                     <div class="mb-3">
@@ -819,7 +819,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     addModal.addEventListener('show.bs.modal', function() {
         // Load available products
-        fetch('{{ route('retailer.inventory.products') }}')
+        {{-- fetch('{{ route('retailer.inventory.products') }}') --}}
             .then(response => response.json())
             .then(products => {
                 productSelect.innerHTML = '<option value="">Select a product...</option>';

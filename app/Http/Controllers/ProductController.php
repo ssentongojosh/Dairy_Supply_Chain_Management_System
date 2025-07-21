@@ -24,4 +24,11 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'Product added!');
     }
-} 
+
+    public function index()
+{
+    // Fetch and return products for the catalog
+    return view('index');
+}
+
+}

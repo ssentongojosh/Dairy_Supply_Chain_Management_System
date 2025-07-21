@@ -3,14 +3,33 @@
 
 @section('content')
 <div class="container my-5">
+  <!-- heading -->
   <h2 class="mb-4 text-center font-bold text-xl">Raw Materials Purchased</h2>
+  <div class="d-flex justify-content-between align-items-center mb-4">
+  <form method="GET" action="{{ route('inventory.raw_materials') }}" class="mb-4">
+                <input type="text" name="search" placeholder="Search product by name..." value="{{ request('search') }}"class="border px-3 py-1 rounded w-1/2">
+                <button type="submit" class="bg-blue-500 text-black px-3 py-1 rounded">Search</button>
+
+                <!-- clear search -->
+                 @if(request('search'))
+                   <a href="{{ route('inventory.raw_materials') }}" class="btn btn-outline-secondary">
+                   <i class="ri-refresh-line"></i> Clear
+                   </a>
+                @endif
+            </form>
+
+      <!-- create a delivery -->
+       <span><a href="{{ route('delivery.create') }}" class="btn btn-primary">
+            <i class="ri-add-line me-1"></i> Send Delivery
+        </a>      
 
   <!-- view their deliveries -->
-   <div class="text-end mb-3">
+   <!--<div class="text-end mb-3">-->
     <a href="{{ route('delivery.mine') }}" class="btn btn-outline-primary">
         <i class="ri-truck-line"></i> View My Deliveries
     </a>
-   </div>
+   </span>
+  </div>
 
   <div class="row">
     @forelse ($rawMaterials as $item)

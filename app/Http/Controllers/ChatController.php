@@ -40,6 +40,9 @@ class ChatController extends Controller
             case Role::ADMIN:
                 $allowedRoles = [ Role::INSPECTOR];
                 break;
+            case Role::SUPPLIER:
+                $allowedRoles = [Role::PLANT_MANAGER];
+                break;
             case Role::DRIVER:
                 $allowedRoles = [Role::FARMER, Role::PLANT_MANAGER, Role::WHOLESALER];
                 break;
