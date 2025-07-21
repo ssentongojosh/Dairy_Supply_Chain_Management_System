@@ -337,7 +337,6 @@
                         <th>Stock</th>
                         <th>Price</th>
                         <th>Status</th>
-                        <th>Sale Unit</th>
                         <th>Actions</th> {{-- For buttons like "View" --}}
                     </tr>
                 </thead>
@@ -357,7 +356,6 @@
                                    <span class="text-success">Available</span>
                                 @endif
                             </td>
-                            <td>{{ $product->sale_unit }}</td>
                             <td>
                                 {{-- Button to view product details --}}
                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
@@ -453,7 +451,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Stock</label>
-                        <input type="number" name="quantity" class="form-control" min="1" required>
+                        <input type="number" name="quantity" class="form-control" min="0" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Price</label>

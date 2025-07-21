@@ -602,7 +602,7 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
 
     // Inventory management
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
-    Route::post('/inventory', [PlantManagerInventoryController::class, 'store'])->name('plant_manager.inventory.store');
+    Route::post('/inventory', [PlantManagerInventoryController::class, 'storeProduct'])->name('plant_manager.inventory.store')->middleware(['auth', 'role:plant_manager']);
     Route::put('/inventory/{inventory}/update-quantity', [PlantManagerInventoryController::class, 'updateQuantity'])->name('plant_manager.inventory.update-quantity');
     Route::put('/inventory/{inventory}/threshold', [PlantManagerInventoryController::class, 'updateThreshold'])->name('plant_manager.inventory.threshold');
     Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');
