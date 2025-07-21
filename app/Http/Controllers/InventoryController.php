@@ -242,7 +242,7 @@ class InventoryController extends Controller
         $productName = $inventory->product->name;
         $inventory->delete();
 
-        return redirect()->route('wholesaler.inventory')
+        return redirect()->route('catalog.index')
                         ->with('success', "Removed {$productName} from inventory");
     }
 
