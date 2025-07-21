@@ -29,7 +29,11 @@ class TaskAssignmentService
         string $requiredRole,
         ?Carbon $dueDate = null,
         string $priority = Task::PRIORITY_MEDIUM,
-        ?Model $related = null
+        ?Model $related = null,
+        string $status = Task::STATUS_PENDING,
+        ?string $wholesalerId = null,
+        ?Carbon $forecastStartDate = null,
+        ?Carbon $forecastEndDate = null
     ): ?Task {
         try {
             // Find the least busy eligible user for the required role
@@ -52,13 +56,16 @@ class TaskAssignmentService
                 'related_id' => $related ? $related->id : null,
                 'related_type' => $related ? $related::class : null,
                 'assigned_at' => Carbon::now(),
+                'wholesaler_id' => $wholesalerId,
+                'forecast_start_date' => $forecastStartDate,
+                'forecast_end_date' => $forecastEndDate,
             ]);
 
             $relatedClass = $related ? $related::class : 'N/A';
             $relatedId = $related && isset($related->id) ? $related->id : 'N/A';
             Log::info("Task '{$type}' assigned to user ID: {$assignee->id} ({$assignee->name}) for related {$relatedClass}:{$relatedId}. Task ID: {$task->id}");
 
-            
+
             $assignee->notify(new NewTaskAssignedNotification($task));
             Log::info("New task assigned notification dispatched for Task ID: {$task->id} to User ID: {$assignee->id}.");
             return $task;
@@ -141,16 +148,7 @@ class TaskAssignmentService
                     ->count();
     }
 
-    /**
-     * Placeholder for more advanced conflict resolution or scheduling.
-     * This is where "assign on a different date" or "assign to a different inspector" logic
-     * would become more complex, potentially involving checking due date conflicts against
-     * existing tasks' due dates, or capacity planning.
-     *
-     * For now, the `getLeastBusyUserByRole` handles the primary assignment.
-     * If a user is "busy" as defined by their workload, they won't be picked.
-     * More advanced scheduling would be for a later phase if needed.
-     */
+   
     protected function handleAssignmentConflict(Task $task, User $user, Carbon $dueDate): void
     {
         // Logic for complex scheduling/reassignment if primary fails

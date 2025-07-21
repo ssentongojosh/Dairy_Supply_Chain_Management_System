@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
       FarmerSeeder::class,
       PlantManagerSeeder::class,
       InspectorAndDriverSeeder::class,
+      WorkerSeeder::class,
       // Other seeders...
     ]);
   }

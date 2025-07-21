@@ -41,6 +41,12 @@ class OrderController extends Controller
         elseif ($role === 'plant_manager') {
             return redirect()->route('plant_manager.orders');
         }
+        elseif ($role === 'supplier') {
+            return redirect()->route('supplier.orders');
+        }
+        elseif ($role === 'retailer') {
+            return redirect()->route('retailer.orders');
+        }
 
         // Role configuration mapping
         $roleConfig = [
@@ -444,7 +450,7 @@ class OrderController extends Controller
         $query = Order::where('buyer_id', $user->id)
     ->where('status', '!=', 'cancelled');
     $status = request('status');
-    
+
     if ($status && $status !== 'all') {
         $query->where('status', $status);
     }

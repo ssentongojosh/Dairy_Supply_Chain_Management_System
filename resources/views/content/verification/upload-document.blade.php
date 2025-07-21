@@ -122,7 +122,7 @@
             @enderror
           </div>
 
-          <div class="mb-4 form-step">
+          {{-- <div class="mb-4 form-step">
             <label for="business_description" class="form-label">
               <i class="ri-file-text-line me-2"></i>Business Description
             </label>
@@ -131,7 +131,7 @@
             @error('business_description')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
-          </div>
+          </div> --}}
 
           <div class="d-grid form-step">
             <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">

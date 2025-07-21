@@ -6,19 +6,13 @@ from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 
 # === 1. Load Data ===
-<<<<<<< HEAD
-<<<<<<< HEAD
-DATA_PATH = 'C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/database/seeders/Dataset/customer_segmentation_data_business.csv'
-=======
-DATA_PATH = '../database/seeders/Dataset/customer_segmentation_data.csv'
->>>>>>> origin/main
-=======
-DATA_PATH = '../database/seeders/Dataset/customer_segmentation_data.csv'
->>>>>>> origin/main
+
+DATA_PATH = '../database/seeders/Dataset/customer_segmentation_data_business.csv'
+
 df = pd.read_csv(DATA_PATH)
 
 # === 1b. Set output directory for graphs and summary ===
-OUTPUT_DIR = 'C:/xampp/htdocs/Dairy_Supply_Chain_Management_System/storage/app/public'
+OUTPUT_DIR = '../storage/app/public'
 os.makedirs(OUTPUT_DIR, exist_ok=True)  # Create the folder if it doesn't exist
 
 # === 2. Encode categorical variables ===

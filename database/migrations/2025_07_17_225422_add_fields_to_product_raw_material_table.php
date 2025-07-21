@@ -11,6 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+      if (Schema::hasColumn('product_raw_material', 'raw_material_id')) {
+            return; // Column already exists, skip migration
+        }
+        if (Schema::hasColumn('product_raw_material', 'quantity_required')) {
+            return; // Column already exists, skip migration
+        }
         Schema::table('product_raw_material', function (Blueprint $table) {
             //
             $table->foreignId('raw_material_id')->constrained('raw_materials')->onDelete('cascade');
