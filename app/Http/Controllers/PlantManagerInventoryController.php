@@ -55,19 +55,20 @@ class PlantManagerInventoryController extends Controller
         $product = Product::create([
             'name' => $validated['name'],
             'price' => $validated['price'],
+            'quantity' => $validated['quantity'],
             'category' => 'Finished Product',
             'supplier_id' => Auth::id(),
-            'added_on' => $validated['manufacture_date']
+            //'added_on' => $validated['manufacture_date']
         ]);
 
         // Create corresponding inventory entry
-        Inventory::create([
+        /*Inventory::create([
             'user_id' => Auth::id(),
             'product_id' => $product->id,
             'quantity' => $validated['quantity'],
             'selling_price' => $validated['price'],
             'last_restocked_at' => now()
-        ]);
+        ]); */
 
         return redirect()->back()->with('success', 'Product added successfully!');
     }

@@ -1,0 +1,1587 @@
+invoice_date,Product,daily_demand
+2023-01-07,Butter,0.0
+2023-01-07,Cheese,0.0
+2023-01-07,Condensed milk,3.0
+2023-01-07,Cream,0.0
+2023-01-07,Cultured milk,0.0
+2023-01-07,Evaporated milk,0.0
+2023-01-07,Flavored sterilized milk,0.0
+2023-01-07,Modified milk,0.0
+2023-01-07,Pasteurized milk 2.5% mg,0.0
+2023-01-07,Pasteurized milk 3.0% mg,0.0
+2023-01-07,Powdered milk 12% mg,0.0
+2023-01-07,Powdered milk 18% mg,0.0
+2023-01-07,Powdered milk 20% mg,0.0
+2023-01-07,Powdered milk 26% mg,0.0
+2023-01-07,Powdered milk 28% mg,0.0
+2023-01-07,Powdered whey,0.0
+2023-01-07,Skimmed pasteurized milk,0.0
+2023-01-07,Skimmed powdered milk,0.0
+2023-01-07,Small cheese,0.0
+2023-01-07,Sterilized semi-skimmed milk,0.0
+2023-01-07,Sterilized skimmed milk,0.0
+2023-01-07,Sterilized whole milk,1.0
+2023-01-07,Sweetened condensed milk,0.0
+2023-01-07,Total powdered milk,0.0
+2023-01-07,Yogurt,4.0
+2023-01-07,chocolate milk,0.0
+2023-01-08,Butter,0.0
+2023-01-08,Cheese,0.0
+2023-01-08,Condensed milk,0.0
+2023-01-08,Cream,0.0
+2023-01-08,Cultured milk,0.0
+2023-01-08,Evaporated milk,0.0
+2023-01-08,Flavored sterilized milk,0.0
+2023-01-08,Modified milk,0.0
+2023-01-08,Pasteurized milk 2.5% mg,0.0
+2023-01-08,Pasteurized milk 3.0% mg,0.0
+2023-01-08,Powdered milk 12% mg,0.0
+2023-01-08,Powdered milk 18% mg,0.0
+2023-01-08,Powdered milk 20% mg,0.0
+2023-01-08,Powdered milk 26% mg,0.0
+2023-01-08,Powdered milk 28% mg,0.0
+2023-01-08,Powdered whey,0.0
+2023-01-08,Skimmed pasteurized milk,0.0
+2023-01-08,Skimmed powdered milk,0.0
+2023-01-08,Small cheese,0.0
+2023-01-08,Sterilized semi-skimmed milk,0.0
+2023-01-08,Sterilized skimmed milk,0.0
+2023-01-08,Sterilized whole milk,0.0
+2023-01-08,Sweetened condensed milk,0.0
+2023-01-08,Total powdered milk,0.0
+2023-01-08,Yogurt,0.0
+2023-01-08,chocolate milk,0.0
+2023-01-09,Butter,0.0
+2023-01-09,Cheese,0.0
+2023-01-09,Condensed milk,0.0
+2023-01-09,Cream,0.0
+2023-01-09,Cultured milk,0.0
+2023-01-09,Evaporated milk,0.0
+2023-01-09,Flavored sterilized milk,0.0
+2023-01-09,Modified milk,0.0
+2023-01-09,Pasteurized milk 2.5% mg,2.0
+2023-01-09,Pasteurized milk 3.0% mg,0.0
+2023-01-09,Powdered milk 12% mg,0.0
+2023-01-09,Powdered milk 18% mg,0.0
+2023-01-09,Powdered milk 20% mg,0.0
+2023-01-09,Powdered milk 26% mg,0.0
+2023-01-09,Powdered milk 28% mg,0.0
+2023-01-09,Powdered whey,0.0
+2023-01-09,Skimmed pasteurized milk,0.0
+2023-01-09,Skimmed powdered milk,0.0
+2023-01-09,Small cheese,0.0
+2023-01-09,Sterilized semi-skimmed milk,0.0
+2023-01-09,Sterilized skimmed milk,3.0
+2023-01-09,Sterilized whole milk,0.0
+2023-01-09,Sweetened condensed milk,0.0
+2023-01-09,Total powdered milk,0.0
+2023-01-09,Yogurt,0.0
+2023-01-09,chocolate milk,0.0
+2023-01-10,Butter,0.0
+2023-01-10,Cheese,0.0
+2023-01-10,Condensed milk,0.0
+2023-01-10,Cream,1.0
+2023-01-10,Cultured milk,0.0
+2023-01-10,Evaporated milk,0.0
+2023-01-10,Flavored sterilized milk,0.0
+2023-01-10,Modified milk,0.0
+2023-01-10,Pasteurized milk 2.5% mg,0.0
+2023-01-10,Pasteurized milk 3.0% mg,0.0
+2023-01-10,Powdered milk 12% mg,0.0
+2023-01-10,Powdered milk 18% mg,0.0
+2023-01-10,Powdered milk 20% mg,0.0
+2023-01-10,Powdered milk 26% mg,0.0
+2023-01-10,Powdered milk 28% mg,0.0
+2023-01-10,Powdered whey,0.0
+2023-01-10,Skimmed pasteurized milk,0.0
+2023-01-10,Skimmed powdered milk,4.0
+2023-01-10,Small cheese,0.0
+2023-01-10,Sterilized semi-skimmed milk,0.0
+2023-01-10,Sterilized skimmed milk,0.0
+2023-01-10,Sterilized whole milk,0.0
+2023-01-10,Sweetened condensed milk,0.0
+2023-01-10,Total powdered milk,0.0
+2023-01-10,Yogurt,0.0
+2023-01-10,chocolate milk,0.0
+2023-01-11,Butter,0.0
+2023-01-11,Cheese,0.0
+2023-01-11,Condensed milk,0.0
+2023-01-11,Cream,1.0
+2023-01-11,Cultured milk,0.0
+2023-01-11,Evaporated milk,0.0
+2023-01-11,Flavored sterilized milk,0.0
+2023-01-11,Modified milk,0.0
+2023-01-11,Pasteurized milk 2.5% mg,0.0
+2023-01-11,Pasteurized milk 3.0% mg,0.0
+2023-01-11,Powdered milk 12% mg,0.0
+2023-01-11,Powdered milk 18% mg,0.0
+2023-01-11,Powdered milk 20% mg,0.0
+2023-01-11,Powdered milk 26% mg,1.0
+2023-01-11,Powdered milk 28% mg,0.0
+2023-01-11,Powdered whey,0.0
+2023-01-11,Skimmed pasteurized milk,0.0
+2023-01-11,Skimmed powdered milk,0.0
+2023-01-11,Small cheese,0.0
+2023-01-11,Sterilized semi-skimmed milk,0.0
+2023-01-11,Sterilized skimmed milk,0.0
+2023-01-11,Sterilized whole milk,0.0
+2023-01-11,Sweetened condensed milk,0.0
+2023-01-11,Total powdered milk,0.0
+2023-01-11,Yogurt,0.0
+2023-01-11,chocolate milk,0.0
+2023-01-12,Butter,3.0
+2023-01-12,Cheese,0.0
+2023-01-12,Condensed milk,0.0
+2023-01-12,Cream,0.0
+2023-01-12,Cultured milk,0.0
+2023-01-12,Evaporated milk,0.0
+2023-01-12,Flavored sterilized milk,0.0
+2023-01-12,Modified milk,0.0
+2023-01-12,Pasteurized milk 2.5% mg,0.0
+2023-01-12,Pasteurized milk 3.0% mg,0.0
+2023-01-12,Powdered milk 12% mg,0.0
+2023-01-12,Powdered milk 18% mg,0.0
+2023-01-12,Powdered milk 20% mg,0.0
+2023-01-12,Powdered milk 26% mg,0.0
+2023-01-12,Powdered milk 28% mg,0.0
+2023-01-12,Powdered whey,0.0
+2023-01-12,Skimmed pasteurized milk,0.0
+2023-01-12,Skimmed powdered milk,0.0
+2023-01-12,Small cheese,0.0
+2023-01-12,Sterilized semi-skimmed milk,0.0
+2023-01-12,Sterilized skimmed milk,0.0
+2023-01-12,Sterilized whole milk,2.0
+2023-01-12,Sweetened condensed milk,0.0
+2023-01-12,Total powdered milk,0.0
+2023-01-12,Yogurt,5.0
+2023-01-12,chocolate milk,2.0
+2023-01-13,Butter,0.0
+2023-01-13,Cheese,0.0
+2023-01-13,Condensed milk,0.0
+2023-01-13,Cream,0.0
+2023-01-13,Cultured milk,0.0
+2023-01-13,Evaporated milk,0.0
+2023-01-13,Flavored sterilized milk,0.0
+2023-01-13,Modified milk,0.0
+2023-01-13,Pasteurized milk 2.5% mg,0.0
+2023-01-13,Pasteurized milk 3.0% mg,0.0
+2023-01-13,Powdered milk 12% mg,0.0
+2023-01-13,Powdered milk 18% mg,0.0
+2023-01-13,Powdered milk 20% mg,0.0
+2023-01-13,Powdered milk 26% mg,0.0
+2023-01-13,Powdered milk 28% mg,0.0
+2023-01-13,Powdered whey,0.0
+2023-01-13,Skimmed pasteurized milk,0.0
+2023-01-13,Skimmed powdered milk,0.0
+2023-01-13,Small cheese,0.0
+2023-01-13,Sterilized semi-skimmed milk,0.0
+2023-01-13,Sterilized skimmed milk,0.0
+2023-01-13,Sterilized whole milk,0.0
+2023-01-13,Sweetened condensed milk,0.0
+2023-01-13,Total powdered milk,0.0
+2023-01-13,Yogurt,0.0
+2023-01-13,chocolate milk,0.0
+2023-01-14,Butter,0.0
+2023-01-14,Cheese,0.0
+2023-01-14,Condensed milk,0.0
+2023-01-14,Cream,0.0
+2023-01-14,Cultured milk,0.0
+2023-01-14,Evaporated milk,0.0
+2023-01-14,Flavored sterilized milk,0.0
+2023-01-14,Modified milk,0.0
+2023-01-14,Pasteurized milk 2.5% mg,0.0
+2023-01-14,Pasteurized milk 3.0% mg,0.0
+2023-01-14,Powdered milk 12% mg,0.0
+2023-01-14,Powdered milk 18% mg,0.0
+2023-01-14,Powdered milk 20% mg,0.0
+2023-01-14,Powdered milk 26% mg,0.0
+2023-01-14,Powdered milk 28% mg,0.0
+2023-01-14,Powdered whey,0.0
+2023-01-14,Skimmed pasteurized milk,0.0
+2023-01-14,Skimmed powdered milk,0.0
+2023-01-14,Small cheese,0.0
+2023-01-14,Sterilized semi-skimmed milk,0.0
+2023-01-14,Sterilized skimmed milk,0.0
+2023-01-14,Sterilized whole milk,0.0
+2023-01-14,Sweetened condensed milk,0.0
+2023-01-14,Total powdered milk,0.0
+2023-01-14,Yogurt,0.0
+2023-01-14,chocolate milk,0.0
+2023-01-15,Butter,0.0
+2023-01-15,Cheese,0.0
+2023-01-15,Condensed milk,0.0
+2023-01-15,Cream,0.0
+2023-01-15,Cultured milk,0.0
+2023-01-15,Evaporated milk,0.0
+2023-01-15,Flavored sterilized milk,0.0
+2023-01-15,Modified milk,0.0
+2023-01-15,Pasteurized milk 2.5% mg,0.0
+2023-01-15,Pasteurized milk 3.0% mg,1.0
+2023-01-15,Powdered milk 12% mg,0.0
+2023-01-15,Powdered milk 18% mg,0.0
+2023-01-15,Powdered milk 20% mg,0.0
+2023-01-15,Powdered milk 26% mg,0.0
+2023-01-15,Powdered milk 28% mg,0.0
+2023-01-15,Powdered whey,0.0
+2023-01-15,Skimmed pasteurized milk,1.0
+2023-01-15,Skimmed powdered milk,1.0
+2023-01-15,Small cheese,0.0
+2023-01-15,Sterilized semi-skimmed milk,0.0
+2023-01-15,Sterilized skimmed milk,0.0
+2023-01-15,Sterilized whole milk,0.0
+2023-01-15,Sweetened condensed milk,0.0
+2023-01-15,Total powdered milk,0.0
+2023-01-15,Yogurt,0.0
+2023-01-15,chocolate milk,0.0
+2023-01-16,Butter,0.0
+2023-01-16,Cheese,0.0
+2023-01-16,Condensed milk,3.0
+2023-01-16,Cream,0.0
+2023-01-16,Cultured milk,0.0
+2023-01-16,Evaporated milk,0.0
+2023-01-16,Flavored sterilized milk,0.0
+2023-01-16,Modified milk,0.0
+2023-01-16,Pasteurized milk 2.5% mg,0.0
+2023-01-16,Pasteurized milk 3.0% mg,0.0
+2023-01-16,Powdered milk 12% mg,0.0
+2023-01-16,Powdered milk 18% mg,0.0
+2023-01-16,Powdered milk 20% mg,0.0
+2023-01-16,Powdered milk 26% mg,0.0
+2023-01-16,Powdered milk 28% mg,0.0
+2023-01-16,Powdered whey,0.0
+2023-01-16,Skimmed pasteurized milk,0.0
+2023-01-16,Skimmed powdered milk,0.0
+2023-01-16,Small cheese,0.0
+2023-01-16,Sterilized semi-skimmed milk,0.0
+2023-01-16,Sterilized skimmed milk,0.0
+2023-01-16,Sterilized whole milk,0.0
+2023-01-16,Sweetened condensed milk,0.0
+2023-01-16,Total powdered milk,0.0
+2023-01-16,Yogurt,0.0
+2023-01-16,chocolate milk,0.0
+2023-01-17,Butter,0.0
+2023-01-17,Cheese,0.0
+2023-01-17,Condensed milk,0.0
+2023-01-17,Cream,0.0
+2023-01-17,Cultured milk,0.0
+2023-01-17,Evaporated milk,0.0
+2023-01-17,Flavored sterilized milk,0.0
+2023-01-17,Modified milk,0.0
+2023-01-17,Pasteurized milk 2.5% mg,0.0
+2023-01-17,Pasteurized milk 3.0% mg,0.0
+2023-01-17,Powdered milk 12% mg,0.0
+2023-01-17,Powdered milk 18% mg,5.0
+2023-01-17,Powdered milk 20% mg,0.0
+2023-01-17,Powdered milk 26% mg,0.0
+2023-01-17,Powdered milk 28% mg,0.0
+2023-01-17,Powdered whey,0.0
+2023-01-17,Skimmed pasteurized milk,3.0
+2023-01-17,Skimmed powdered milk,0.0
+2023-01-17,Small cheese,0.0
+2023-01-17,Sterilized semi-skimmed milk,0.0
+2023-01-17,Sterilized skimmed milk,0.0
+2023-01-17,Sterilized whole milk,0.0
+2023-01-17,Sweetened condensed milk,0.0
+2023-01-17,Total powdered milk,0.0
+2023-01-17,Yogurt,0.0
+2023-01-17,chocolate milk,0.0
+2023-01-18,Butter,0.0
+2023-01-18,Cheese,0.0
+2023-01-18,Condensed milk,0.0
+2023-01-18,Cream,0.0
+2023-01-18,Cultured milk,0.0
+2023-01-18,Evaporated milk,0.0
+2023-01-18,Flavored sterilized milk,0.0
+2023-01-18,Modified milk,0.0
+2023-01-18,Pasteurized milk 2.5% mg,0.0
+2023-01-18,Pasteurized milk 3.0% mg,0.0
+2023-01-18,Powdered milk 12% mg,0.0
+2023-01-18,Powdered milk 18% mg,0.0
+2023-01-18,Powdered milk 20% mg,0.0
+2023-01-18,Powdered milk 26% mg,1.0
+2023-01-18,Powdered milk 28% mg,4.0
+2023-01-18,Powdered whey,0.0
+2023-01-18,Skimmed pasteurized milk,0.0
+2023-01-18,Skimmed powdered milk,0.0
+2023-01-18,Small cheese,0.0
+2023-01-18,Sterilized semi-skimmed milk,0.0
+2023-01-18,Sterilized skimmed milk,0.0
+2023-01-18,Sterilized whole milk,0.0
+2023-01-18,Sweetened condensed milk,0.0
+2023-01-18,Total powdered milk,0.0
+2023-01-18,Yogurt,0.0
+2023-01-18,chocolate milk,0.0
+2023-01-19,Butter,0.0
+2023-01-19,Cheese,0.0
+2023-01-19,Condensed milk,0.0
+2023-01-19,Cream,0.0
+2023-01-19,Cultured milk,0.0
+2023-01-19,Evaporated milk,0.0
+2023-01-19,Flavored sterilized milk,0.0
+2023-01-19,Modified milk,0.0
+2023-01-19,Pasteurized milk 2.5% mg,0.0
+2023-01-19,Pasteurized milk 3.0% mg,0.0
+2023-01-19,Powdered milk 12% mg,0.0
+2023-01-19,Powdered milk 18% mg,0.0
+2023-01-19,Powdered milk 20% mg,0.0
+2023-01-19,Powdered milk 26% mg,0.0
+2023-01-19,Powdered milk 28% mg,0.0
+2023-01-19,Powdered whey,0.0
+2023-01-19,Skimmed pasteurized milk,0.0
+2023-01-19,Skimmed powdered milk,0.0
+2023-01-19,Small cheese,0.0
+2023-01-19,Sterilized semi-skimmed milk,0.0
+2023-01-19,Sterilized skimmed milk,0.0
+2023-01-19,Sterilized whole milk,0.0
+2023-01-19,Sweetened condensed milk,0.0
+2023-01-19,Total powdered milk,0.0
+2023-01-19,Yogurt,0.0
+2023-01-19,chocolate milk,0.0
+2023-01-20,Butter,0.0
+2023-01-20,Cheese,0.0
+2023-01-20,Condensed milk,0.0
+2023-01-20,Cream,0.0
+2023-01-20,Cultured milk,0.0
+2023-01-20,Evaporated milk,0.0
+2023-01-20,Flavored sterilized milk,0.0
+2023-01-20,Modified milk,0.0
+2023-01-20,Pasteurized milk 2.5% mg,0.0
+2023-01-20,Pasteurized milk 3.0% mg,0.0
+2023-01-20,Powdered milk 12% mg,0.0
+2023-01-20,Powdered milk 18% mg,0.0
+2023-01-20,Powdered milk 20% mg,0.0
+2023-01-20,Powdered milk 26% mg,0.0
+2023-01-20,Powdered milk 28% mg,0.0
+2023-01-20,Powdered whey,0.0
+2023-01-20,Skimmed pasteurized milk,0.0
+2023-01-20,Skimmed powdered milk,0.0
+2023-01-20,Small cheese,0.0
+2023-01-20,Sterilized semi-skimmed milk,0.0
+2023-01-20,Sterilized skimmed milk,0.0
+2023-01-20,Sterilized whole milk,0.0
+2023-01-20,Sweetened condensed milk,0.0
+2023-01-20,Total powdered milk,0.0
+2023-01-20,Yogurt,0.0
+2023-01-20,chocolate milk,0.0
+2023-01-21,Butter,0.0
+2023-01-21,Cheese,0.0
+2023-01-21,Condensed milk,0.0
+2023-01-21,Cream,0.0
+2023-01-21,Cultured milk,0.0
+2023-01-21,Evaporated milk,0.0
+2023-01-21,Flavored sterilized milk,0.0
+2023-01-21,Modified milk,0.0
+2023-01-21,Pasteurized milk 2.5% mg,0.0
+2023-01-21,Pasteurized milk 3.0% mg,0.0
+2023-01-21,Powdered milk 12% mg,2.0
+2023-01-21,Powdered milk 18% mg,0.0
+2023-01-21,Powdered milk 20% mg,0.0
+2023-01-21,Powdered milk 26% mg,0.0
+2023-01-21,Powdered milk 28% mg,0.0
+2023-01-21,Powdered whey,0.0
+2023-01-21,Skimmed pasteurized milk,0.0
+2023-01-21,Skimmed powdered milk,0.0
+2023-01-21,Small cheese,0.0
+2023-01-21,Sterilized semi-skimmed milk,0.0
+2023-01-21,Sterilized skimmed milk,0.0
+2023-01-21,Sterilized whole milk,0.0
+2023-01-21,Sweetened condensed milk,0.0
+2023-01-21,Total powdered milk,0.0
+2023-01-21,Yogurt,0.0
+2023-01-21,chocolate milk,0.0
+2023-01-22,Butter,0.0
+2023-01-22,Cheese,0.0
+2023-01-22,Condensed milk,0.0
+2023-01-22,Cream,0.0
+2023-01-22,Cultured milk,0.0
+2023-01-22,Evaporated milk,0.0
+2023-01-22,Flavored sterilized milk,0.0
+2023-01-22,Modified milk,0.0
+2023-01-22,Pasteurized milk 2.5% mg,0.0
+2023-01-22,Pasteurized milk 3.0% mg,0.0
+2023-01-22,Powdered milk 12% mg,0.0
+2023-01-22,Powdered milk 18% mg,0.0
+2023-01-22,Powdered milk 20% mg,4.0
+2023-01-22,Powdered milk 26% mg,0.0
+2023-01-22,Powdered milk 28% mg,0.0
+2023-01-22,Powdered whey,0.0
+2023-01-22,Skimmed pasteurized milk,0.0
+2023-01-22,Skimmed powdered milk,0.0
+2023-01-22,Small cheese,0.0
+2023-01-22,Sterilized semi-skimmed milk,0.0
+2023-01-22,Sterilized skimmed milk,0.0
+2023-01-22,Sterilized whole milk,0.0
+2023-01-22,Sweetened condensed milk,0.0
+2023-01-22,Total powdered milk,0.0
+2023-01-22,Yogurt,0.0
+2023-01-22,chocolate milk,0.0
+2023-01-23,Butter,0.0
+2023-01-23,Cheese,0.0
+2023-01-23,Condensed milk,0.0
+2023-01-23,Cream,0.0
+2023-01-23,Cultured milk,0.0
+2023-01-23,Evaporated milk,0.0
+2023-01-23,Flavored sterilized milk,0.0
+2023-01-23,Modified milk,0.0
+2023-01-23,Pasteurized milk 2.5% mg,0.0
+2023-01-23,Pasteurized milk 3.0% mg,0.0
+2023-01-23,Powdered milk 12% mg,3.0
+2023-01-23,Powdered milk 18% mg,0.0
+2023-01-23,Powdered milk 20% mg,0.0
+2023-01-23,Powdered milk 26% mg,0.0
+2023-01-23,Powdered milk 28% mg,0.0
+2023-01-23,Powdered whey,0.0
+2023-01-23,Skimmed pasteurized milk,0.0
+2023-01-23,Skimmed powdered milk,0.0
+2023-01-23,Small cheese,0.0
+2023-01-23,Sterilized semi-skimmed milk,0.0
+2023-01-23,Sterilized skimmed milk,0.0
+2023-01-23,Sterilized whole milk,0.0
+2023-01-23,Sweetened condensed milk,0.0
+2023-01-23,Total powdered milk,0.0
+2023-01-23,Yogurt,0.0
+2023-01-23,chocolate milk,0.0
+2023-01-24,Butter,0.0
+2023-01-24,Cheese,0.0
+2023-01-24,Condensed milk,0.0
+2023-01-24,Cream,0.0
+2023-01-24,Cultured milk,0.0
+2023-01-24,Evaporated milk,0.0
+2023-01-24,Flavored sterilized milk,0.0
+2023-01-24,Modified milk,4.0
+2023-01-24,Pasteurized milk 2.5% mg,0.0
+2023-01-24,Pasteurized milk 3.0% mg,0.0
+2023-01-24,Powdered milk 12% mg,0.0
+2023-01-24,Powdered milk 18% mg,0.0
+2023-01-24,Powdered milk 20% mg,0.0
+2023-01-24,Powdered milk 26% mg,0.0
+2023-01-24,Powdered milk 28% mg,0.0
+2023-01-24,Powdered whey,0.0
+2023-01-24,Skimmed pasteurized milk,0.0
+2023-01-24,Skimmed powdered milk,0.0
+2023-01-24,Small cheese,0.0
+2023-01-24,Sterilized semi-skimmed milk,0.0
+2023-01-24,Sterilized skimmed milk,0.0
+2023-01-24,Sterilized whole milk,0.0
+2023-01-24,Sweetened condensed milk,0.0
+2023-01-24,Total powdered milk,0.0
+2023-01-24,Yogurt,0.0
+2023-01-24,chocolate milk,0.0
+2023-01-25,Butter,0.0
+2023-01-25,Cheese,0.0
+2023-01-25,Condensed milk,0.0
+2023-01-25,Cream,0.0
+2023-01-25,Cultured milk,0.0
+2023-01-25,Evaporated milk,0.0
+2023-01-25,Flavored sterilized milk,0.0
+2023-01-25,Modified milk,0.0
+2023-01-25,Pasteurized milk 2.5% mg,0.0
+2023-01-25,Pasteurized milk 3.0% mg,0.0
+2023-01-25,Powdered milk 12% mg,0.0
+2023-01-25,Powdered milk 18% mg,0.0
+2023-01-25,Powdered milk 20% mg,0.0
+2023-01-25,Powdered milk 26% mg,0.0
+2023-01-25,Powdered milk 28% mg,0.0
+2023-01-25,Powdered whey,5.0
+2023-01-25,Skimmed pasteurized milk,0.0
+2023-01-25,Skimmed powdered milk,5.0
+2023-01-25,Small cheese,0.0
+2023-01-25,Sterilized semi-skimmed milk,0.0
+2023-01-25,Sterilized skimmed milk,0.0
+2023-01-25,Sterilized whole milk,0.0
+2023-01-25,Sweetened condensed milk,0.0
+2023-01-25,Total powdered milk,0.0
+2023-01-25,Yogurt,0.0
+2023-01-25,chocolate milk,0.0
+2023-01-26,Butter,0.0
+2023-01-26,Cheese,0.0
+2023-01-26,Condensed milk,0.0
+2023-01-26,Cream,0.0
+2023-01-26,Cultured milk,0.0
+2023-01-26,Evaporated milk,0.0
+2023-01-26,Flavored sterilized milk,0.0
+2023-01-26,Modified milk,0.0
+2023-01-26,Pasteurized milk 2.5% mg,0.0
+2023-01-26,Pasteurized milk 3.0% mg,0.0
+2023-01-26,Powdered milk 12% mg,0.0
+2023-01-26,Powdered milk 18% mg,0.0
+2023-01-26,Powdered milk 20% mg,3.0
+2023-01-26,Powdered milk 26% mg,0.0
+2023-01-26,Powdered milk 28% mg,0.0
+2023-01-26,Powdered whey,0.0
+2023-01-26,Skimmed pasteurized milk,0.0
+2023-01-26,Skimmed powdered milk,0.0
+2023-01-26,Small cheese,0.0
+2023-01-26,Sterilized semi-skimmed milk,0.0
+2023-01-26,Sterilized skimmed milk,0.0
+2023-01-26,Sterilized whole milk,0.0
+2023-01-26,Sweetened condensed milk,0.0
+2023-01-26,Total powdered milk,0.0
+2023-01-26,Yogurt,0.0
+2023-01-26,chocolate milk,0.0
+2023-01-27,Butter,0.0
+2023-01-27,Cheese,0.0
+2023-01-27,Condensed milk,0.0
+2023-01-27,Cream,0.0
+2023-01-27,Cultured milk,0.0
+2023-01-27,Evaporated milk,0.0
+2023-01-27,Flavored sterilized milk,0.0
+2023-01-27,Modified milk,0.0
+2023-01-27,Pasteurized milk 2.5% mg,0.0
+2023-01-27,Pasteurized milk 3.0% mg,0.0
+2023-01-27,Powdered milk 12% mg,0.0
+2023-01-27,Powdered milk 18% mg,0.0
+2023-01-27,Powdered milk 20% mg,0.0
+2023-01-27,Powdered milk 26% mg,0.0
+2023-01-27,Powdered milk 28% mg,0.0
+2023-01-27,Powdered whey,0.0
+2023-01-27,Skimmed pasteurized milk,0.0
+2023-01-27,Skimmed powdered milk,0.0
+2023-01-27,Small cheese,0.0
+2023-01-27,Sterilized semi-skimmed milk,0.0
+2023-01-27,Sterilized skimmed milk,0.0
+2023-01-27,Sterilized whole milk,0.0
+2023-01-27,Sweetened condensed milk,0.0
+2023-01-27,Total powdered milk,3.0
+2023-01-27,Yogurt,0.0
+2023-01-27,chocolate milk,0.0
+2023-01-28,Butter,0.0
+2023-01-28,Cheese,0.0
+2023-01-28,Condensed milk,0.0
+2023-01-28,Cream,0.0
+2023-01-28,Cultured milk,0.0
+2023-01-28,Evaporated milk,0.0
+2023-01-28,Flavored sterilized milk,0.0
+2023-01-28,Modified milk,0.0
+2023-01-28,Pasteurized milk 2.5% mg,0.0
+2023-01-28,Pasteurized milk 3.0% mg,0.0
+2023-01-28,Powdered milk 12% mg,0.0
+2023-01-28,Powdered milk 18% mg,0.0
+2023-01-28,Powdered milk 20% mg,0.0
+2023-01-28,Powdered milk 26% mg,0.0
+2023-01-28,Powdered milk 28% mg,0.0
+2023-01-28,Powdered whey,0.0
+2023-01-28,Skimmed pasteurized milk,0.0
+2023-01-28,Skimmed powdered milk,0.0
+2023-01-28,Small cheese,0.0
+2023-01-28,Sterilized semi-skimmed milk,0.0
+2023-01-28,Sterilized skimmed milk,0.0
+2023-01-28,Sterilized whole milk,0.0
+2023-01-28,Sweetened condensed milk,0.0
+2023-01-28,Total powdered milk,0.0
+2023-01-28,Yogurt,0.0
+2023-01-28,chocolate milk,0.0
+2023-01-29,Butter,0.0
+2023-01-29,Cheese,0.0
+2023-01-29,Condensed milk,0.0
+2023-01-29,Cream,0.0
+2023-01-29,Cultured milk,0.0
+2023-01-29,Evaporated milk,0.0
+2023-01-29,Flavored sterilized milk,0.0
+2023-01-29,Modified milk,1.0
+2023-01-29,Pasteurized milk 2.5% mg,0.0
+2023-01-29,Pasteurized milk 3.0% mg,0.0
+2023-01-29,Powdered milk 12% mg,0.0
+2023-01-29,Powdered milk 18% mg,0.0
+2023-01-29,Powdered milk 20% mg,0.0
+2023-01-29,Powdered milk 26% mg,0.0
+2023-01-29,Powdered milk 28% mg,0.0
+2023-01-29,Powdered whey,0.0
+2023-01-29,Skimmed pasteurized milk,0.0
+2023-01-29,Skimmed powdered milk,0.0
+2023-01-29,Small cheese,0.0
+2023-01-29,Sterilized semi-skimmed milk,0.0
+2023-01-29,Sterilized skimmed milk,0.0
+2023-01-29,Sterilized whole milk,0.0
+2023-01-29,Sweetened condensed milk,3.0
+2023-01-29,Total powdered milk,0.0
+2023-01-29,Yogurt,0.0
+2023-01-29,chocolate milk,0.0
+2023-01-30,Butter,0.0
+2023-01-30,Cheese,0.0
+2023-01-30,Condensed milk,0.0
+2023-01-30,Cream,0.0
+2023-01-30,Cultured milk,0.0
+2023-01-30,Evaporated milk,4.0
+2023-01-30,Flavored sterilized milk,0.0
+2023-01-30,Modified milk,0.0
+2023-01-30,Pasteurized milk 2.5% mg,0.0
+2023-01-30,Pasteurized milk 3.0% mg,0.0
+2023-01-30,Powdered milk 12% mg,0.0
+2023-01-30,Powdered milk 18% mg,0.0
+2023-01-30,Powdered milk 20% mg,0.0
+2023-01-30,Powdered milk 26% mg,0.0
+2023-01-30,Powdered milk 28% mg,0.0
+2023-01-30,Powdered whey,0.0
+2023-01-30,Skimmed pasteurized milk,0.0
+2023-01-30,Skimmed powdered milk,0.0
+2023-01-30,Small cheese,0.0
+2023-01-30,Sterilized semi-skimmed milk,0.0
+2023-01-30,Sterilized skimmed milk,0.0
+2023-01-30,Sterilized whole milk,0.0
+2023-01-30,Sweetened condensed milk,0.0
+2023-01-30,Total powdered milk,0.0
+2023-01-30,Yogurt,0.0
+2023-01-30,chocolate milk,0.0
+2023-01-31,Butter,0.0
+2023-01-31,Cheese,1.0
+2023-01-31,Condensed milk,0.0
+2023-01-31,Cream,0.0
+2023-01-31,Cultured milk,0.0
+2023-01-31,Evaporated milk,0.0
+2023-01-31,Flavored sterilized milk,0.0
+2023-01-31,Modified milk,0.0
+2023-01-31,Pasteurized milk 2.5% mg,0.0
+2023-01-31,Pasteurized milk 3.0% mg,0.0
+2023-01-31,Powdered milk 12% mg,0.0
+2023-01-31,Powdered milk 18% mg,0.0
+2023-01-31,Powdered milk 20% mg,0.0
+2023-01-31,Powdered milk 26% mg,0.0
+2023-01-31,Powdered milk 28% mg,0.0
+2023-01-31,Powdered whey,0.0
+2023-01-31,Skimmed pasteurized milk,0.0
+2023-01-31,Skimmed powdered milk,0.0
+2023-01-31,Small cheese,0.0
+2023-01-31,Sterilized semi-skimmed milk,0.0
+2023-01-31,Sterilized skimmed milk,0.0
+2023-01-31,Sterilized whole milk,0.0
+2023-01-31,Sweetened condensed milk,0.0
+2023-01-31,Total powdered milk,0.0
+2023-01-31,Yogurt,0.0
+2023-01-31,chocolate milk,0.0
+2023-02-01,Butter,0.0
+2023-02-01,Cheese,5.0
+2023-02-01,Condensed milk,0.0
+2023-02-01,Cream,0.0
+2023-02-01,Cultured milk,0.0
+2023-02-01,Evaporated milk,0.0
+2023-02-01,Flavored sterilized milk,0.0
+2023-02-01,Modified milk,0.0
+2023-02-01,Pasteurized milk 2.5% mg,0.0
+2023-02-01,Pasteurized milk 3.0% mg,0.0
+2023-02-01,Powdered milk 12% mg,0.0
+2023-02-01,Powdered milk 18% mg,0.0
+2023-02-01,Powdered milk 20% mg,0.0
+2023-02-01,Powdered milk 26% mg,0.0
+2023-02-01,Powdered milk 28% mg,0.0
+2023-02-01,Powdered whey,0.0
+2023-02-01,Skimmed pasteurized milk,0.0
+2023-02-01,Skimmed powdered milk,2.0
+2023-02-01,Small cheese,0.0
+2023-02-01,Sterilized semi-skimmed milk,0.0
+2023-02-01,Sterilized skimmed milk,0.0
+2023-02-01,Sterilized whole milk,1.0
+2023-02-01,Sweetened condensed milk,0.0
+2023-02-01,Total powdered milk,0.0
+2023-02-01,Yogurt,0.0
+2023-02-01,chocolate milk,0.0
+2023-02-02,Butter,0.0
+2023-02-02,Cheese,3.0
+2023-02-02,Condensed milk,0.0
+2023-02-02,Cream,0.0
+2023-02-02,Cultured milk,0.0
+2023-02-02,Evaporated milk,0.0
+2023-02-02,Flavored sterilized milk,0.0
+2023-02-02,Modified milk,0.0
+2023-02-02,Pasteurized milk 2.5% mg,0.0
+2023-02-02,Pasteurized milk 3.0% mg,0.0
+2023-02-02,Powdered milk 12% mg,0.0
+2023-02-02,Powdered milk 18% mg,0.0
+2023-02-02,Powdered milk 20% mg,0.0
+2023-02-02,Powdered milk 26% mg,0.0
+2023-02-02,Powdered milk 28% mg,0.0
+2023-02-02,Powdered whey,0.0
+2023-02-02,Skimmed pasteurized milk,0.0
+2023-02-02,Skimmed powdered milk,0.0
+2023-02-02,Small cheese,0.0
+2023-02-02,Sterilized semi-skimmed milk,0.0
+2023-02-02,Sterilized skimmed milk,0.0
+2023-02-02,Sterilized whole milk,0.0
+2023-02-02,Sweetened condensed milk,0.0
+2023-02-02,Total powdered milk,0.0
+2023-02-02,Yogurt,0.0
+2023-02-02,chocolate milk,4.0
+2023-02-03,Butter,0.0
+2023-02-03,Cheese,0.0
+2023-02-03,Condensed milk,0.0
+2023-02-03,Cream,0.0
+2023-02-03,Cultured milk,0.0
+2023-02-03,Evaporated milk,0.0
+2023-02-03,Flavored sterilized milk,0.0
+2023-02-03,Modified milk,0.0
+2023-02-03,Pasteurized milk 2.5% mg,0.0
+2023-02-03,Pasteurized milk 3.0% mg,0.0
+2023-02-03,Powdered milk 12% mg,0.0
+2023-02-03,Powdered milk 18% mg,0.0
+2023-02-03,Powdered milk 20% mg,1.0
+2023-02-03,Powdered milk 26% mg,0.0
+2023-02-03,Powdered milk 28% mg,0.0
+2023-02-03,Powdered whey,0.0
+2023-02-03,Skimmed pasteurized milk,0.0
+2023-02-03,Skimmed powdered milk,0.0
+2023-02-03,Small cheese,0.0
+2023-02-03,Sterilized semi-skimmed milk,0.0
+2023-02-03,Sterilized skimmed milk,0.0
+2023-02-03,Sterilized whole milk,0.0
+2023-02-03,Sweetened condensed milk,0.0
+2023-02-03,Total powdered milk,5.0
+2023-02-03,Yogurt,4.0
+2023-02-03,chocolate milk,0.0
+2023-02-04,Butter,0.0
+2023-02-04,Cheese,0.0
+2023-02-04,Condensed milk,0.0
+2023-02-04,Cream,0.0
+2023-02-04,Cultured milk,0.0
+2023-02-04,Evaporated milk,0.0
+2023-02-04,Flavored sterilized milk,0.0
+2023-02-04,Modified milk,0.0
+2023-02-04,Pasteurized milk 2.5% mg,0.0
+2023-02-04,Pasteurized milk 3.0% mg,0.0
+2023-02-04,Powdered milk 12% mg,0.0
+2023-02-04,Powdered milk 18% mg,0.0
+2023-02-04,Powdered milk 20% mg,0.0
+2023-02-04,Powdered milk 26% mg,0.0
+2023-02-04,Powdered milk 28% mg,0.0
+2023-02-04,Powdered whey,0.0
+2023-02-04,Skimmed pasteurized milk,0.0
+2023-02-04,Skimmed powdered milk,0.0
+2023-02-04,Small cheese,0.0
+2023-02-04,Sterilized semi-skimmed milk,0.0
+2023-02-04,Sterilized skimmed milk,0.0
+2023-02-04,Sterilized whole milk,0.0
+2023-02-04,Sweetened condensed milk,2.0
+2023-02-04,Total powdered milk,0.0
+2023-02-04,Yogurt,0.0
+2023-02-04,chocolate milk,0.0
+2023-02-05,Butter,0.0
+2023-02-05,Cheese,0.0
+2023-02-05,Condensed milk,0.0
+2023-02-05,Cream,0.0
+2023-02-05,Cultured milk,0.0
+2023-02-05,Evaporated milk,0.0
+2023-02-05,Flavored sterilized milk,0.0
+2023-02-05,Modified milk,0.0
+2023-02-05,Pasteurized milk 2.5% mg,0.0
+2023-02-05,Pasteurized milk 3.0% mg,0.0
+2023-02-05,Powdered milk 12% mg,0.0
+2023-02-05,Powdered milk 18% mg,0.0
+2023-02-05,Powdered milk 20% mg,0.0
+2023-02-05,Powdered milk 26% mg,0.0
+2023-02-05,Powdered milk 28% mg,0.0
+2023-02-05,Powdered whey,0.0
+2023-02-05,Skimmed pasteurized milk,0.0
+2023-02-05,Skimmed powdered milk,0.0
+2023-02-05,Small cheese,0.0
+2023-02-05,Sterilized semi-skimmed milk,0.0
+2023-02-05,Sterilized skimmed milk,0.0
+2023-02-05,Sterilized whole milk,0.0
+2023-02-05,Sweetened condensed milk,0.0
+2023-02-05,Total powdered milk,0.0
+2023-02-05,Yogurt,0.0
+2023-02-05,chocolate milk,0.0
+2023-02-06,Butter,0.0
+2023-02-06,Cheese,0.0
+2023-02-06,Condensed milk,0.0
+2023-02-06,Cream,0.0
+2023-02-06,Cultured milk,0.0
+2023-02-06,Evaporated milk,0.0
+2023-02-06,Flavored sterilized milk,0.0
+2023-02-06,Modified milk,0.0
+2023-02-06,Pasteurized milk 2.5% mg,0.0
+2023-02-06,Pasteurized milk 3.0% mg,0.0
+2023-02-06,Powdered milk 12% mg,0.0
+2023-02-06,Powdered milk 18% mg,0.0
+2023-02-06,Powdered milk 20% mg,4.0
+2023-02-06,Powdered milk 26% mg,0.0
+2023-02-06,Powdered milk 28% mg,0.0
+2023-02-06,Powdered whey,0.0
+2023-02-06,Skimmed pasteurized milk,0.0
+2023-02-06,Skimmed powdered milk,0.0
+2023-02-06,Small cheese,0.0
+2023-02-06,Sterilized semi-skimmed milk,0.0
+2023-02-06,Sterilized skimmed milk,0.0
+2023-02-06,Sterilized whole milk,0.0
+2023-02-06,Sweetened condensed milk,0.0
+2023-02-06,Total powdered milk,0.0
+2023-02-06,Yogurt,0.0
+2023-02-06,chocolate milk,0.0
+2023-02-07,Butter,0.0
+2023-02-07,Cheese,0.0
+2023-02-07,Condensed milk,0.0
+2023-02-07,Cream,0.0
+2023-02-07,Cultured milk,0.0
+2023-02-07,Evaporated milk,0.0
+2023-02-07,Flavored sterilized milk,0.0
+2023-02-07,Modified milk,0.0
+2023-02-07,Pasteurized milk 2.5% mg,0.0
+2023-02-07,Pasteurized milk 3.0% mg,0.0
+2023-02-07,Powdered milk 12% mg,0.0
+2023-02-07,Powdered milk 18% mg,0.0
+2023-02-07,Powdered milk 20% mg,0.0
+2023-02-07,Powdered milk 26% mg,0.0
+2023-02-07,Powdered milk 28% mg,0.0
+2023-02-07,Powdered whey,0.0
+2023-02-07,Skimmed pasteurized milk,0.0
+2023-02-07,Skimmed powdered milk,0.0
+2023-02-07,Small cheese,0.0
+2023-02-07,Sterilized semi-skimmed milk,0.0
+2023-02-07,Sterilized skimmed milk,0.0
+2023-02-07,Sterilized whole milk,0.0
+2023-02-07,Sweetened condensed milk,0.0
+2023-02-07,Total powdered milk,0.0
+2023-02-07,Yogurt,0.0
+2023-02-07,chocolate milk,0.0
+2023-02-08,Butter,0.0
+2023-02-08,Cheese,0.0
+2023-02-08,Condensed milk,0.0
+2023-02-08,Cream,1.0
+2023-02-08,Cultured milk,0.0
+2023-02-08,Evaporated milk,0.0
+2023-02-08,Flavored sterilized milk,0.0
+2023-02-08,Modified milk,0.0
+2023-02-08,Pasteurized milk 2.5% mg,0.0
+2023-02-08,Pasteurized milk 3.0% mg,0.0
+2023-02-08,Powdered milk 12% mg,0.0
+2023-02-08,Powdered milk 18% mg,0.0
+2023-02-08,Powdered milk 20% mg,0.0
+2023-02-08,Powdered milk 26% mg,0.0
+2023-02-08,Powdered milk 28% mg,0.0
+2023-02-08,Powdered whey,0.0
+2023-02-08,Skimmed pasteurized milk,1.0
+2023-02-08,Skimmed powdered milk,0.0
+2023-02-08,Small cheese,0.0
+2023-02-08,Sterilized semi-skimmed milk,0.0
+2023-02-08,Sterilized skimmed milk,0.0
+2023-02-08,Sterilized whole milk,0.0
+2023-02-08,Sweetened condensed milk,0.0
+2023-02-08,Total powdered milk,0.0
+2023-02-08,Yogurt,0.0
+2023-02-08,chocolate milk,0.0
+2023-02-09,Butter,0.0
+2023-02-09,Cheese,0.0
+2023-02-09,Condensed milk,0.0
+2023-02-09,Cream,0.0
+2023-02-09,Cultured milk,0.0
+2023-02-09,Evaporated milk,0.0
+2023-02-09,Flavored sterilized milk,5.0
+2023-02-09,Modified milk,0.0
+2023-02-09,Pasteurized milk 2.5% mg,0.0
+2023-02-09,Pasteurized milk 3.0% mg,0.0
+2023-02-09,Powdered milk 12% mg,0.0
+2023-02-09,Powdered milk 18% mg,0.0
+2023-02-09,Powdered milk 20% mg,2.0
+2023-02-09,Powdered milk 26% mg,0.0
+2023-02-09,Powdered milk 28% mg,0.0
+2023-02-09,Powdered whey,0.0
+2023-02-09,Skimmed pasteurized milk,0.0
+2023-02-09,Skimmed powdered milk,0.0
+2023-02-09,Small cheese,0.0
+2023-02-09,Sterilized semi-skimmed milk,0.0
+2023-02-09,Sterilized skimmed milk,0.0
+2023-02-09,Sterilized whole milk,0.0
+2023-02-09,Sweetened condensed milk,0.0
+2023-02-09,Total powdered milk,0.0
+2023-02-09,Yogurt,0.0
+2023-02-09,chocolate milk,0.0
+2023-02-10,Butter,0.0
+2023-02-10,Cheese,0.0
+2023-02-10,Condensed milk,3.0
+2023-02-10,Cream,0.0
+2023-02-10,Cultured milk,0.0
+2023-02-10,Evaporated milk,0.0
+2023-02-10,Flavored sterilized milk,0.0
+2023-02-10,Modified milk,0.0
+2023-02-10,Pasteurized milk 2.5% mg,0.0
+2023-02-10,Pasteurized milk 3.0% mg,0.0
+2023-02-10,Powdered milk 12% mg,0.0
+2023-02-10,Powdered milk 18% mg,0.0
+2023-02-10,Powdered milk 20% mg,0.0
+2023-02-10,Powdered milk 26% mg,0.0
+2023-02-10,Powdered milk 28% mg,0.0
+2023-02-10,Powdered whey,0.0
+2023-02-10,Skimmed pasteurized milk,0.0
+2023-02-10,Skimmed powdered milk,0.0
+2023-02-10,Small cheese,0.0
+2023-02-10,Sterilized semi-skimmed milk,0.0
+2023-02-10,Sterilized skimmed milk,0.0
+2023-02-10,Sterilized whole milk,0.0
+2023-02-10,Sweetened condensed milk,0.0
+2023-02-10,Total powdered milk,0.0
+2023-02-10,Yogurt,0.0
+2023-02-10,chocolate milk,0.0
+2023-02-11,Butter,0.0
+2023-02-11,Cheese,0.0
+2023-02-11,Condensed milk,0.0
+2023-02-11,Cream,0.0
+2023-02-11,Cultured milk,0.0
+2023-02-11,Evaporated milk,0.0
+2023-02-11,Flavored sterilized milk,0.0
+2023-02-11,Modified milk,0.0
+2023-02-11,Pasteurized milk 2.5% mg,0.0
+2023-02-11,Pasteurized milk 3.0% mg,0.0
+2023-02-11,Powdered milk 12% mg,0.0
+2023-02-11,Powdered milk 18% mg,0.0
+2023-02-11,Powdered milk 20% mg,0.0
+2023-02-11,Powdered milk 26% mg,0.0
+2023-02-11,Powdered milk 28% mg,0.0
+2023-02-11,Powdered whey,0.0
+2023-02-11,Skimmed pasteurized milk,0.0
+2023-02-11,Skimmed powdered milk,0.0
+2023-02-11,Small cheese,0.0
+2023-02-11,Sterilized semi-skimmed milk,4.0
+2023-02-11,Sterilized skimmed milk,0.0
+2023-02-11,Sterilized whole milk,0.0
+2023-02-11,Sweetened condensed milk,0.0
+2023-02-11,Total powdered milk,0.0
+2023-02-11,Yogurt,0.0
+2023-02-11,chocolate milk,0.0
+2023-02-12,Butter,0.0
+2023-02-12,Cheese,0.0
+2023-02-12,Condensed milk,0.0
+2023-02-12,Cream,0.0
+2023-02-12,Cultured milk,0.0
+2023-02-12,Evaporated milk,0.0
+2023-02-12,Flavored sterilized milk,0.0
+2023-02-12,Modified milk,0.0
+2023-02-12,Pasteurized milk 2.5% mg,0.0
+2023-02-12,Pasteurized milk 3.0% mg,0.0
+2023-02-12,Powdered milk 12% mg,0.0
+2023-02-12,Powdered milk 18% mg,0.0
+2023-02-12,Powdered milk 20% mg,0.0
+2023-02-12,Powdered milk 26% mg,0.0
+2023-02-12,Powdered milk 28% mg,0.0
+2023-02-12,Powdered whey,0.0
+2023-02-12,Skimmed pasteurized milk,0.0
+2023-02-12,Skimmed powdered milk,0.0
+2023-02-12,Small cheese,0.0
+2023-02-12,Sterilized semi-skimmed milk,0.0
+2023-02-12,Sterilized skimmed milk,0.0
+2023-02-12,Sterilized whole milk,0.0
+2023-02-12,Sweetened condensed milk,0.0
+2023-02-12,Total powdered milk,0.0
+2023-02-12,Yogurt,0.0
+2023-02-12,chocolate milk,0.0
+2023-02-13,Butter,0.0
+2023-02-13,Cheese,0.0
+2023-02-13,Condensed milk,0.0
+2023-02-13,Cream,0.0
+2023-02-13,Cultured milk,0.0
+2023-02-13,Evaporated milk,0.0
+2023-02-13,Flavored sterilized milk,0.0
+2023-02-13,Modified milk,2.0
+2023-02-13,Pasteurized milk 2.5% mg,0.0
+2023-02-13,Pasteurized milk 3.0% mg,3.0
+2023-02-13,Powdered milk 12% mg,0.0
+2023-02-13,Powdered milk 18% mg,0.0
+2023-02-13,Powdered milk 20% mg,0.0
+2023-02-13,Powdered milk 26% mg,0.0
+2023-02-13,Powdered milk 28% mg,0.0
+2023-02-13,Powdered whey,0.0
+2023-02-13,Skimmed pasteurized milk,0.0
+2023-02-13,Skimmed powdered milk,0.0
+2023-02-13,Small cheese,0.0
+2023-02-13,Sterilized semi-skimmed milk,0.0
+2023-02-13,Sterilized skimmed milk,0.0
+2023-02-13,Sterilized whole milk,4.0
+2023-02-13,Sweetened condensed milk,0.0
+2023-02-13,Total powdered milk,0.0
+2023-02-13,Yogurt,0.0
+2023-02-13,chocolate milk,5.0
+2023-02-14,Butter,0.0
+2023-02-14,Cheese,0.0
+2023-02-14,Condensed milk,0.0
+2023-02-14,Cream,0.0
+2023-02-14,Cultured milk,0.0
+2023-02-14,Evaporated milk,0.0
+2023-02-14,Flavored sterilized milk,0.0
+2023-02-14,Modified milk,0.0
+2023-02-14,Pasteurized milk 2.5% mg,0.0
+2023-02-14,Pasteurized milk 3.0% mg,0.0
+2023-02-14,Powdered milk 12% mg,0.0
+2023-02-14,Powdered milk 18% mg,0.0
+2023-02-14,Powdered milk 20% mg,0.0
+2023-02-14,Powdered milk 26% mg,0.0
+2023-02-14,Powdered milk 28% mg,0.0
+2023-02-14,Powdered whey,0.0
+2023-02-14,Skimmed pasteurized milk,0.0
+2023-02-14,Skimmed powdered milk,0.0
+2023-02-14,Small cheese,0.0
+2023-02-14,Sterilized semi-skimmed milk,0.0
+2023-02-14,Sterilized skimmed milk,0.0
+2023-02-14,Sterilized whole milk,0.0
+2023-02-14,Sweetened condensed milk,0.0
+2023-02-14,Total powdered milk,0.0
+2023-02-14,Yogurt,0.0
+2023-02-14,chocolate milk,0.0
+2023-02-15,Butter,1.0
+2023-02-15,Cheese,0.0
+2023-02-15,Condensed milk,0.0
+2023-02-15,Cream,0.0
+2023-02-15,Cultured milk,0.0
+2023-02-15,Evaporated milk,0.0
+2023-02-15,Flavored sterilized milk,0.0
+2023-02-15,Modified milk,0.0
+2023-02-15,Pasteurized milk 2.5% mg,0.0
+2023-02-15,Pasteurized milk 3.0% mg,0.0
+2023-02-15,Powdered milk 12% mg,0.0
+2023-02-15,Powdered milk 18% mg,0.0
+2023-02-15,Powdered milk 20% mg,0.0
+2023-02-15,Powdered milk 26% mg,0.0
+2023-02-15,Powdered milk 28% mg,0.0
+2023-02-15,Powdered whey,0.0
+2023-02-15,Skimmed pasteurized milk,0.0
+2023-02-15,Skimmed powdered milk,0.0
+2023-02-15,Small cheese,0.0
+2023-02-15,Sterilized semi-skimmed milk,0.0
+2023-02-15,Sterilized skimmed milk,0.0
+2023-02-15,Sterilized whole milk,0.0
+2023-02-15,Sweetened condensed milk,0.0
+2023-02-15,Total powdered milk,0.0
+2023-02-15,Yogurt,0.0
+2023-02-15,chocolate milk,0.0
+2023-02-16,Butter,0.0
+2023-02-16,Cheese,0.0
+2023-02-16,Condensed milk,0.0
+2023-02-16,Cream,0.0
+2023-02-16,Cultured milk,0.0
+2023-02-16,Evaporated milk,0.0
+2023-02-16,Flavored sterilized milk,0.0
+2023-02-16,Modified milk,0.0
+2023-02-16,Pasteurized milk 2.5% mg,0.0
+2023-02-16,Pasteurized milk 3.0% mg,0.0
+2023-02-16,Powdered milk 12% mg,0.0
+2023-02-16,Powdered milk 18% mg,0.0
+2023-02-16,Powdered milk 20% mg,0.0
+2023-02-16,Powdered milk 26% mg,0.0
+2023-02-16,Powdered milk 28% mg,0.0
+2023-02-16,Powdered whey,0.0
+2023-02-16,Skimmed pasteurized milk,0.0
+2023-02-16,Skimmed powdered milk,0.0
+2023-02-16,Small cheese,0.0
+2023-02-16,Sterilized semi-skimmed milk,0.0
+2023-02-16,Sterilized skimmed milk,0.0
+2023-02-16,Sterilized whole milk,0.0
+2023-02-16,Sweetened condensed milk,0.0
+2023-02-16,Total powdered milk,0.0
+2023-02-16,Yogurt,0.0
+2023-02-16,chocolate milk,0.0
+2023-02-17,Butter,2.0
+2023-02-17,Cheese,0.0
+2023-02-17,Condensed milk,0.0
+2023-02-17,Cream,0.0
+2023-02-17,Cultured milk,0.0
+2023-02-17,Evaporated milk,0.0
+2023-02-17,Flavored sterilized milk,0.0
+2023-02-17,Modified milk,0.0
+2023-02-17,Pasteurized milk 2.5% mg,0.0
+2023-02-17,Pasteurized milk 3.0% mg,0.0
+2023-02-17,Powdered milk 12% mg,0.0
+2023-02-17,Powdered milk 18% mg,0.0
+2023-02-17,Powdered milk 20% mg,0.0
+2023-02-17,Powdered milk 26% mg,0.0
+2023-02-17,Powdered milk 28% mg,0.0
+2023-02-17,Powdered whey,0.0
+2023-02-17,Skimmed pasteurized milk,0.0
+2023-02-17,Skimmed powdered milk,2.0
+2023-02-17,Small cheese,0.0
+2023-02-17,Sterilized semi-skimmed milk,0.0
+2023-02-17,Sterilized skimmed milk,0.0
+2023-02-17,Sterilized whole milk,0.0
+2023-02-17,Sweetened condensed milk,0.0
+2023-02-17,Total powdered milk,0.0
+2023-02-17,Yogurt,0.0
+2023-02-17,chocolate milk,0.0
+2023-02-18,Butter,0.0
+2023-02-18,Cheese,0.0
+2023-02-18,Condensed milk,0.0
+2023-02-18,Cream,0.0
+2023-02-18,Cultured milk,0.0
+2023-02-18,Evaporated milk,0.0
+2023-02-18,Flavored sterilized milk,0.0
+2023-02-18,Modified milk,0.0
+2023-02-18,Pasteurized milk 2.5% mg,0.0
+2023-02-18,Pasteurized milk 3.0% mg,0.0
+2023-02-18,Powdered milk 12% mg,0.0
+2023-02-18,Powdered milk 18% mg,0.0
+2023-02-18,Powdered milk 20% mg,0.0
+2023-02-18,Powdered milk 26% mg,0.0
+2023-02-18,Powdered milk 28% mg,0.0
+2023-02-18,Powdered whey,0.0
+2023-02-18,Skimmed pasteurized milk,0.0
+2023-02-18,Skimmed powdered milk,0.0
+2023-02-18,Small cheese,0.0
+2023-02-18,Sterilized semi-skimmed milk,0.0
+2023-02-18,Sterilized skimmed milk,0.0
+2023-02-18,Sterilized whole milk,0.0
+2023-02-18,Sweetened condensed milk,0.0
+2023-02-18,Total powdered milk,0.0
+2023-02-18,Yogurt,0.0
+2023-02-18,chocolate milk,0.0
+2023-02-19,Butter,3.0
+2023-02-19,Cheese,0.0
+2023-02-19,Condensed milk,2.0
+2023-02-19,Cream,0.0
+2023-02-19,Cultured milk,0.0
+2023-02-19,Evaporated milk,0.0
+2023-02-19,Flavored sterilized milk,2.0
+2023-02-19,Modified milk,0.0
+2023-02-19,Pasteurized milk 2.5% mg,0.0
+2023-02-19,Pasteurized milk 3.0% mg,0.0
+2023-02-19,Powdered milk 12% mg,0.0
+2023-02-19,Powdered milk 18% mg,0.0
+2023-02-19,Powdered milk 20% mg,0.0
+2023-02-19,Powdered milk 26% mg,0.0
+2023-02-19,Powdered milk 28% mg,0.0
+2023-02-19,Powdered whey,0.0
+2023-02-19,Skimmed pasteurized milk,0.0
+2023-02-19,Skimmed powdered milk,0.0
+2023-02-19,Small cheese,0.0
+2023-02-19,Sterilized semi-skimmed milk,0.0
+2023-02-19,Sterilized skimmed milk,0.0
+2023-02-19,Sterilized whole milk,0.0
+2023-02-19,Sweetened condensed milk,0.0
+2023-02-19,Total powdered milk,0.0
+2023-02-19,Yogurt,0.0
+2023-02-19,chocolate milk,0.0
+2023-02-20,Butter,0.0
+2023-02-20,Cheese,0.0
+2023-02-20,Condensed milk,0.0
+2023-02-20,Cream,0.0
+2023-02-20,Cultured milk,0.0
+2023-02-20,Evaporated milk,0.0
+2023-02-20,Flavored sterilized milk,0.0
+2023-02-20,Modified milk,0.0
+2023-02-20,Pasteurized milk 2.5% mg,0.0
+2023-02-20,Pasteurized milk 3.0% mg,0.0
+2023-02-20,Powdered milk 12% mg,0.0
+2023-02-20,Powdered milk 18% mg,0.0
+2023-02-20,Powdered milk 20% mg,0.0
+2023-02-20,Powdered milk 26% mg,0.0
+2023-02-20,Powdered milk 28% mg,0.0
+2023-02-20,Powdered whey,0.0
+2023-02-20,Skimmed pasteurized milk,0.0
+2023-02-20,Skimmed powdered milk,0.0
+2023-02-20,Small cheese,0.0
+2023-02-20,Sterilized semi-skimmed milk,0.0
+2023-02-20,Sterilized skimmed milk,0.0
+2023-02-20,Sterilized whole milk,0.0
+2023-02-20,Sweetened condensed milk,0.0
+2023-02-20,Total powdered milk,0.0
+2023-02-20,Yogurt,0.0
+2023-02-20,chocolate milk,0.0
+2023-02-21,Butter,0.0
+2023-02-21,Cheese,0.0
+2023-02-21,Condensed milk,0.0
+2023-02-21,Cream,0.0
+2023-02-21,Cultured milk,0.0
+2023-02-21,Evaporated milk,0.0
+2023-02-21,Flavored sterilized milk,0.0
+2023-02-21,Modified milk,0.0
+2023-02-21,Pasteurized milk 2.5% mg,0.0
+2023-02-21,Pasteurized milk 3.0% mg,0.0
+2023-02-21,Powdered milk 12% mg,0.0
+2023-02-21,Powdered milk 18% mg,2.0
+2023-02-21,Powdered milk 20% mg,0.0
+2023-02-21,Powdered milk 26% mg,0.0
+2023-02-21,Powdered milk 28% mg,0.0
+2023-02-21,Powdered whey,0.0
+2023-02-21,Skimmed pasteurized milk,0.0
+2023-02-21,Skimmed powdered milk,0.0
+2023-02-21,Small cheese,0.0
+2023-02-21,Sterilized semi-skimmed milk,0.0
+2023-02-21,Sterilized skimmed milk,0.0
+2023-02-21,Sterilized whole milk,0.0
+2023-02-21,Sweetened condensed milk,0.0
+2023-02-21,Total powdered milk,0.0
+2023-02-21,Yogurt,0.0
+2023-02-21,chocolate milk,0.0
+2023-02-22,Butter,0.0
+2023-02-22,Cheese,0.0
+2023-02-22,Condensed milk,0.0
+2023-02-22,Cream,0.0
+2023-02-22,Cultured milk,0.0
+2023-02-22,Evaporated milk,0.0
+2023-02-22,Flavored sterilized milk,0.0
+2023-02-22,Modified milk,0.0
+2023-02-22,Pasteurized milk 2.5% mg,0.0
+2023-02-22,Pasteurized milk 3.0% mg,0.0
+2023-02-22,Powdered milk 12% mg,0.0
+2023-02-22,Powdered milk 18% mg,0.0
+2023-02-22,Powdered milk 20% mg,0.0
+2023-02-22,Powdered milk 26% mg,0.0
+2023-02-22,Powdered milk 28% mg,0.0
+2023-02-22,Powdered whey,0.0
+2023-02-22,Skimmed pasteurized milk,0.0
+2023-02-22,Skimmed powdered milk,0.0
+2023-02-22,Small cheese,0.0
+2023-02-22,Sterilized semi-skimmed milk,0.0
+2023-02-22,Sterilized skimmed milk,0.0
+2023-02-22,Sterilized whole milk,0.0
+2023-02-22,Sweetened condensed milk,0.0
+2023-02-22,Total powdered milk,0.0
+2023-02-22,Yogurt,0.0
+2023-02-22,chocolate milk,0.0
+2023-02-23,Butter,0.0
+2023-02-23,Cheese,0.0
+2023-02-23,Condensed milk,0.0
+2023-02-23,Cream,0.0
+2023-02-23,Cultured milk,0.0
+2023-02-23,Evaporated milk,0.0
+2023-02-23,Flavored sterilized milk,0.0
+2023-02-23,Modified milk,0.0
+2023-02-23,Pasteurized milk 2.5% mg,0.0
+2023-02-23,Pasteurized milk 3.0% mg,0.0
+2023-02-23,Powdered milk 12% mg,0.0
+2023-02-23,Powdered milk 18% mg,0.0
+2023-02-23,Powdered milk 20% mg,0.0
+2023-02-23,Powdered milk 26% mg,0.0
+2023-02-23,Powdered milk 28% mg,0.0
+2023-02-23,Powdered whey,0.0
+2023-02-23,Skimmed pasteurized milk,0.0
+2023-02-23,Skimmed powdered milk,0.0
+2023-02-23,Small cheese,0.0
+2023-02-23,Sterilized semi-skimmed milk,0.0
+2023-02-23,Sterilized skimmed milk,4.0
+2023-02-23,Sterilized whole milk,0.0
+2023-02-23,Sweetened condensed milk,1.0
+2023-02-23,Total powdered milk,0.0
+2023-02-23,Yogurt,0.0
+2023-02-23,chocolate milk,0.0
+2023-02-24,Butter,0.0
+2023-02-24,Cheese,3.0
+2023-02-24,Condensed milk,0.0
+2023-02-24,Cream,0.0
+2023-02-24,Cultured milk,0.0
+2023-02-24,Evaporated milk,3.0
+2023-02-24,Flavored sterilized milk,0.0
+2023-02-24,Modified milk,0.0
+2023-02-24,Pasteurized milk 2.5% mg,0.0
+2023-02-24,Pasteurized milk 3.0% mg,0.0
+2023-02-24,Powdered milk 12% mg,0.0
+2023-02-24,Powdered milk 18% mg,0.0
+2023-02-24,Powdered milk 20% mg,0.0
+2023-02-24,Powdered milk 26% mg,0.0
+2023-02-24,Powdered milk 28% mg,0.0
+2023-02-24,Powdered whey,0.0
+2023-02-24,Skimmed pasteurized milk,0.0
+2023-02-24,Skimmed powdered milk,0.0
+2023-02-24,Small cheese,0.0
+2023-02-24,Sterilized semi-skimmed milk,0.0
+2023-02-24,Sterilized skimmed milk,1.0
+2023-02-24,Sterilized whole milk,0.0
+2023-02-24,Sweetened condensed milk,0.0
+2023-02-24,Total powdered milk,0.0
+2023-02-24,Yogurt,0.0
+2023-02-24,chocolate milk,0.0
+2023-02-25,Butter,0.0
+2023-02-25,Cheese,0.0
+2023-02-25,Condensed milk,0.0
+2023-02-25,Cream,0.0
+2023-02-25,Cultured milk,3.0
+2023-02-25,Evaporated milk,0.0
+2023-02-25,Flavored sterilized milk,0.0
+2023-02-25,Modified milk,0.0
+2023-02-25,Pasteurized milk 2.5% mg,0.0
+2023-02-25,Pasteurized milk 3.0% mg,0.0
+2023-02-25,Powdered milk 12% mg,0.0
+2023-02-25,Powdered milk 18% mg,0.0
+2023-02-25,Powdered milk 20% mg,0.0
+2023-02-25,Powdered milk 26% mg,0.0
+2023-02-25,Powdered milk 28% mg,0.0
+2023-02-25,Powdered whey,0.0
+2023-02-25,Skimmed pasteurized milk,0.0
+2023-02-25,Skimmed powdered milk,0.0
+2023-02-25,Small cheese,0.0
+2023-02-25,Sterilized semi-skimmed milk,0.0
+2023-02-25,Sterilized skimmed milk,0.0
+2023-02-25,Sterilized whole milk,0.0
+2023-02-25,Sweetened condensed milk,0.0
+2023-02-25,Total powdered milk,0.0
+2023-02-25,Yogurt,0.0
+2023-02-25,chocolate milk,0.0
+2023-02-26,Butter,0.0
+2023-02-26,Cheese,0.0
+2023-02-26,Condensed milk,0.0
+2023-02-26,Cream,0.0
+2023-02-26,Cultured milk,0.0
+2023-02-26,Evaporated milk,0.0
+2023-02-26,Flavored sterilized milk,0.0
+2023-02-26,Modified milk,0.0
+2023-02-26,Pasteurized milk 2.5% mg,5.0
+2023-02-26,Pasteurized milk 3.0% mg,0.0
+2023-02-26,Powdered milk 12% mg,4.0
+2023-02-26,Powdered milk 18% mg,0.0
+2023-02-26,Powdered milk 20% mg,0.0
+2023-02-26,Powdered milk 26% mg,0.0
+2023-02-26,Powdered milk 28% mg,0.0
+2023-02-26,Powdered whey,0.0
+2023-02-26,Skimmed pasteurized milk,0.0
+2023-02-26,Skimmed powdered milk,0.0
+2023-02-26,Small cheese,0.0
+2023-02-26,Sterilized semi-skimmed milk,0.0
+2023-02-26,Sterilized skimmed milk,5.0
+2023-02-26,Sterilized whole milk,0.0
+2023-02-26,Sweetened condensed milk,0.0
+2023-02-26,Total powdered milk,0.0
+2023-02-26,Yogurt,6.0
+2023-02-26,chocolate milk,0.0
+2023-02-27,Butter,0.0
+2023-02-27,Cheese,0.0
+2023-02-27,Condensed milk,0.0
+2023-02-27,Cream,0.0
+2023-02-27,Cultured milk,0.0
+2023-02-27,Evaporated milk,0.0
+2023-02-27,Flavored sterilized milk,0.0
+2023-02-27,Modified milk,0.0
+2023-02-27,Pasteurized milk 2.5% mg,0.0
+2023-02-27,Pasteurized milk 3.0% mg,0.0
+2023-02-27,Powdered milk 12% mg,0.0
+2023-02-27,Powdered milk 18% mg,0.0
+2023-02-27,Powdered milk 20% mg,0.0
+2023-02-27,Powdered milk 26% mg,0.0
+2023-02-27,Powdered milk 28% mg,0.0
+2023-02-27,Powdered whey,0.0
+2023-02-27,Skimmed pasteurized milk,0.0
+2023-02-27,Skimmed powdered milk,0.0
+2023-02-27,Small cheese,0.0
+2023-02-27,Sterilized semi-skimmed milk,0.0
+2023-02-27,Sterilized skimmed milk,0.0
+2023-02-27,Sterilized whole milk,0.0
+2023-02-27,Sweetened condensed milk,0.0
+2023-02-27,Total powdered milk,0.0
+2023-02-27,Yogurt,0.0
+2023-02-27,chocolate milk,0.0
+2023-02-28,Butter,0.0
+2023-02-28,Cheese,0.0
+2023-02-28,Condensed milk,0.0
+2023-02-28,Cream,0.0
+2023-02-28,Cultured milk,0.0
+2023-02-28,Evaporated milk,0.0
+2023-02-28,Flavored sterilized milk,0.0
+2023-02-28,Modified milk,0.0
+2023-02-28,Pasteurized milk 2.5% mg,0.0
+2023-02-28,Pasteurized milk 3.0% mg,0.0
+2023-02-28,Powdered milk 12% mg,3.0
+2023-02-28,Powdered milk 18% mg,0.0
+2023-02-28,Powdered milk 20% mg,0.0
+2023-02-28,Powdered milk 26% mg,0.0
+2023-02-28,Powdered milk 28% mg,0.0
+2023-02-28,Powdered whey,0.0
+2023-02-28,Skimmed pasteurized milk,0.0
+2023-02-28,Skimmed powdered milk,0.0
+2023-02-28,Small cheese,0.0
+2023-02-28,Sterilized semi-skimmed milk,0.0
+2023-02-28,Sterilized skimmed milk,0.0
+2023-02-28,Sterilized whole milk,0.0
+2023-02-28,Sweetened condensed milk,0.0
+2023-02-28,Total powdered milk,0.0
+2023-02-28,Yogurt,0.0
+2023-02-28,chocolate milk,0.0
+2023-03-01,Butter,0.0
+2023-03-01,Cheese,0.0
+2023-03-01,Condensed milk,0.0
+2023-03-01,Cream,0.0
+2023-03-01,Cultured milk,0.0
+2023-03-01,Evaporated milk,0.0
+2023-03-01,Flavored sterilized milk,0.0
+2023-03-01,Modified milk,0.0
+2023-03-01,Pasteurized milk 2.5% mg,0.0
+2023-03-01,Pasteurized milk 3.0% mg,0.0
+2023-03-01,Powdered milk 12% mg,0.0
+2023-03-01,Powdered milk 18% mg,0.0
+2023-03-01,Powdered milk 20% mg,0.0
+2023-03-01,Powdered milk 26% mg,0.0
+2023-03-01,Powdered milk 28% mg,0.0
+2023-03-01,Powdered whey,0.0
+2023-03-01,Skimmed pasteurized milk,0.0
+2023-03-01,Skimmed powdered milk,0.0
+2023-03-01,Small cheese,0.0
+2023-03-01,Sterilized semi-skimmed milk,0.0
+2023-03-01,Sterilized skimmed milk,0.0
+2023-03-01,Sterilized whole milk,0.0
+2023-03-01,Sweetened condensed milk,0.0
+2023-03-01,Total powdered milk,0.0
+2023-03-01,Yogurt,0.0
+2023-03-01,chocolate milk,0.0
+2023-03-02,Butter,0.0
+2023-03-02,Cheese,0.0
+2023-03-02,Condensed milk,0.0
+2023-03-02,Cream,0.0
+2023-03-02,Cultured milk,0.0
+2023-03-02,Evaporated milk,0.0
+2023-03-02,Flavored sterilized milk,0.0
+2023-03-02,Modified milk,0.0
+2023-03-02,Pasteurized milk 2.5% mg,0.0
+2023-03-02,Pasteurized milk 3.0% mg,0.0
+2023-03-02,Powdered milk 12% mg,0.0
+2023-03-02,Powdered milk 18% mg,0.0
+2023-03-02,Powdered milk 20% mg,0.0
+2023-03-02,Powdered milk 26% mg,0.0
+2023-03-02,Powdered milk 28% mg,1.0
+2023-03-02,Powdered whey,0.0
+2023-03-02,Skimmed pasteurized milk,0.0
+2023-03-02,Skimmed powdered milk,0.0
+2023-03-02,Small cheese,0.0
+2023-03-02,Sterilized semi-skimmed milk,0.0
+2023-03-02,Sterilized skimmed milk,0.0
+2023-03-02,Sterilized whole milk,0.0
+2023-03-02,Sweetened condensed milk,0.0
+2023-03-02,Total powdered milk,0.0
+2023-03-02,Yogurt,0.0
+2023-03-02,chocolate milk,0.0
+2023-03-03,Butter,0.0
+2023-03-03,Cheese,0.0
+2023-03-03,Condensed milk,0.0
+2023-03-03,Cream,0.0
+2023-03-03,Cultured milk,0.0
+2023-03-03,Evaporated milk,0.0
+2023-03-03,Flavored sterilized milk,0.0
+2023-03-03,Modified milk,0.0
+2023-03-03,Pasteurized milk 2.5% mg,0.0
+2023-03-03,Pasteurized milk 3.0% mg,0.0
+2023-03-03,Powdered milk 12% mg,0.0
+2023-03-03,Powdered milk 18% mg,0.0
+2023-03-03,Powdered milk 20% mg,0.0
+2023-03-03,Powdered milk 26% mg,0.0
+2023-03-03,Powdered milk 28% mg,0.0
+2023-03-03,Powdered whey,0.0
+2023-03-03,Skimmed pasteurized milk,0.0
+2023-03-03,Skimmed powdered milk,0.0
+2023-03-03,Small cheese,0.0
+2023-03-03,Sterilized semi-skimmed milk,0.0
+2023-03-03,Sterilized skimmed milk,0.0
+2023-03-03,Sterilized whole milk,0.0
+2023-03-03,Sweetened condensed milk,0.0
+2023-03-03,Total powdered milk,0.0
+2023-03-03,Yogurt,0.0
+2023-03-03,chocolate milk,0.0
+2023-03-04,Butter,0.0
+2023-03-04,Cheese,0.0
+2023-03-04,Condensed milk,0.0
+2023-03-04,Cream,0.0
+2023-03-04,Cultured milk,0.0
+2023-03-04,Evaporated milk,0.0
+2023-03-04,Flavored sterilized milk,0.0
+2023-03-04,Modified milk,0.0
+2023-03-04,Pasteurized milk 2.5% mg,3.0
+2023-03-04,Pasteurized milk 3.0% mg,0.0
+2023-03-04,Powdered milk 12% mg,0.0
+2023-03-04,Powdered milk 18% mg,0.0
+2023-03-04,Powdered milk 20% mg,0.0
+2023-03-04,Powdered milk 26% mg,0.0
+2023-03-04,Powdered milk 28% mg,0.0
+2023-03-04,Powdered whey,0.0
+2023-03-04,Skimmed pasteurized milk,0.0
+2023-03-04,Skimmed powdered milk,0.0
+2023-03-04,Small cheese,0.0
+2023-03-04,Sterilized semi-skimmed milk,0.0
+2023-03-04,Sterilized skimmed milk,0.0
+2023-03-04,Sterilized whole milk,0.0
+2023-03-04,Sweetened condensed milk,0.0
+2023-03-04,Total powdered milk,0.0
+2023-03-04,Yogurt,0.0
+2023-03-04,chocolate milk,0.0
+2023-03-05,Butter,0.0
+2023-03-05,Cheese,4.0
+2023-03-05,Condensed milk,0.0
+2023-03-05,Cream,0.0
+2023-03-05,Cultured milk,0.0
+2023-03-05,Evaporated milk,0.0
+2023-03-05,Flavored sterilized milk,0.0
+2023-03-05,Modified milk,0.0
+2023-03-05,Pasteurized milk 2.5% mg,0.0
+2023-03-05,Pasteurized milk 3.0% mg,0.0
+2023-03-05,Powdered milk 12% mg,0.0
+2023-03-05,Powdered milk 18% mg,0.0
+2023-03-05,Powdered milk 20% mg,0.0
+2023-03-05,Powdered milk 26% mg,4.0
+2023-03-05,Powdered milk 28% mg,0.0
+2023-03-05,Powdered whey,0.0
+2023-03-05,Skimmed pasteurized milk,0.0
+2023-03-05,Skimmed powdered milk,0.0
+2023-03-05,Small cheese,0.0
+2023-03-05,Sterilized semi-skimmed milk,0.0
+2023-03-05,Sterilized skimmed milk,0.0
+2023-03-05,Sterilized whole milk,0.0
+2023-03-05,Sweetened condensed milk,0.0
+2023-03-05,Total powdered milk,0.0
+2023-03-05,Yogurt,0.0
+2023-03-05,chocolate milk,0.0
+2023-03-06,Butter,0.0
+2023-03-06,Cheese,0.0
+2023-03-06,Condensed milk,0.0
+2023-03-06,Cream,0.0
+2023-03-06,Cultured milk,0.0
+2023-03-06,Evaporated milk,0.0
+2023-03-06,Flavored sterilized milk,0.0
+2023-03-06,Modified milk,0.0
+2023-03-06,Pasteurized milk 2.5% mg,0.0
+2023-03-06,Pasteurized milk 3.0% mg,0.0
+2023-03-06,Powdered milk 12% mg,0.0
+2023-03-06,Powdered milk 18% mg,0.0
+2023-03-06,Powdered milk 20% mg,0.0
+2023-03-06,Powdered milk 26% mg,0.0
+2023-03-06,Powdered milk 28% mg,0.0
+2023-03-06,Powdered whey,0.0
+2023-03-06,Skimmed pasteurized milk,0.0
+2023-03-06,Skimmed powdered milk,0.0
+2023-03-06,Small cheese,0.0
+2023-03-06,Sterilized semi-skimmed milk,0.0
+2023-03-06,Sterilized skimmed milk,0.0
+2023-03-06,Sterilized whole milk,0.0
+2023-03-06,Sweetened condensed milk,0.0
+2023-03-06,Total powdered milk,0.0
+2023-03-06,Yogurt,0.0
+2023-03-06,chocolate milk,0.0
+2023-03-07,Butter,0.0
+2023-03-07,Cheese,0.0
+2023-03-07,Condensed milk,0.0
+2023-03-07,Cream,4.0
+2023-03-07,Cultured milk,0.0
+2023-03-07,Evaporated milk,0.0
+2023-03-07,Flavored sterilized milk,0.0
+2023-03-07,Modified milk,0.0
+2023-03-07,Pasteurized milk 2.5% mg,0.0
+2023-03-07,Pasteurized milk 3.0% mg,0.0
+2023-03-07,Powdered milk 12% mg,0.0
+2023-03-07,Powdered milk 18% mg,0.0
+2023-03-07,Powdered milk 20% mg,0.0
+2023-03-07,Powdered milk 26% mg,0.0
+2023-03-07,Powdered milk 28% mg,0.0
+2023-03-07,Powdered whey,0.0
+2023-03-07,Skimmed pasteurized milk,0.0
+2023-03-07,Skimmed powdered milk,0.0
+2023-03-07,Small cheese,0.0
+2023-03-07,Sterilized semi-skimmed milk,0.0
+2023-03-07,Sterilized skimmed milk,0.0
+2023-03-07,Sterilized whole milk,0.0
+2023-03-07,Sweetened condensed milk,0.0
+2023-03-07,Total powdered milk,0.0
+2023-03-07,Yogurt,0.0
+2023-03-07,chocolate milk,0.0
+2023-03-08,Butter,0.0
+2023-03-08,Cheese,0.0
+2023-03-08,Condensed milk,3.0
+2023-03-08,Cream,0.0
+2023-03-08,Cultured milk,0.0
+2023-03-08,Evaporated milk,0.0
+2023-03-08,Flavored sterilized milk,0.0
+2023-03-08,Modified milk,0.0
+2023-03-08,Pasteurized milk 2.5% mg,0.0
+2023-03-08,Pasteurized milk 3.0% mg,0.0
+2023-03-08,Powdered milk 12% mg,0.0
+2023-03-08,Powdered milk 18% mg,0.0
+2023-03-08,Powdered milk 20% mg,0.0
+2023-03-08,Powdered milk 26% mg,0.0
+2023-03-08,Powdered milk 28% mg,0.0
+2023-03-08,Powdered whey,0.0
+2023-03-08,Skimmed pasteurized milk,0.0
+2023-03-08,Skimmed powdered milk,0.0
+2023-03-08,Small cheese,0.0
+2023-03-08,Sterilized semi-skimmed milk,0.0
+2023-03-08,Sterilized skimmed milk,0.0
+2023-03-08,Sterilized whole milk,0.0
+2023-03-08,Sweetened condensed milk,0.0
+2023-03-08,Total powdered milk,0.0
+2023-03-08,Yogurt,2.0
+2023-03-08,chocolate milk,0.0

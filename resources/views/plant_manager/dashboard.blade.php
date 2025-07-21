@@ -235,11 +235,7 @@
             </a>
         </div>
         <div class="card-body">
-<<<<<<< HEAD
-            @if($incomingOrders->count() > 0)
-=======
             @if(isset($incomingOrders) && $incomingOrders->count() > 0)
->>>>>>> origin/main
                 <div class="list-group list-group-flush">
                     @foreach($incomingOrders as $order)
                         <div class="list-group-item d-flex justify-content-between align-items-center px-0">
@@ -289,13 +285,8 @@
             </a>
         </div>
         <div class="card-body">
-<<<<<<< HEAD
-            @if($outgoingOrders->count() > 0)
-                <div class="list-group list-group-flush">
-=======
         @if(isset($outgoingOrders) && $outgoingOrders->count() > 0)
         <div class="list-group list-group-flush">
->>>>>>> origin/main
                     @foreach($outgoingOrders as $order)
                         <div class="list-group-item d-flex justify-content-between align-items-center px-0">
                             <div>
@@ -346,7 +337,6 @@
                         <th>Stock</th>
                         <th>Price</th>
                         <th>Status</th>
-                        <th>Sale Unit</th>
                         <th>Actions</th> {{-- For buttons like "View" --}}
                     </tr>
                 </thead>
@@ -366,7 +356,6 @@
                                    <span class="text-success">Available</span>
                                 @endif
                             </td>
-                            <td>{{ $product->sale_unit }}</td>
                             <td>
                                 {{-- Button to view product details --}}
                                 <a href="{{ route('products.show', $product->id) }}" class="btn btn-sm btn-info">
@@ -462,7 +451,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Stock</label>
-                        <input type="number" name="quantity" class="form-control" min="1" required>
+                        <input type="number" name="quantity" class="form-control" min="0" required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Price</label>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
@@ -51,7 +52,6 @@ use App\Http\Controllers\dashboard\WholesalerDashboard;
 use App\Http\Controllers\RetailInventoryController;
 use App\Http\Controllers\ReportHistoryController;
 // use App\Http\Controllers\SupplierDashboardController;
-// use App\Http\Controllers\PlantManagerDashboard;
 use App\Http\Controllers\PlantManagerOrderController;
 use App\Http\Controllers\PlantManagerInventoryController;
 use App\Http\Controllers\MarketplaceController;
@@ -69,6 +69,7 @@ use App\Http\Controllers\SupplyController;
 use App\Http\Controllers\ProductInventoryController;
 use App\Http\Controllers\ProductionController;
 use App\Http\Controllers\SupplierSelectionController;
+use App\Http\Controllers\DemandForecastController;
 use App\Http\Controllers\DocumentVerificationController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\dashboard\UserController;
@@ -80,7 +81,8 @@ use App\Http\Controllers\dashboard\FarmerDashboard;
 use App\Http\Controllers\dashboard\PlantManagerDashboard;
 // Root route - Welcome page
 use App\Http\Controllers\PrInventoryController;
-
+use App\Http\Controllers\ReportConfigurationController;
+use App\Http\Controllers\ReportNotificationController;
 // index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -196,6 +198,16 @@ Route::get('/layouts/blank', [Blank::class, 'index'])->name('layouts-blank');
 Route::get('/pages/account-settings-account', [AccountSettingsAccount::class, 'index'])->name('pages-account-settings-account');
 Route::get('/pages/account-settings-notifications', [AccountSettingsNotifications::class, 'index'])->name('pages-account-settings-notifications');
 Route::get('/pages/account-settings-connections', [AccountSettingsConnections::class, 'index'])->name('pages-account-settings-connections');
+
+// Account settings functionality
+Route::middleware(['auth'])->group(function () {
+    Route::get('/account-settings', [\App\Http\Controllers\AccountSettingsController::class, 'account'])->name('account.settings');
+    Route::post('/account-settings/update', [\App\Http\Controllers\AccountSettingsController::class, 'updateAccount'])->name('account.update');
+    Route::post('/account-settings/upload-avatar', [\App\Http\Controllers\AccountSettingsController::class, 'uploadAvatar'])->name('account.upload-avatar');
+    Route::post('/account-settings/reset-avatar', [\App\Http\Controllers\AccountSettingsController::class, 'resetAvatar'])->name('account.reset-avatar');
+    Route::post('/account-settings/deactivate', [\App\Http\Controllers\AccountSettingsController::class, 'deactivateAccount'])->name('account.deactivate');
+});
+
 Route::get('/pages/misc-error', [MiscError::class, 'index'])->name('pages-misc-error');
 Route::get('/pages/misc-under-maintenance', [MiscUnderMaintenance::class, 'index'])->name('pages-misc-under-maintenance');
 
@@ -336,9 +348,9 @@ Route::put('/inventory/{id}',[RawMaterialInventoryController::class, 'update'])-
 Route::delete('/raw-material/{id}', [RawMaterialInventoryController::class, 'destroy'])->name('raw-material.destroy');
 //show details of raw material
 Route::get('/inventory/raw-materials/{id}', [RawMaterialInventoryController::class, 'show'])->name('rawmaterials.show');
-//show details of products 
-Route::get('/inventory/products/{id}', [ProductInventoryController::class, 'show'])->name('products.show'); 
-      
+//show details of products
+Route::get('/inventory/products/{id}', [ProductInventoryController::class, 'show'])->name('products.show');
+
 
 //delivery routes
 Route::resource('delivery',DeliveryController::class);
@@ -602,7 +614,7 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
 
     // Inventory management
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
-    Route::post('/inventory', [PlantManagerInventoryController::class, 'store'])->name('plant_manager.inventory.store');
+    Route::post('/inventory', [PlantManagerInventoryController::class, 'storeProduct'])->name('plant_manager.inventory.store');
     Route::put('/inventory/{inventory}/update-quantity', [PlantManagerInventoryController::class, 'updateQuantity'])->name('plant_manager.inventory.update-quantity');
     Route::put('/inventory/{inventory}/threshold', [PlantManagerInventoryController::class, 'updateThreshold'])->name('plant_manager.inventory.threshold');
     Route::delete('/inventory/{inventory}', [PlantManagerInventoryController::class, 'destroy'])->name('plant_manager.inventory.destroy');
@@ -622,6 +634,16 @@ Route::middleware(['auth'])->group(function () {
 
     // Report configuration routes
     Route::get('/reports/download-on-demand', [ReportConfigurationController::class, 'downloadOnDemand'])->name('reports.download-on-demand');
+    Route::post('/report/store', [ReportConfigurationController::class, 'store'])->name('report-settings.store');
+
+    // Report notification routes
+    Route::prefix('reports')->group(function () {
+        Route::get('/notifications/recent', [ReportNotificationController::class, 'recent'])->name('reports.notifications.recent');
+        Route::get('/notifications/unread-count', [ReportNotificationController::class, 'unreadCount'])->name('reports.notifications.unread-count');
+        Route::get('/download/{id}', [ReportNotificationController::class, 'download'])->name('reports.download');
+        Route::post('/notifications/{id}/mark-read', [ReportNotificationController::class, 'markAsRead'])->name('reports.notifications.mark-read');
+        Route::post('/notifications/mark-all-read', [ReportNotificationController::class, 'markAllAsRead'])->name('reports.notifications.mark-all-read');
+    });
 });
 
 // Farmer Order Management
@@ -667,9 +689,20 @@ Route::get('/supplier/orders/history', [OrderController::class, 'orderHistory'])
 
 //i can see you this is important
 //dont touch
+
+
 Route::get('/tasks', [TaskController::class, 'index'])->name('tasks.index');
 Route::get('/tasks/{task}/show/', [TaskController::class, 'show'])->name('tasks.show');
 Route::post('/tasks/{task}/complete',[TaskController::class, 'complete'])->name('tasks.complete');
 Route::post('/tasks/{task}/inprogress',[TaskController::class, 'inProgress'])->name('tasks.inprogress');
 Route::post('/tasks/{task}/send-inspection-message',[TaskController::class, 'sendInspectionMessage'])->name('tasks.sendInspectionMessage');
+Route::post('/tasks/{task}/approve', [TaskController::class, 'approveTask'])->name('tasks.approve');
+    Route::post('/tasks/{task}/reject', [TaskController::class, 'rejectTask'])->name('tasks.reject');
 
+
+
+  // Routes for Demand Forecasting
+    Route::get('/demand-forecast', [DemandForecastController::class, 'index'])->name('demand.forecast.index');
+    Route::post('/demand-forecast', [DemandForecastController::class, 'forecast'])->name('demand.forecast.predict');
+    Route::post('/demand-forecast/generate-task', [DemandForecastController::class, 'generateTasksFromForecast'])->name('demand.forecast.generate_task');
+Route::post('/demand-forecast/suggest-automated-tasks', [DemandForecastController::class, 'suggestAutomatedTasks'])->name('demand.forecast.suggest_automated_tasks');

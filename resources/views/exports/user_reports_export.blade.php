@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Report: {{ $reportPeriodName ?? 'Generated Report' }}</title>
+    <title>Report {{ $reportPeriodName ?? 'Generated Report' }}</title>
 </head>
 <body>
     <h1>Report: {{ $reportPeriodName ?? 'Generated Report' }}</h1>

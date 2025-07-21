@@ -72,7 +72,7 @@
             <ul class="navbar-nav flex-row align-items-center ms-md-auto">
 
               <!-- Language -->
-              <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
+              {{-- <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                   <i class="icon-base ri ri-translate-2 icon-22px"></i>
                 </a>
@@ -98,7 +98,7 @@
                     </a>
                   </li>
                 </ul>
-              </li>
+              </li> --}}
               <!--/ Language -->
 
               <!-- Style Switcher -->
@@ -143,13 +143,13 @@
                   </div>
                   <div class="dropdown-shortcuts-list scrollable-container">
                     <div class="row row-bordered overflow-visible g-0">
-                      <div class="dropdown-shortcuts-item col">
+                      {{-- <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-calendar-line icon-26px text-heading"></i>
                         </span>
                         <a href="{{url('/app/calendar')}}" class="stretched-link">Calendar</a>
                         <small>Appointments</small>
-                      </div>
+                      </div> --}}
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-wechat-line icon-26px text-heading"></i>
@@ -158,7 +158,7 @@
                         <small>Team Communication</small>
                       </div>
                     </div>
-                    <div class="row row-bordered overflow-visible g-0">
+                    {{-- <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-user-line icon-26px text-heading"></i>
@@ -173,20 +173,20 @@
                         <a href="{{url('/roles')}}" class="stretched-link">Role Management</a>
                         <small>Permissions</small>
                       </div>
-                    </div>
+                    </div> --}}
                     <div class="row row-bordered overflow-visible g-0">
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-pie-chart-2-line icon-26px text-heading"></i>
                         </span>
-                        <a href="{{url('/')}}" class="stretched-link">Dashboard</a>
-                        <small>Analytics</small>
+                        <a href="{{url('/dashboard')}}" class="stretched-link">Dashboard</a>
+                        {{-- <small>Analytics</small> --}}
                       </div>
                       <div class="dropdown-shortcuts-item col">
                         <span class="dropdown-shortcuts-icon rounded-circle mb-3">
                           <i class="icon-base ri ri-settings-4-line icon-26px text-heading"></i>
                         </span>
-                        <a href="{{url('/settings')}}" class="stretched-link">Settings</a>
+                        <a href="{{url('pages/account-settings-account')}}" class="stretched-link">Settings</a>
                         <small>Account Settings</small>
                       </div>
                     </div>
@@ -200,19 +200,18 @@
                 <a class="nav-link dropdown-toggle hide-arrow btn btn-icon btn-text-secondary rounded-pill waves-effect" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                   <span class="position-relative">
                     <i class="icon-base ri ri-notification-2-line icon-22px"></i>
-                    @if($unreadMessagesCount > 0)
+                    @if($totalUnreadCount > 0)
                     <span class="badge rounded-pill bg-danger badge-dot badge-notifications border" style="width: 8px; height: 8px; display: inline-block; border-radius: 50%; position: absolute; top: -2px; right: -2px; background-color: #dc3545; padding: 0; min-width: 8px;"></span>
                     @endif
-
                   </span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end p-0" style="max-height: 300px; overflow-y: auto;">
+                <ul class="dropdown-menu dropdown-menu-end p-0" style="max-height: 400px; overflow-y: auto;">
                   <li class="dropdown-menu-header border-bottom">
                     <div class="dropdown-header d-flex align-items-center py-3">
-                      <h6 class="mb-0 me-auto">Messages</h6>
+                      <h6 class="mb-0 me-auto">Notifications</h6>
                       <div class="d-flex align-items-center h6 mb-0">
-                        @if($unreadMessagesCount > 0)
-                          <span class="badge bg-label-primary rounded-pill me-2">{{ $unreadMessagesCount }} New</span>
+                        @if($totalUnreadCount > 0)
+                          <span class="badge bg-label-primary rounded-pill me-2">{{ $totalUnreadCount }} New</span>
                         @endif
                         <a href="javascript:void(0)" class="dropdown-notifications-all p-2" data-bs-toggle="tooltip" data-bs-placement="top" aria-label="Mark all as read" data-bs-original-title="Mark all as read">
                           <i class="icon-base ri ri-mail-open-line text-heading"></i>
@@ -220,7 +219,53 @@
                       </div>
                     </div>
                   </li>
+
+                  <!-- Report Notifications Section -->
+                  @if($unreadReportNotifications->count() > 0)
+                    <li class="dropdown-notifications-list scrollable-container">
+                      <div class="px-3 py-2 border-bottom">
+                        <small class="text-muted fw-semibold">Reports ({{ $unreadReportNotificationsCount }})</small>
+                      </div>
+                      <ul class="list-group list-group-flush">
+                        @foreach($unreadReportNotifications as $notification)
+                          <li class="list-group-item list-group-item-action dropdown-notifications-item waves-effect"
+                              style="cursor: pointer;"
+                              onclick="window.location.href='{{ route('reports.download', $notification->id) }}'">
+                            <div class="d-flex">
+                              <div class="flex-shrink-0 me-3">
+                                <div class="avatar">
+                                  <span class="avatar-initial rounded-circle bg-label-{{ $notification->status === 'success' ? 'success' : 'danger' }}">
+                                    <i class="icon-base ri ri-file-chart-line"></i>
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="flex-grow-1">
+                                <h6 class="small mb-1">{{ $notification->report_name }}</h6>
+                                <small class="text-body-secondary d-block">
+                                  {{ $notification->formatted_report_types }} • {{ strtoupper($notification->format) }}
+                                  @if($notification->file_size)
+                                    • {{ $notification->formatted_file_size }}
+                                  @endif
+                                </small>
+                                <small class="text-body-secondary">{{ $notification->generated_at->diffForHumans() }}</small>
+                              </div>
+                              <div class="flex-shrink-0 dropdown-notifications-actions">
+                                <small class="text-muted">{{ $notification->generated_at->format('M d') }}</small>
+                              </div>
+                            </div>
+                          </li>
+                        @endforeach
+                      </ul>
+                    </li>
+                  @endif
+
+                  <!-- Messages Section -->
                   <li class="dropdown-notifications-list scrollable-container">
+                    @if($unreadMessages->count() > 0)
+                      <div class="px-3 py-2 border-bottom">
+                        <small class="text-muted fw-semibold">Messages ({{ $unreadMessagesCount }})</small>
+                      </div>
+                    @endif
                     <ul class="list-group list-group-flush">
                       @if($unreadMessages->count() > 0)
                         @foreach($unreadMessages as $message)
@@ -247,27 +292,48 @@
                           </li>
                         @endforeach
                       @else
-                        <li class="list-group-item dropdown-notifications-item">
-                          <div class="d-flex justify-content-center align-items-center py-4">
-                            <div class="text-center">
-                              <div class="avatar mx-auto mb-2">
-                                <span class="avatar-initial rounded-circle bg-label-secondary">
-                                  <i class="icon-base ri ri-message-3-line"></i>
-                                </span>
+                        @if($unreadReportNotifications->count() == 0)
+                          <li class="list-group-item dropdown-notifications-item">
+                            <div class="d-flex justify-content-center align-items-center py-4">
+                              <div class="text-center">
+                                <div class="avatar mx-auto mb-2">
+                                  <span class="avatar-initial rounded-circle bg-label-secondary">
+                                    <i class="icon-base ri ri-notification-off-line"></i>
+                                  </span>
+                                </div>
+                                <h6 class="mb-1">No new notifications</h6>
+                                <small class="text-body-secondary">You're all caught up!</small>
                               </div>
-                              <h6 class="mb-1">No new messages</h6>
-                              <small class="text-body-secondary">You're all caught up!</small>
                             </div>
-                          </div>
-                        </li>
+                          </li>
+                        @else
+                          <li class="list-group-item dropdown-notifications-item">
+                            <div class="d-flex justify-content-center align-items-center py-2">
+                              <div class="text-center">
+                                <small class="text-body-secondary">No new messages</small>
+                              </div>
+                            </div>
+                          </li>
+                        @endif
                       @endif
                     </ul>
                   </li>
                   <li class="border-top">
                     <div class="d-grid p-4">
-                      <a class="btn btn-primary btn-sm d-flex h-px-34 waves-effect waves-light" href="{{ url('/app/chat') }}">
-                        <small class="align-middle">View all messages</small>
-                      </a>
+                      <div class="row g-2">
+                        @if($unreadReportNotifications->count() > 0)
+                          <div class="col-6">
+                            <a class="btn btn-success btn-sm d-flex h-px-34 waves-effect waves-light" href="{{ route('reports-history') }}">
+                              <small class="align-middle">View Reports</small>
+                            </a>
+                          </div>
+                        @endif
+                        <div class="col-{{ $unreadReportNotifications->count() > 0 ? '6' : '12' }}">
+                          <a class="btn btn-primary btn-sm d-flex h-px-34 waves-effect waves-light" href="{{ url('/app/chat') }}">
+                            <small class="align-middle">View Messages</small>
+                          </a>
+                        </div>
+                      </div>
                     </div>
                   </li>
                 </ul>
@@ -278,7 +344,17 @@
               <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow p-0" href="javascript:void(0);" data-bs-toggle="dropdown">
                   <div class="avatar avatar-online">
-                    <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle">
+                    @auth
+                      @if(Auth::user()->avatar && Storage::disk('public')->exists(Auth::user()->avatar))
+                        <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                      @else
+                        <span class="avatar-initial rounded-circle bg-label-primary">
+                          {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}{{ strtoupper(substr(strstr(Auth::user()->name, ' '), 1, 1)) }}
+                        </span>
+                      @endif
+                    @else
+                      <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                    @endauth
                   </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end mt-3 py-2">
@@ -287,7 +363,17 @@
                       <div class="d-flex align-items-center">
                         <div class="flex-shrink-0 me-2">
                           <div class="avatar avatar-online">
-                            <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="w-px-40 h-auto rounded-circle">
+                            @auth
+                              @if(Auth::user()->avatar && Storage::disk('public')->exists(Auth::user()->avatar))
+                                <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                              @else
+                                <span class="avatar-initial rounded-circle bg-label-primary w-px-40 h-px-40 d-flex align-items-center justify-content-center">
+                                  <span class="fw-medium">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}{{ strtoupper(substr(strstr(Auth::user()->name, ' '), 1, 1)) }}</span>
+                                </span>
+                              @endif
+                            @else
+                              <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                            @endauth
                           </div>
                         </div>
                         <div class="flex-grow-1">
@@ -311,13 +397,13 @@
                       <span class="align-middle">My Profile</span>
                     </a>
                   </li>
-                  <li>
-                    <a class="dropdown-item waves-effect" href="javascript:void(0);">
+                  {{-- <li>
+                    <a class="dropdown-item waves-effect" href="">
                       <i class='icon-base ri ri-settings-4-line icon-22px me-2'></i>
                       <span class="align-middle">Settings</span>
                     </a>
-                  </li>
-                  <li>
+                  </li> --}}
+                  {{-- <li>
                     <a class="dropdown-item waves-effect" href="javascript:void(0);">
                       <span class="d-flex align-items-center align-middle">
                         <i class="flex-shrink-0 icon-base ri ri-file-text-line icon-22px me-2"></i>
@@ -325,7 +411,7 @@
                         <span class="flex-shrink-0 badge badge-center rounded-pill bg-danger h-px-20 d-flex align-items-center justify-content-center">4</span>
                       </span>
                     </a>
-                  </li>
+                  </li> --}}
                   <li>
                     <div class="dropdown-divider my-1"></div>
                   </li>
@@ -856,3 +942,54 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 }
 </style>
+
+<script>
+// Handle "Mark all as read" functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const markAllReadBtn = document.querySelector('.dropdown-notifications-all');
+
+    if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Show loading state
+            const icon = this.querySelector('i');
+            const originalClass = icon.className;
+            icon.className = 'fa fa-spinner fa-spin';
+
+            // Make API call to mark all notifications as read
+            fetch('{{ route("reports.notifications.mark-all-read") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update notification count badge
+                    const notificationBadge = document.querySelector('.badge-notifications');
+                    if (notificationBadge) {
+                        notificationBadge.style.display = 'none';
+                    }
+
+                    // Reload the page to refresh the notification dropdown
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                } else {
+                    console.error('Failed to mark notifications as read:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error marking notifications as read:', error);
+            })
+            .finally(() => {
+                // Restore icon
+                icon.className = originalClass;
+            });
+        });
+    }
+});
+</script>

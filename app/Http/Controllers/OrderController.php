@@ -41,6 +41,12 @@ class OrderController extends Controller
         elseif ($role === 'plant_manager') {
             return redirect()->route('plant_manager.orders');
         }
+        elseif ($role === 'supplier') {
+            return redirect()->route('supplier.orders');
+        }
+        elseif ($role === 'retailer') {
+            return redirect()->route('retailer.orders');
+        }
 
         // Role configuration mapping
         $roleConfig = [
@@ -441,11 +447,17 @@ class OrderController extends Controller
     public function outgoingOrders()
     {
         $user = Auth::user();
-        $orders = Order::where('buyer_id', $user->id)
-            ->where('status', '!=', 'cancelled') // Exclude cancelled orders
-            ->with(['seller', 'items.product'])
-            ->orderByDesc('created_at')
-            ->paginate(10);
+        $query = Order::where('buyer_id', $user->id)
+    ->where('status', '!=', 'cancelled');
+    $status = request('status');
+
+    if ($status && $status !== 'all') {
+        $query->where('status', $status);
+    }
+
+$orders = $query->with(['seller', 'items.product'])
+    ->orderByDesc('created_at')
+    ->paginate(10);
 
         // Return appropriate view based on user role
         $view = match($user->role->value) {
@@ -474,6 +486,8 @@ class OrderController extends Controller
         $view = match($user->role->value) {
             'wholesaler' => 'wholesaler.orders',
             'plant_manager' => 'plant_manager.orders',
+            'supplier'=> 'supplier.orders',
+            'farmer'=>'farmer.orders',
             default => 'orders.incoming',
         };
 

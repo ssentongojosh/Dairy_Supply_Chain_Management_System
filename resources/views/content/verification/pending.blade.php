@@ -107,10 +107,7 @@
             </a>
           </div>
         @else
-          <h4 class="card-title mb-3 text-warning">⏳ Verification Pending</h4>
-          <p class="card-text mb-4">
-            Your business documents have been submitted and processed by our verification system.
-          </p>
+          
 
           @if(Auth::user()->verification_notes)
             <div class="alert alert-warning">
