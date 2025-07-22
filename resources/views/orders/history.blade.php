@@ -114,7 +114,40 @@
                         <td>{{ $order->total_price ?? $order->total_amount }} UGX</td>
                         <td>{{ $order->created_at->format('d M Y') }}</td>
                         <td>
-                            <a href="{{ route($showRoute, $order) }}" class="btn btn-sm btn-info">View</a>
+                                                                            <div class="dropdown">
+                                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle"
+                                                            data-bs-toggle="dropdown">
+                                                        Actions
+                                                    </button>
+                                                    <div class="dropdown-menu">
+                                                        <a class="dropdown-item" href="{{ route($showRoute, $order) }}" >
+                                                            <i class="ri-eye-line me-2"></i>View Details
+                                                        </a>
+                                                        @if($order->status === 'pending')
+                                                            <button class="dropdown-item text-success"
+                                                                    onclick="approveOrder({{ $order->id }})">
+                                                                <i class="ri-check-line me-2"></i>Approve
+                                                            </button>
+                                                            <button class="dropdown-item text-danger"
+                                                                    onclick="rejectOrder({{ $order->id }})">
+                                                                <i class="ri-close-line me-2"></i>Reject
+                                                            </button>
+                                                        @endif
+                                                        @if(in_array($order->status, ['approved', 'processing']))
+                                                            <button class="dropdown-item text-primary"
+                                                                    onclick="markShipped({{ $order->id }})">
+                                                                <i class="ri-truck-line me-2"></i>Mark as Shipped
+                                                            </button>
+                                                        @endif
+                                                        {{-- <div class="dropdown-divider"></div>
+                                                        <a class="dropdown-item" href="{{ route('wholesaler.orders.show', $order) }}?print=true" target="_blank">
+                                                            <i class="ri-printer-line me-2"></i>Print Invoice
+                                                        </a>
+                                                        <a class="dropdown-item" href="{{ route('wholesaler.orders.show', $order) }}?download=true">
+                                                            <i class="ri-download-line me-2"></i>Download PDF
+                                                        </a>
+                                                    </div> --}}
+                                                </div>
                         </td>
                     </tr>
                 @empty
