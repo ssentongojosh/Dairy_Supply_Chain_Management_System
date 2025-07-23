@@ -20,7 +20,7 @@
                     @endphp
                     <form action="{{ $storeRoute !== '#' ? route($storeRoute) : '#' }}" method="POST" id="orderForm">
                         @csrf
-                        
+
                         <div class="mb-3">
                             <label for="seller_id" class="form-label">Choose Seller</label>
                             <select name="seller_id" id="seller_id" class="form-select" required>
@@ -34,7 +34,7 @@
                         <div class="mb-3">
                             <h5 class="mb-3">Select Products</h5>
                             <div id="products-container">
-                                
+
                             </div>
                         </div>
 
@@ -73,11 +73,12 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch('/seller/' + sellerId + '/products')
                 .then(response => response.json())
                 .then(products => {
-                    if (products.length === 0) {
+                    if (products.length === 0  || products.products.length === 0) {
                         productsContainer.innerHTML = '<p>No products available for this seller.</p>';
                     } else {
                         let html = '';
-                        products.forEach(product => {
+                        const productList = products.products || products; // Handle both cases
+                        productList.forEach(product => {
                             html += `
                                 <div class="product-row mb-3 p-3 border rounded">
                                     <div class="row">

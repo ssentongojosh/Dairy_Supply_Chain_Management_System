@@ -579,10 +579,34 @@ $orders = $query->with(['seller', 'items.product'])
     }
 
     public function getProductsForSeller($sellerId)
-    {
-        $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
+{
+  $user = Auth::user();
+  if ($user && $user->role && $user->role->value === 'plant_manager') {
+    Log::info('User is a plant manager', ['user_id' => $user->id]);
+
+    $products = DB::table('supplier_raw_material as srm')
+    ->join('raw_materials as rm', 'srm.raw_material_id', '=', 'rm.id')
+    ->where('srm.supplier_id', $sellerId)
+    ->select('rm.id', 'rm.name', 'rm.quantity') // 👈 assuming 'quantity' exists in raw_materials
+    ->get(); // returns an array of objects
+
+    Log::info('Fetched products for seller', [
+        'seller_id' => $sellerId,
+        'product_count' => $products->count()
+    ]);
+return response()->json([
+    'sellerId' => $sellerId,
+    'products' => $products
+]);}
+else {
+    $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
         return response()->json($products);
-    }
+  }
+
+}
+
+
+
 
     /**
      * Show order details
