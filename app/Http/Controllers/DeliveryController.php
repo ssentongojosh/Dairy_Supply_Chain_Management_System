@@ -177,6 +177,33 @@ public function confirmDelivery(Request $request, $deliveryId)
 
     return back()->with('success', 'Delivery created automatically from order.');
 }
+  
+//approve by supplier to make a delivery 
+public function approveOrderAndCreateDelivery($orderId)
+{
+    $order = Order::with('items')->findOrFail($orderId);
+    $receiver = User::where('role', 'plant_manager')->first();
+    $plantManagerName = $order->user->name;
+    $supplierName = Auth::user()->name;
+
+    foreach ($order->items as $item) {
+        Delivery::create([
+            'item_name'    => $item->rawMaterial->name,
+            'quantity'     => $item->quantity,
+            'order_id'     => $order->id,
+            'sender_id'    => Auth::id(), // the supplier approving
+            'receiver_id'  => $receiver->id ?? null,
+            'delivery_date'=> now(),
+            'status'       => 'pending',
+            'from'         => $supplierName,
+            'to'           => $plantManagerName,
+            'notes'        => 'Auto-generated from approved order',
+            'confirmed'    => false,
+        ]);
+    }
+
+    return redirect()->route('delivery.myDeliveries')->with('success', 'Order approved and delivery created.');
+}
 
 
 

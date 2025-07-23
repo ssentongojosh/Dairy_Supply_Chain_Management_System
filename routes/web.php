@@ -371,6 +371,10 @@ Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate']
 Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
 Route::put('/delivery/{id}/confirm-raw', [DeliveryController::class, 'confirmRawMaterialDelivery'])->name('delivery.confirmRaw');
 
+//approve delivery by supplier
+
+Route::post('/orders/{order}/approve-delivery', [DeliveryController::class, 'approveOrderAndCreateDelivery'])->name('delivery.approveAndCreate');
+     
 //for supplier to selectproducts
 Route::middleware(['auth', 'role:supplier'])->group(function () {
     Route::get('/supplier/select-materials', [SupplierSelectionController::class, 'index'])->name('supplier.selection');

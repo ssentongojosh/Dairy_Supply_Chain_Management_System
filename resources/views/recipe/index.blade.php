@@ -3,13 +3,19 @@
 @section('content')
 <div class="container">
     <h2 class="mb-4" style="text-align:center;">Product Recipes</h2>
+
+    <!-- Search Box -->
+    <div class="mb-4">
+       <input type="text" id="searchBox" class="form-control" placeholder="Search for a product...">
+    </div>
+
     <!-- back button -->
     <div class="d-flex justify-content-end mb-3"><a href="{{ route('plant_manager.dashboard') }}" class="btn btn-outline-primary">
         Back
     </a></div>
 
      @foreach ($products as $product)
-        <div class="card mb-4 shadow-sm">
+        <div class="product-card card mb-4 shadow-sm" data-name="{{ strtolower($product->name) }}">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <strong>{{ $product->name }}</strong>
                 <div>
@@ -115,4 +121,23 @@ $(document).ready(function () {
     });
 });
 </script>
+
+<!-- for the search button -->
+ <script>
+    $(document).ready(function () {
+        $('#searchBox').on('keyup', function () {
+            let searchTerm = $(this).val().toLowerCase();
+
+            $('.product-card').each(function () {
+                let name = $(this).data('name');
+                if (name.includes(searchTerm)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    });
+</script>
+
 
