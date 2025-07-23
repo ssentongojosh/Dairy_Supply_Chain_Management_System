@@ -73,50 +73,53 @@ document.addEventListener('DOMContentLoaded', function() {
             fetch('/seller/' + sellerId + '/products')
                 .then(response => response.json())
                 .then(products => {
-                    if (products.length === 0  || products.products.length === 0) {
-                        productsContainer.innerHTML = '<p>No products available for this seller.</p>';
-                    } else {
-                        let html = '';
-                        const productList = products.products || products; // Handle both cases
-                        productList.forEach(product => {
-                            html += `
-                                <div class="product-row mb-3 p-3 border rounded">
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <label class="form-label">
-                                                <input type="checkbox" name="items[${product.id}][product_id]" value="${product.id}" class="form-check-input me-2">
-                                                ${product.name}
-                                            </label>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <input type="number" name="items[${product.id}][quantity]" min="1" placeholder="Quantity" class="form-control" disabled>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <span class="text-muted">Available: ${product.quantity}</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                        });
-                        productsContainer.innerHTML = html;
+                    const productList = Array.isArray(products) ? products : (products.products || []);
 
-                        // Enable/disable quantity input based on checkbox
-                        const checkboxes = productsContainer.querySelectorAll('input[type="checkbox"]');
-                        const quantityInputs = productsContainer.querySelectorAll('input[type="number"]');
-                        checkboxes.forEach((checkbox, index) => {
-                            checkbox.addEventListener('change', function() {
-                                const quantityInput = quantityInputs[index];
-                                if (this.checked) {
-                                    quantityInput.disabled = false;
-                                    quantityInput.required = true;
-                                } else {
-                                    quantityInput.disabled = true;
-                                    quantityInput.required = false;
-                                    quantityInput.value = '';
-                                }
-                            });
-                        });
-                    }
+        if (productList.length === 0) {
+            productsContainer.innerHTML = '<p>No products available for this seller.</p>';
+            return;
+        }
+        let html = '';
+
+        console.log("product list value: ", productList);
+        productList.forEach(product => {
+            html += `
+                <div class="product-row mb-3 p-3 border rounded">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">
+                                <input type="checkbox" name="items[${product.id}][product_id]" value="${product.id}" class="form-check-input me-2">
+                                ${product.name}
+                            </label>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="items[${product.id}][quantity]" min="1" placeholder="Quantity" class="form-control" disabled>
+                        </div>
+                        <div class="col-md-3">
+                            <span class="text-muted">Available: ${product.quantity}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        productsContainer.innerHTML = html;
+
+        // Enable/disable quantity input based on checkbox
+        const checkboxes = productsContainer.querySelectorAll('input[type="checkbox"]');
+        const quantityInputs = productsContainer.querySelectorAll('input[type="number"]');
+        checkboxes.forEach((checkbox, index) => {
+            checkbox.addEventListener('change', function() {
+                const quantityInput = quantityInputs[index];
+                if (this.checked) {
+                    quantityInput.disabled = false;
+                    quantityInput.required = true;
+                } else {
+                    quantityInput.disabled = true;
+                    quantityInput.required = false;
+                    quantityInput.value = '';
+                }
+            });
+        });
                 });
         }
     });

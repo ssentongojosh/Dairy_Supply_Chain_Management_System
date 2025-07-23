@@ -136,10 +136,15 @@
                                             </td>
                                             <td>
                                                 <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-sm me-2">
-                                                        <img src="{{ $order->buyer->profile_photo ?? asset('assets/img/avatars/default.png') }}" 
-                                                             alt="Avatar" class="rounded-circle">
-                                                    </div>
+                                                    @if(isset($order->buyer) && $order->buyer->avatar && Storage::disk('public')->exists($order->buyer->avatar))
+  <img src="{{ Storage::url($order->buyer->avatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+@elseif(isset($order->buyer) && $order->buyer->name)
+  <span class="avatar-initial rounded-circle bg-label-primary" style="width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+    {{ strtoupper(substr($order->buyer->name, 0, 1)) }}{{ strtoupper(substr(strstr($order->buyer->name, ' '), 1, 1)) }}
+  </span>
+@else
+  <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+@endif
                                                     <div>
                                                         <span class="fw-semibold">{{ $order->buyer->name ?? 'Unknown' }}</span>
                                                         <small class="text-muted d-block">{{ $order->buyer->email ?? '' }}</small>
@@ -202,7 +207,7 @@
                                             <td>{{ ucfirst($order->payment_method ?? 'N/A') }}</td>
                                             <td>
                                                 <div class="dropdown">
-                                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" 
+                                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle"
                                                             data-bs-toggle="dropdown">
                                                         Actions
                                                     </button>
@@ -211,17 +216,17 @@
                                                             <i class="ri-eye-line me-2"></i>View Details
                                                         </a>
                                                         @if($order->status === 'pending')
-                                                            <button class="dropdown-item text-success" 
+                                                            <button class="dropdown-item text-success"
                                                                     onclick="approveOrder({{ $order->id }})">
                                                                 <i class="ri-check-line me-2"></i>Approve
                                                             </button>
-                                                            <button class="dropdown-item text-danger" 
+                                                            <button class="dropdown-item text-danger"
                                                                     onclick="rejectOrder({{ $order->id }})">
                                                                 <i class="ri-close-line me-2"></i>Reject
                                                             </button>
                                                         @endif
                                                         @if(in_array($order->status, ['approved', 'processing']))
-                                                            <button class="dropdown-item text-primary" 
+                                                            <button class="dropdown-item text-primary"
                                                                     onclick="markShipped({{ $order->id }})">
                                                                 <i class="ri-truck-line me-2"></i>Mark as Shipped
                                                             </button>
@@ -284,7 +289,7 @@
                     <input type="hidden" id="rejectOrderId" name="order_id">
                     <div class="mb-3">
                         <label class="form-label">Reason for Rejection</label>
-                        <textarea class="form-control" name="reason" rows="3" 
+                        <textarea class="form-control" name="reason" rows="3"
                                   placeholder="Please provide a reason for rejecting this order..." required></textarea>
                         <div class="form-text">This reason will be shared with the customer.</div>
                     </div>

@@ -600,6 +600,11 @@ return response()->json([
 ]);}
 else {
     $products = \App\Models\Product::where('supplier_id', $sellerId)->get();
+
+    Log::info('Fetched products for seller', [
+        'seller_id' => $sellerId,
+        'product_count' => $products->count()
+    ]);
         return response()->json($products);
   }
 

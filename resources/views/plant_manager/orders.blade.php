@@ -36,11 +36,18 @@
                                                 <span class="fw-semibold">#{{ $order->id }}</span>
                                             </td>
                                             <td>
-                                                <div class="d-flex align-items-center">
-                                                    <div class="avatar avatar-sm me-2">
-                                                        <img src="{{ $order->seller->profile_photo ?? asset('assets/img/avatars/default.png') }}" 
-                                                             alt="Avatar" class="rounded-circle">
-                                                    </div>
+                                                <div class="d-flex align-items-center ">
+                                                    <div class="avatar avatar-online ">
+                   @if(isset($order->seller) && $order->seller->avatar && Storage::disk('public')->exists($order->seller->avatar))
+  <img src="{{ Storage::url($order->seller->avatar) }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+@elseif(isset($order->seller) && $order->seller->name)
+  <span class="avatar-initial rounded-circle bg-label-primary" style="width: 40px; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+    {{ strtoupper(substr($order->seller->name, 0, 1)) }}{{ strtoupper(substr(strstr($order->seller->name, ' '), 1, 1)) }}
+  </span>
+@else
+  <img src="{{ asset('assets/img/avatars/1.png') }}" alt="Avatar" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+@endif
+                  </div>
                                                     <div>
                                                         <span class="fw-semibold">{{ $order->seller->name ?? 'Unknown' }}</span>
                                                         <small class="text-muted d-block">{{ ucfirst($order->seller->role?->value ?? '') }}</small>
@@ -85,7 +92,7 @@
                                             </td>
                                             <td>
                                                 <div class="dropdown">
-                                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" 
+                                                    <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle"
                                                             data-bs-toggle="dropdown">
                                                         Actions
                                                     </button>
@@ -94,13 +101,13 @@
                                                             <i class="ri-eye-line me-2"></i>View Details
                                                         </a>
                                                         @if($order->status === 'pending')
-                                                            <button class="dropdown-item text-danger" 
+                                                            <button class="dropdown-item text-danger"
                                                                     onclick="cancelOrder({{ $order->id }})">
                                                                 <i class="ri-close-line me-2"></i>Cancel Order
                                                             </button>
                                                         @endif
                                                         @if($order->status === 'delivered' && $order->payment_status !== 'paid')
-                                                            <a class="dropdown-item text-success" 
+                                                            <a class="dropdown-item text-success"
                                                                href="{{ route('retailer.orders.payment.show', $order) }}">
                                                                 <i class="ri-money-dollar-circle-line me-2"></i>Make Payment
                                                             </a>
