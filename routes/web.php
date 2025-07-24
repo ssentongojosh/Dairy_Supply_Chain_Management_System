@@ -738,6 +738,6 @@ Route::middleware(['auth', 'verified'])->prefix('wholesaler')->group(function ()
 // Plant Manager
 Route::middleware(['auth', 'verified'])->prefix('plant_manager')->group(function () {
     Route::get('/orders/history', [OrderController::class, 'outgoingOrders'])->name('plant_manager.orders.outgoing');
-    Route::get('/orders/incoming', [OrderController::class, 'incomingOrders'])->name('plant_manager.orders.history');
+    Route::get('/orders/history', [OrderController::class, 'incomingOrders'])->name('plant_manager.orders.incoming');
 });
 

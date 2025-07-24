@@ -244,9 +244,9 @@
                 <h5 class="mb-0">Recent Incoming Orders</h5>
                 <small class="text-muted">Orders from your customers</small>
             </div>
-            <a href="{{ route('plant_manager.orders.history') }}" class="btn btn-outline-primary btn-sm">
-                <i class="ri-external-link-line me-1"></i>View All
-            </a>
+            <a href="{{ route('plant_manager.orders.incoming') }}" class="btn btn-outline-primary">
+                        <i class="ri-list-check me-2"></i>View Incoming
+                    </a>
         </div>
         <div class="card-body">
             @if(isset($incomingOrders) && $incomingOrders->count() > 0)
@@ -294,7 +294,7 @@
                 <h5 class="mb-0">Recent Outgoing Orders</h5>
                 <small class="text-muted">Orders you have placed</small>
             </div>
-            <a href="{{ route('plant_manager.orders.outgoing') }}" class="btn btn-outline-primary btn-sm">
+            <a href="{{ route('plant_manager.orders.incoming') }}" class="btn btn-outline-primary btn-sm">
                 <i class="ri-external-link-line me-1"></i>View All
             </a>
         </div>
