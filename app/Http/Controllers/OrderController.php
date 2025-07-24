@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Models\Product;
 use App\Models\RawMaterial;
+use App\Models\RawMaterialOrder;
 use Carbon\Carbon;
 use App\Models\Delivery;
 use App\Models\Inventory;
@@ -297,6 +298,8 @@ class OrderController extends Controller
      */
     public function storeOrder(Request $request)
     {
+
+
         $validated = $request->validate([
             'seller_id' => 'required|exists:users,id',
             'items' => 'required|array|min:1',
@@ -304,9 +307,19 @@ class OrderController extends Controller
             'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        DB::beginTransaction();
+        $seller_id = $validated['seller_id'];
+        $seller_role = $seller_id ? User::find($seller_id)->role->value : null;
+
+Log::info("current user role: " . Auth::user()->role->value, [
+            'seller_id' => $seller_id,
+            'seller_role' => $seller_role,
+            'items' => $validated['items'],
+        ]);
+
+        if ($seller_role === 'wholesaler' || $seller_role === 'plant_manager'){
 
         try {
+          DB::beginTransaction();
             // Calculate total amount
             $total = 0;
             foreach ($validated['items'] as $item) {
@@ -344,6 +357,69 @@ class OrderController extends Controller
 
 
         }
+      }
+      elseif ($seller_role === 'supplier' || $seller_role === 'farmer'){
+        DB::beginTransaction();
+        Log::info('Creating raw material order', [
+            'seller_id' => $seller_id,
+            'items' => $validated['items'],
+        ]);
+
+        try {
+            // Calculate total amount
+            $total = 0;
+            foreach ($validated['items'] as $item) {
+                $rawMaterial = RawMaterial::find($item['product_id']);
+                $total += ($rawMaterial ? $rawMaterial->price : 0) * $item['quantity'];
+            }
+
+            Log::info('Total amount calculated for raw material order', [
+                'total' => $total,
+                'items' => $validated['items']
+            ]);
+
+            $rawMaterialOrder = RawMaterialOrder::create([
+                'buyer_id' => Auth::id(),
+                'seller_id' => $validated['seller_id'],
+                'status' => 'pending',
+                'payment_status' => 'unpaid',
+                'total_amount' => $total,
+            ]);
+
+            Log::info('Raw material order created', [
+                'order_id' => $rawMaterialOrder->id,
+                'buyer_id' => Auth::id(),
+                'seller_id' => $validated['seller_id'],
+                'total_amount' => $total
+            ]);
+
+            foreach ($validated['items'] as $item) {
+                $rawMaterial = RawMaterial::find($item['product_id']);
+                $rawMaterialOrder->items()->create([
+                    'raw_material_id' => $item['product_id'],
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $rawMaterial ? $rawMaterial->price : 0,
+                ]);
+            }
+
+            DB::commit();
+
+            return back()->with('success', 'Order placed successfully.');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Raw material order creation failed: ' . $e->getMessage(), [
+        'exception' => $e,
+        'trace' => $e->getTraceAsString(),
+        'buyer_id' => Auth::id(),
+        'seller_id' => $validated['seller_id'],
+        'total' => $total,
+        'items' => $validated['items']
+    ]);
+            return back()->with('error', 'Failed to place order.');
+        }
+
+
+      }
     }
 
     /**
@@ -447,23 +523,46 @@ class OrderController extends Controller
     public function outgoingOrders()
     {
         $user = Auth::user();
+
+        // Handle plant managers viewing outgoing raw material orders
+        if ($user->role->value === 'plant_manager') {
+            $query = RawMaterialOrder::where('buyer_id', $user->id)
+                ->where('status', '!=', 'cancelled');
+
+            $status = request('status');
+            if ($status && $status !== 'all') {
+                $query->where('status', $status);
+            }
+
+            $orders = $query->with(['seller', 'items.rawMaterial'])
+                ->orderByDesc('created_at')
+                ->paginate(10);
+
+            $view = 'plant_manager.orders';
+
+            return view($view, [
+                'orders' => $orders,
+                'outgoingOrders' => $orders
+            ]);
+        }
+
+        // Handle regular orders for other roles
         $query = Order::where('buyer_id', $user->id)
-    ->where('status', '!=', 'cancelled');
-    $status = request('status');
+            ->where('status', '!=', 'cancelled');
+        $status = request('status');
 
-    if ($status && $status !== 'all') {
-        $query->where('status', $status);
-    }
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
 
-$orders = $query->with(['seller', 'items.product'])
-    ->orderByDesc('created_at')
-    ->paginate(10);
+        $orders = $query->with(['seller', 'items.product'])
+            ->orderByDesc('created_at')
+            ->paginate(10);
 
         // Return appropriate view based on user role
         $view = match($user->role->value) {
             'retailer' => 'retailer.orders',
             'wholesaler' => 'wholesaler.orders',
-            'plant_manager' => 'plant_manager.orders',
             default => 'orders.outgoing',
         };
 
@@ -476,8 +575,26 @@ $orders = $query->with(['seller', 'items.product'])
     public function incomingOrders()
     {
         $user = Auth::user();
-        $orders = Order::where('buyer_id', $user->id)
-            ->where('status', '!=', 'cancelled') // Exclude cancelled orders
+
+        // Handle suppliers viewing incoming raw material orders
+        if ($user->role->value === 'supplier') {
+            $orders = RawMaterialOrder::where('seller_id', $user->id)
+                ->where('status', '!=', 'cancelled')
+                ->with(['buyer', 'items.rawMaterial'])
+                ->orderByDesc('created_at')
+                ->paginate(10);
+
+            $view = 'supplier.orders';
+
+            return view($view, [
+                'orders' => $orders,
+                'incomingOrders' => $orders
+            ]);
+        }
+
+        // Handle regular orders for other roles
+        $orders = Order::where('seller_id', $user->id)
+            ->where('status', '!=', 'cancelled')
             ->with(['seller', 'items.product'])
             ->orderByDesc('created_at')
             ->paginate(10);
@@ -486,7 +603,6 @@ $orders = $query->with(['seller', 'items.product'])
         $view = match($user->role->value) {
             'wholesaler' => 'wholesaler.orders',
             'plant_manager' => 'plant_manager.orders',
-            'supplier'=> 'supplier.orders',
             'farmer'=>'farmer.orders',
             default => 'orders.incoming',
         };
@@ -501,8 +617,9 @@ $orders = $query->with(['seller', 'items.product'])
     {
         $user = Auth::user();
         if ($user->role->value === 'farmer' || $user->role->value === 'supplier') {
-            $receivedOrders = \App\Models\Order::where('seller_id', $user->id)
-                ->with(['buyer', 'items.product'])
+            // For suppliers, get raw material orders where they are the seller
+            $receivedOrders = \App\Models\RawMaterialOrder::where('seller_id', $user->id)
+                ->with(['buyer', 'items.rawMaterial'])
                 ->orderBy('created_at', 'desc')
                 ->get();
             $placedOrders = $user->role->value === 'farmer'
@@ -512,7 +629,7 @@ $orders = $query->with(['seller', 'items.product'])
                     ->get()
                 : collect();
             return view('orders.history', compact('placedOrders', 'receivedOrders'));
-        }
+        }elseif($user->role->value === 'retailer' || $user->role->value ==='wholesaler'){
         $orders = Order::where('seller_id', $user->id)
             ->orderBy('created_at', 'asc')
             ->paginate(10);
@@ -520,14 +637,19 @@ $orders = $query->with(['seller', 'items.product'])
         $view = match($user->role->value) {
             'retailer' => 'retailer.orders',
             'wholesaler' => 'wholesaler.order_history',
-            'plant_manager' => 'plant_manager.order_history',
             default => 'orders.history',
         };
 
+        if($user->role->value === 'plant_manager'){
+          $orders = RawMaterialOrder::where('seller_id', $user->id)
+            ->orderBy('created_at', 'asc')
+            ->paginate(10);
+          $view = 'plant_manager.order_history';
+        }
 
         return view($view, compact('orders'));
     }
-
+  }
     /**
      * View order history (orders where user is the seller)
      */
@@ -537,35 +659,49 @@ $orders = $query->with(['seller', 'items.product'])
 
         // Apply filters if provided
         $query = Order::where('seller_id', $user->id);
+        $rawMaterialsQuery = RawMaterialOrder::where('seller_id', $user->id);
 
         if (request('status')) {
             $query->where('status', request('status'));
+            $rawMaterialsQuery->where('status', request('status'));
         }
 
         if (request('date_from')) {
             $query->whereDate('created_at', '>=', request('date_from'));
+            $rawMaterialsQuery->whereDate('created_at', '>=', request('date_from'));
         }
 
         if (request('date_to')) {
             $query->whereDate('created_at', '<=', request('date_to'));
+            $rawMaterialsQuery->whereDate('created_at', '<=', request('date_to'));
         }
 
         if (request('search')) {
             $query->whereHas('buyer', function($q) {
                 $q->where('name', 'like', '%' . request('search') . '%');
             });
+            $rawMaterialsQuery->whereHas('buyer', function($q) {
+                $q->where('name', 'like', '%' . request('search') . '%');
+            });
         }
 
-        $orders = $query->with(['buyer', 'items.product'])
+        $regularOrders = $query->with(['buyer', 'items.product'])
+            ->orderByDesc('created_at')
+            ->paginate(10);
+        $rawMaterialOrders = $rawMaterialsQuery->with(['buyer', 'items.rawMaterial'])
             ->orderByDesc('created_at')
             ->paginate(10);
 
+        $orders = $regularOrders->concat($rawMaterialOrders)
+        ->sortByDesc('created_at')
+        ->paginate(10);
+
         // Calculate order statistics
         $stats = [
-            'total_orders' => Order::where('seller_id', $user->id)->count(),
-            'pending_orders' => Order::where('seller_id', $user->id)->where('status', 'pending')->count(),
-            'completed_orders' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count(),
-            'total_revenue' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount'),
+            'total_orders' => Order::where('seller_id', $user->id)->count() + RawMaterialOrder::where('seller_id', $user->id)->count(),
+            'pending_orders' => Order::where('seller_id', $user->id)->where('status', 'pending')->count() + RawMaterialOrder::where('seller_id', $user->id)->where('status', 'pending')->count(),
+            'completed_orders' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count() + RawMaterialOrder::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count(),
+            'total_revenue' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount') + RawMaterialOrder::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount'),
         ];
 
         $view = match($user->role->value) {
@@ -616,27 +752,119 @@ else {
     /**
      * Show order details
      */
-    public function showOrder(Order $order)
+    public function showOrder(Request $request, $orderId)
     {
         $user = Auth::user();
 
-        // Check if user is authorized to view this order
-        if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
-            abort(403, 'Unauthorized access to this order.');
+        Log::info("showOrder called", [
+            'orderId' => $orderId,
+            'user_id' => $user->id,
+            'user_role' => $user->role->value
+        ]);
+
+        // First try to find it as a regular order
+        $order = Order::find($orderId);
+        Log::info('current user role', [
+            'user_role' => $user->role->value,
+            'order_id' => $orderId
+        ]);
+        
+        if ($order && ($user->role->value !== 'supplier' && $user->role->value !== 'farmer')) {
+            Log::info("Found regular order", ['order_id' => $order->id]);
+            
+            // Check if user is authorized to view this order
+            if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
+                abort(403, 'Unauthorized access to this order.');
+            }
+
+            $order->load(['seller', 'buyer', 'items.product']);
+
+            $view = match($user->role->value) {
+                'retailer' => 'retailer.order-show',
+                'wholesaler' => 'wholesaler.order_detail',
+                'plant_manager' => 'plant_manager.order_show',
+                default => 'orders.show',
+            };
+
+            return view($view, compact('order'));
+        } else {
+            Log::info("Regular order not found, trying raw material order");
+            
+            // If not found as regular order, try to find it as a raw material order
+            $rawMaterialOrder = RawMaterialOrder::find($orderId);
+            
+            if ($rawMaterialOrder) {
+                Log::info("Found raw material order", [
+                    'order_id' => $rawMaterialOrder->id,
+                    'seller_id' => $rawMaterialOrder->seller_id,
+                    'buyer_id' => $rawMaterialOrder->buyer_id
+                ]);
+                
+                // Check if user is authorized to view this raw material order
+                if ($rawMaterialOrder->seller_id !== $user->id && $rawMaterialOrder->buyer_id !== $user->id) {
+                    abort(403, 'Unauthorized access to this order.');
+                }
+
+                $rawMaterialOrder->load(['seller', 'buyer', 'items.rawMaterial']);
+
+                // Use the existing showRawMaterialOrder method for raw material orders
+                return $this->showRawMaterialOrder($rawMaterialOrder);
+            } else {
+                Log::error("Neither regular nor raw material order found", ['orderId' => $orderId]);
+                abort(404, 'Order not found.');
+            }
+        }
+    }    /**
+     * Show raw material order details
+     */
+    public function showRawMaterialOrder( $orderId)
+    {
+        $order = $orderId instanceof RawMaterialOrder ? $orderId : RawMaterialOrder::find($orderId);
+
+        // Log the user accessing the raw material order
+        Log::info("Accessing raw material order", [
+            'order_id' => $order->id ?? null,
+            'user_id' => Auth::id(),
+            'timestamp' => now()
+        ]);
+
+        // Get the authenticated user
+    {
+        $user = Auth::user();
+
+        // Check if order exists
+        if (!$order) {
+            Log::error("RawMaterialOrder is null in showRawMaterialOrder method");
+            abort(404, 'Raw material order not found.');
         }
 
-        $order->load(['seller', 'buyer', 'items.product']);
+        Log::info("Show Raw Materials method hit", [
+            'order' => $order
+        ]);
+
+        // Check if user is authorized to view this order
+        // if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
+        //     abort(403, 'Unauthorized access to this order.');
+        // }
+        
+
+        $order->load(['seller', 'buyer', 'items.rawMaterial']);
+
+        Log::info("Showing raw material order details", [
+            'order_id' => $order->id,
+            'seller_id' => $order->seller,
+            'buyer_id' => $order->buyer,
+        ]);
 
         $view = match($user->role->value) {
-            'retailer' => 'retailer.order_detail',
-            'wholesaler' => 'wholesaler.order_detail',
-            'plant_manager' => 'plant_manager.order_detail',
+            'supplier' => 'supplier.order-show',
+            'plant_manager' => 'plant_manager.order_show',
             default => 'orders.show',
         };
 
         return view($view, compact('order'));
     }
-
+  }
     /**
      * Approve an order
      */
@@ -714,6 +942,53 @@ else {
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error("Error approving order {$order->id}: " . $e->getMessage());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred while approving the order. Please try again.'
+            ], 500);
+        }
+    }
+
+    /**
+     * Approve a raw material order
+     */
+    public function approveRawMaterialOrder(RawMaterialOrder $order)
+    {
+        $user = Auth::user();
+
+        try {
+            // Check if user is authorized to approve this order
+            if ($order->seller_id !== $user->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only the seller can approve this order.'
+                ], 403);
+            }
+
+            if ($order->status !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only pending orders can be approved.'
+                ], 400);
+            }
+
+            // Update order status
+            DB::beginTransaction();
+            $order->update(['status' => 'approved']);
+            DB::commit();
+
+            // Log the approval
+            Log::info("Raw material order {$order->id} approved by user {$user->id}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Raw material order has been approved successfully.'
+            ]);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Error approving raw material order {$order->id}: " . $e->getMessage());
 
             return response()->json([
                 'success' => false,

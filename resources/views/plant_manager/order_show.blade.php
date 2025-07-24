@@ -34,7 +34,7 @@
             <tbody>
                 @foreach($order->items as $item)
                 <tr>
-                    <td>{{ $item->product->name }}</td>
+                    <td>{{ optional($item->product)->name ?? optional($item->rawMaterial)->name ?? 'N/A' }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>UGX {{ number_format($item->unit_price) }}</td>
                     <td>UGX {{ number_format($item->unit_price * $item->quantity) }}</td>
@@ -78,7 +78,7 @@
             @endif
         @endif
 
-        <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-secondary">Back to Orders</a>
+        {{-- <a href="{{ route('plant_manager.orders_history') }}" class="btn btn-secondary">Back to Orders</a> --}}
     </div>
 </div>
 @endsection

@@ -97,7 +97,7 @@
                                                         Actions
                                                     </button>
                                                     <div class="dropdown-menu">
-                                                        <a class="dropdown-item" href="{{ route('retailer.orders.show', $order) }}">
+                                                        <a class="dropdown-item" href="{{ route('raw-material-orders.show', $order) }}">
                                                             <i class="ri-eye-line me-2"></i>View Details
                                                         </a>
                                                         @if($order->status === 'pending')

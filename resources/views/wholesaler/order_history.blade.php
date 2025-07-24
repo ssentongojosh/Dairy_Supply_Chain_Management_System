@@ -215,7 +215,7 @@
                                                         <a class="dropdown-item" href="{{ route('wholesaler.orders.show', $order) }}">
                                                             <i class="ri-eye-line me-2"></i>View Details
                                                         </a>
-                                                        @if($order->status === 'pending')
+                                                        @if($order->status === 'pending' || $order->status === 'pending_review')
                                                             <button class="dropdown-item text-success"
                                                                     onclick="approveOrder({{ $order->id }})">
                                                                 <i class="ri-check-line me-2"></i>Approve

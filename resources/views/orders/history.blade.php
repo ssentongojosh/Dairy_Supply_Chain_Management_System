@@ -127,7 +127,7 @@
                                                             <button class="dropdown-item text-success"
                                                                     onclick="approveOrder({{ $order->id }})">
                                                                 <i class="ri-check-line me-2"></i>Approve
-                                                            </button>
+                                                           </button>
                                                             <button class="dropdown-item text-danger"
                                                                     onclick="rejectOrder({{ $order->id }})">
                                                                 <i class="ri-close-line me-2"></i>Reject
