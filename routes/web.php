@@ -405,10 +405,16 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->name('supplier
     // Order management
     Route::get('/orders', [SupplierOrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/history', [SupplierOrderController::class, 'orderHistory'])->name('orders.history');
-    Route::get('/orders/{order}', [SupplierOrderController::class, 'showOrder'])->name('orders.show');
+    Route::get('/orders/{orderId}', [SupplierOrderController::class, 'showOrder'])->name('orders.show');
     Route::post('/orders/{order}/approve', [SupplierOrderController::class, 'approveOrder'])->name('orders.approve');
     Route::post('/orders/{order}/reject', [SupplierOrderController::class, 'rejectOrder'])->name('orders.reject');
-    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped'])->name('orders.ship');
+    Route::post('/orders/{order}/ship', [SupplierOrderController::class, 'markShipped'])->name('rawMaterialOrders.ship');
+
+    // Raw Material Order management
+    Route::get('/raw-material-orders/{rawMaterialOrder}', [SupplierOrderController::class, 'showRawMaterialOrder'])->name('raw-material-orders.show');
+    Route::post('/raw-material-orders/{rawMaterialOrder}/approve', [SupplierOrderController::class, 'approveRawMaterialOrder'])->name('raw-material-orders.approve');
+    Route::post('/raw-material-orders/{rawMaterialOrder}/reject', [SupplierOrderController::class, 'rejectRawMaterialOrder'])->name('raw-material-orders.reject');
+    Route::post('/raw-material-orders/{rawMaterialOrder}/ship', [SupplierOrderController::class, 'markRawMaterialOrderShipped'])->name('raw-material-orders.ship');
 
     // Inventory management
     Route::get('/inventory', [SupplierInventoryController::class, 'index'])->name('inventory');
@@ -513,7 +519,7 @@ Route::prefix('supplier')->middleware(['auth', 'role:supplier'])->group(function
     Route::get('supplier/dashboard', [SupplierDashboard::class, 'index'])->name('supplier.dashboard');
     Route::get('/orders', [OrderController::class, 'orderHistory'])->name('supplier.orders');
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('supplier.order.dashboard');
-    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('supplier.orders.show');
+    Route::get('/orders/{orderId}', [OrderController::class, 'showOrder'])->name('supplier.orders.show');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('supplier.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('supplier.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('supplier.orders.ship');
@@ -536,7 +542,8 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     Route::get('/orders/dashboard', [OrderController::class, 'index'])->name('plant_manager.order.dashboard');
 
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('plant_manager.orders_history');
-    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('plant_manager.orders.show');
+    Route::get('/orders/{orderId}', [OrderController::class, 'showOrder'])->name('plant_manager.orders.show');
+    Route::get('/raw-material-orders/{rawMaterialOrder}', [OrderController::class, 'showRawMaterialOrder'])->name('raw-material-orders.show');
     Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('plant_manager.orders.create');
     Route::post('/orders', [OrderController::class, 'storeOrder'])->name('plant_manager.orders.store');
     Route::patch('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('plant_manager.orders.approve');
@@ -565,7 +572,7 @@ Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(func
 
     // Wildcard routes should come after specific routes
     Route::post('/orders/store', [OrderController::class, 'storeOrder'])->name('wholesaler.orders.store');
-    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('wholesaler.orders.show');
+    Route::get('/orders/{orderId}', [OrderController::class, 'showOrder'])->name('wholesaler.orders.show');
     Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('wholesaler.orders.create');
         Route::post('/orders', [OrderController::class, 'storeOrder'])->name('wholesaler.orders.store');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
@@ -606,7 +613,7 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     // Change this name to avoid conflict
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('farmer.orders.history');
 
-    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('farmer.orders.show');
+    Route::get('/orders/{orderId}', [OrderController::class, 'showOrder'])->name('farmer.orders.show');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('farmer.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('farmer.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('farmer.orders.ship');
@@ -656,7 +663,7 @@ Route::prefix('farmer')->middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders', [OrderController::class, 'orderHistory'])->name('farmer.orders');
     // Change this name to avoid conflict
     Route::get('/orders/history', [OrderController::class, 'orderHistory'])->name('farmer.orders.history');
-    Route::get('/orders/{order}', [OrderController::class, 'showOrder'])->name('farmer.orders.show');
+    Route::get('/orders/{orderId}', [OrderController::class, 'showOrder'])->name('farmer.orders.show');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('farmer.orders.approve');
     Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('farmer.orders.reject');
     Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('farmer.orders.ship');

@@ -27,6 +27,8 @@
             <div class="card border-start border-4">
                 <div class="card-body">
                     <img src="{{ asset('images/products/' . $item->image) }}" alt="{{ $item->name }}" class="card-img-top" style="height: 100px; object-fit: cover;">
+                    <!--<img src="{{ asset($item->image) }}" alt="{{ $item->name }}" style="height: 100px; object-fit: cover;">-->
+
                 </div>
             </div>
         </div>

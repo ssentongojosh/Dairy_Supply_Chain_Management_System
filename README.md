@@ -62,6 +62,7 @@ php artisan db:seed --class=RetailerSeeder
 php artisan db:seed --class=PlantManagerSeeder
 ```
 
+php artisan rawmaterials:update-prices
 ## Default Login Credentials
 
 

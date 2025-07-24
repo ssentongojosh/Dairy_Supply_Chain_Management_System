@@ -34,7 +34,7 @@
             <tbody>
                 @foreach($order->items as $item)
                 <tr>
-                    <td>{{ $item->product->name }}</td>
+                    <td>{{ optional($item->product)->name ?? optional($item->rawMaterial)->name ?? 'N/A' }}</td>
                     <td>{{ $item->quantity }}</td>
                     <td>UGX {{ number_format($item->unit_price) }}</td>
                     <td>UGX {{ number_format($item->unit_price * $item->quantity) }}</td>
@@ -52,9 +52,9 @@
         @if($order->seller_id === auth()->id())
             {{-- Approve Order --}}
             @if($order->status === 'pending')
-                <form method="POST" action="{{ route('orders.updateStatus', $order) }}" class="d-inline">
+                <form method="POST" action="{{ route('supplier.raw-material-orders.approve', $order) }}" class="d-inline">
                     @csrf
-                    @method('PUT')
+                    @method('POST')
                     <input type="hidden" name="status" value="approved">
                     <button type="submit" class="btn btn-success">Approve Order</button>
                 </form>
@@ -62,9 +62,9 @@
 
             {{-- Mark as Shipped --}}
             @if($order->status === 'approved')
-                <form method="POST" action="{{ route('orders.updateStatus', $order) }}" class="d-inline">
+                <form method="POST" action="{{ route('supplier.raw-material-orders.ship', $order) }}" class="d-inline">
                     @csrf
-                    @method('PUT')
+                    @method('POST')
                     <input type="hidden" name="status" value="shipped">
                     <button type="submit" class="btn btn-primary">Mark as Shipped</button>
                 </form>

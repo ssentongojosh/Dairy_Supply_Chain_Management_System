@@ -443,7 +443,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form action="{{ route('plant_manager.inventory.store') }}" method="POST">
+                <form action="{{ route('plant_manager.inventory.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="mb-3">
                         <label class="form-label">Product Name</label>
@@ -460,6 +460,10 @@
                     <div class="mb-3">
                         <label class="form-label">Added on</label>
                         <input type="date" name="manufacture_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Product Image</label>
+                        <input type="file" name="image" class="form-control" accept="image/*">
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

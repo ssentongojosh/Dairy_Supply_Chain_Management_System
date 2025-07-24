@@ -48,8 +48,19 @@ class PlantManagerInventoryController extends Controller
             'name' => 'required|string|max:255',
             'quantity' => 'required|integer|min:0',
             'price' => 'required|numeric|min:0',
-            'manufacture_date' => 'required|date'
+            'manufacture_date' => 'required|date',
+            'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
         ]);
+
+        //image upload
+        $imagePath = null;
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $image->move(public_path('images/products'), $imageName);
+                $imagePath = 'images/products/' . $imageName;
+            }
+
 
         // Create inventory entry for the product
         $product = Product::create([
@@ -58,6 +69,7 @@ class PlantManagerInventoryController extends Controller
             'quantity' => $validated['quantity'],
             'category' => 'Finished Product',
             'supplier_id' => Auth::id(),
+            'image' => $imagePath,
             //'added_on' => $validated['manufacture_date']
         ]);
 
@@ -69,7 +81,7 @@ class PlantManagerInventoryController extends Controller
             'selling_price' => $validated['price'],
             'last_restocked_at' => now()
         ]); */
-
+        
         return redirect()->back()->with('success', 'Product added successfully!');
     }
 

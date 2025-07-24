@@ -9,6 +9,7 @@ class RawMaterial extends Model
     //filled in from table
     protected $fillable = [
         'name',
+        'price',
         'quantity',
         'unit',
         'expiry',
