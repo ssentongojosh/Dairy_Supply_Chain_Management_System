@@ -335,9 +335,13 @@ class OrderController extends Controller
             DB::commit();
 
             if (Auth::user()->role->value === 'retailer') {
-                return redirect()->route('retailer.orders.history')->with('success', 'Order placed successfully!');
+                return redirect()->route('retailer.dashboard')->with('success', 'Order placed successfully🎉');
             }
+             elseif (Auth::user()->role->value === 'wholesaler') {
+    return redirect()->route('wholesaler.dashboard')->with('success', 'Order placed successfully🎉');
+}
             return back()->with('success', 'Order placed successfully.');
+            
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to place order.');
@@ -628,9 +632,9 @@ else {
         $order->load(['seller', 'buyer', 'items.product']);
 
         $view = match($user->role->value) {
-            'retailer' => 'retailer.order_detail',
-            'wholesaler' => 'wholesaler.order_detail',
-            'plant_manager' => 'plant_manager.order_detail',
+            'retailer' => 'retailer.order-show',
+            'wholesaler' => 'wholesaler.order-show',
+            'plant_manager' => 'plant_manager.order-show',
             default => 'orders.show',
         };
 

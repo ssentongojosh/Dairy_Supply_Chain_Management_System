@@ -5,6 +5,20 @@
 
 @section('content')
 <div class="row">
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+@if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
     <!-- Statistics Cards -->
     <div class="col-12 mb-4">
         <div class="row">
@@ -237,7 +251,7 @@
                 <h5 class="mb-0">Recent Outgoing Orders</h5>
                 <small class="text-muted">Orders you have placed</small>
             </div>
-            <a href="{{ route('wholesaler.orders') }}" class="btn btn-outline-primary btn-sm">
+            <a href="{{ route('wholesaler.orders.outgoing') }}" class="btn btn-outline-primary btn-sm">
                 <i class="ri-external-link-line me-1"></i>View All
             </a>
         </div>
@@ -359,6 +373,7 @@
 
 @endsection
 
+
 {{-- @section('page-script')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
@@ -412,4 +427,4 @@ setInterval(() => {
     location.reload();
 }, 300000);
 </script>
-@endsection --> --}}
+@endsection --}}

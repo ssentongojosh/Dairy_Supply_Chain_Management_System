@@ -117,13 +117,17 @@ Route::get('/analytics', [Analytics::class, 'index'])
   ->middleware(['auth', 'role:admin']);
 
 Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
-  ->name('dashboard.retailer')
+  ->name('retailer.dashboard')
   ->middleware(['auth', 'role:retailer']);
 
 // Wholesaler dashboard is defined in the prefix group below
 Route::get('/wholesaler/dashboard', [WholesalerDashboard::class, 'index'])
   ->name('wholesaler.dashboard')
   ->middleware(['auth', 'role:wholesaler']);
+
+  Route::get('/retailer/dashboard', [RetailerDashboard::class, 'index'])
+  ->name('dashboard.retailer')
+  ->middleware(['auth', 'role:retailer']);
 
 // Other role dashboard routes
 // Wholesaler order routes (for dashboard quick actions)
@@ -706,3 +710,23 @@ Route::post('/tasks/{task}/approve', [TaskController::class, 'approveTask'])->na
     Route::post('/demand-forecast', [DemandForecastController::class, 'forecast'])->name('demand.forecast.predict');
     Route::post('/demand-forecast/generate-task', [DemandForecastController::class, 'generateTasksFromForecast'])->name('demand.forecast.generate_task');
 Route::post('/demand-forecast/suggest-automated-tasks', [DemandForecastController::class, 'suggestAutomatedTasks'])->name('demand.forecast.suggest_automated_tasks');
+
+//order correction routes
+// Retailer routes
+Route::middleware(['auth', 'verified'])->prefix('retailer')->group(function () {
+    Route::get('/orders/history', [OrderController::class, 'outgoingOrders'])->name('retailer.orders.history');
+    Route::get('/orders/incoming', [OrderController::class, 'incomingOrders'])->name('retailer.orders.incoming');
+});
+
+// Wholesaler routes
+Route::middleware(['auth', 'verified'])->prefix('wholesaler')->group(function () {
+    Route::get('/orders/history', [OrderController::class, 'outgoingOrders'])->name('wholesaler.orders.outgoing');
+    Route::get('/orders/incoming', [OrderController::class, 'incomingOrders'])->name('wholesaler.orders.history');
+});
+
+// Plant Manager
+Route::middleware(['auth', 'verified'])->prefix('plant_manager')->group(function () {
+    Route::get('/orders/history', [OrderController::class, 'outgoingOrders'])->name('plant_manager.orders.outgoing');
+    Route::get('/orders/incoming', [OrderController::class, 'incomingOrders'])->name('plant_manager.orders.history');
+});
+

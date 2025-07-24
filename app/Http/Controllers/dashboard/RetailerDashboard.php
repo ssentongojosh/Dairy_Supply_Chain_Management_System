@@ -147,7 +147,7 @@ class RetailerDashboard extends Controller
                 ];
             });
 
-        return view('dashboard.retailer', [
+        return view('retailer.dashboard', [
             'user' => $user,
             'pendingOrdersCount' => $pendingOrdersCount,
             'lowStockProductsCount' => $lowStockProductsCount,
