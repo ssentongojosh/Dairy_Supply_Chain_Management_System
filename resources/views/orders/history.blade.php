@@ -123,21 +123,46 @@
                                                         <a class="dropdown-item" href="{{ route($showRoute, $order) }}" >
                                                             <i class="ri-eye-line me-2"></i>View Details
                                                         </a>
-                                                        @if($order->status === 'pending')
-                                                            <button class="dropdown-item text-success"
+                                                         @if($order->status === 'pending')
+<form method="POST" action="{{ route('supplier.raw-material-orders.approve', $order) }}" class="d-inline">
+                    @csrf
+                    @method('POST')
+                                                            <button type="submit" class="dropdown-item text-success"
                                                                     onclick="approveOrder({{ $order->id }})">
                                                                 <i class="ri-check-line me-2"></i>Approve
                                                            </button>
-                                                            <button class="dropdown-item text-danger"
+</form>
+<form method="POST" action="{{ route('supplier.raw-material-orders.reject', $order) }}" class="d-inline">
+                    @csrf
+                    @method('POST')
+
+                                                            <button type="submit" class="dropdown-item text-danger"
                                                                     onclick="rejectOrder({{ $order->id }})">
                                                                 <i class="ri-close-line me-2"></i>Reject
                                                             </button>
+</form>
+
                                                         @endif
-                                                        @if(in_array($order->status, ['approved', 'processing']))
-                                                            <button class="dropdown-item text-primary"
+
+{{-- @if(in_array($order->status, ['approved', 'processing']))
+<form method="POST" action="{{ route('supplier.raw-material-orders.ship', $order) }}" class="d-inline">
+                    @csrf
+                    @method('POST')
+                                                            <button type="submit" class="dropdown-item text-primary"
                                                                     onclick="markShipped({{ $order->id }})">
                                                                 <i class="ri-truck-line me-2"></i>Mark as Shipped
                                                             </button>
+</form>
+                                                        @endif --}}
+                                                        @if(in_array($order->status, ['approved', 'processing']))
+<form method="POST" action="{{ route('delivery.ship', $order) }}" class="d-inline">
+                    @csrf
+                    @method('POST')
+                                                            <button type="submit" class="dropdown-item text-primary"
+                                                                    onclick="markShipped({{ $order->id }})">
+                                                                <i class="ri-truck-line me-2"></i>Mark as Shipped
+                                                            </button>
+</form>
                                                         @endif
                                                         {{-- <div class="dropdown-divider"></div>
                                                         <a class="dropdown-item" href="{{ route('wholesaler.orders.show', $order) }}?print=true" target="_blank">

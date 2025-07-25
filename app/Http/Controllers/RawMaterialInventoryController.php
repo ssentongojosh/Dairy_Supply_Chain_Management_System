@@ -7,7 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\RawMaterial;
 use App\Models\Inventory;
 use App\Models\Order;
-
+use App\Models\Delivery;
+use App\Models\RawMaterialBatch;
+use App\Models\RawMaterialBatchial;
 class RawMaterialInventoryController extends Controller
 {
     /**
@@ -15,7 +17,7 @@ class RawMaterialInventoryController extends Controller
      */
     public function index()
     {
-        
+
     }
 
     //creating a new inventory item
@@ -41,7 +43,7 @@ class RawMaterialInventoryController extends Controller
         $rawMaterial->save();
 
         return redirect()->back()->with('success', 'Raw material added!');
- 
+
     $data = $request->validate([
         'name' => 'required|string|max:15',
         'quantity' => 'required|integer|min:1',
@@ -54,7 +56,7 @@ class RawMaterialInventoryController extends Controller
     return redirect()->back()->with('success', 'Item added successfully!');
 }
 
-    
+
 
     //show one inventory item
     public function show($id)
@@ -63,11 +65,11 @@ class RawMaterialInventoryController extends Controller
 
          $quantity = $item->quantity;
 
-            if ($quantity <= 150) {
-              $status = 'out of stock';
+            if ($quantity <= 100) {
+              $status = 'low stock';
               $color = 'red';
-            } elseif ($quantity <= 350) {
-              $status = 'limited';
+            } elseif ($quantity <= 250) {
+              $status = 'limited stock';
               $color = 'orange';
             } else {
               $status = 'available';
@@ -76,12 +78,12 @@ class RawMaterialInventoryController extends Controller
 
             // assuming you have a Batch model related to RawMaterial
             $batches = $item->batches()->with('supplier')->get();
-            
+
             //for the usuage table
             $usages = $item->usages()->orderBy('used_date', 'desc')->get();
 
         return view('inventory.details', compact('item', 'status', 'color', 'batches', 'usages'));
-        
+
     }
 
     //update inventory
@@ -156,4 +158,24 @@ class RawMaterialInventoryController extends Controller
     return redirect()->back()->with('success', 'Stock updated.');
    }
 
-};   
+
+
+public function storeFromDelivery(Delivery $delivery)
+{
+    // Create a new batch using delivery data
+    $batch = RawMaterialBatch::create([
+        'batch_no' => 'BATCH-' . uniqid(),
+        'raw_material_id' => $delivery->raw_material_id,
+        'quantity' => $delivery->quantity_delivered,
+        'unit' => $delivery->unit,
+        'date_received' => $delivery->date_delivered,
+    ]);
+
+    return response()->json([
+        'message' => 'Batch created from delivery.',
+        'batch' => $batch
+    ]);
+}
+
+
+};

@@ -83,6 +83,8 @@ use App\Http\Controllers\dashboard\PlantManagerDashboard;
 use App\Http\Controllers\PrInventoryController;
 use App\Http\Controllers\ReportConfigurationController;
 use App\Http\Controllers\ReportNotificationController;
+use App\Models\RawMaterialBatch;
+
 // index page
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -369,7 +371,7 @@ Route::get('/delivery/{delivery}/status', function (App\Models\Delivery $deliver
 Route::get('/delivery/{id}/status-page', [DeliveryController::class, 'statusPage'])->name('delivery.statusPage');
 Route::post('/delivery/{id}/terminate', [DeliveryController::class, 'terminate'])->name('delivery.terminate');
 Route::get('/my-deliveries', [DeliveryController::class, 'myDeliveries'])->name('delivery.mine');
-Route::put('/delivery/{id}/confirm-raw', [DeliveryController::class, 'confirmRawMaterialDelivery'])->name('delivery.confirmRaw');
+Route::post('/delivery/{id}/ship', [DeliveryController::class, 'createDelivery'])->name('delivery.ship');
 
 //for supplier to selectproducts
 Route::middleware(['auth', 'role:supplier'])->group(function () {
@@ -547,7 +549,7 @@ Route::prefix('plant_manager')->middleware(['auth', 'role:plant_manager'])->grou
     Route::patch('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('plant_manager.orders.ship');
     Route::get('/orders/history', [OrderController::class, 'history'])->name('plant_manager.orders.history');
      Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
-
+     Route::get('/orders/incoming', [OrderController::class, 'incomingOrders'])->name('plant_manager.orders.incoming');
     Route::patch('/orders/{order}/update', [OrderController::class, 'updateStatus'])->name('plant_manager.orders.updateStatus');
     Route::get('/inventory', [PlantManagerInventoryController::class, 'index'])->name('plant_manager.inventory');
 });
@@ -713,3 +715,9 @@ Route::post('/tasks/{task}/approve', [TaskController::class, 'approveTask'])->na
     Route::post('/demand-forecast', [DemandForecastController::class, 'forecast'])->name('demand.forecast.predict');
     Route::post('/demand-forecast/generate-task', [DemandForecastController::class, 'generateTasksFromForecast'])->name('demand.forecast.generate_task');
 Route::post('/demand-forecast/suggest-automated-tasks', [DemandForecastController::class, 'suggestAutomatedTasks'])->name('demand.forecast.suggest_automated_tasks');
+
+
+
+
+
+Route::post('/batches/from-delivery/{delivery}', [RawMaterialBatch::class, 'storeFromDelivery']);

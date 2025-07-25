@@ -10,6 +10,7 @@ use App\Models\RawMaterial;
 use App\Models\RawMaterialBatch;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\RawMaterialOrder;
 
 class DeliveryController extends Controller
 {
@@ -57,7 +58,7 @@ class DeliveryController extends Controller
             $deliveryData['order_id'] = $request->order_id;
         }
 
-        //return for the status page 
+        //return for the status page
         return redirect()->route('delivery.statusPage', $delivery->id);
 
     }
@@ -80,7 +81,7 @@ class DeliveryController extends Controller
     return back()->with('success', 'Delivery updated');
 }
 
-    //update the status 
+    //update the status
     public function updateStatus(Request $request, $id)
 {
     $delivery = Delivery::findOrFail($id);
@@ -89,7 +90,7 @@ class DeliveryController extends Controller
 
     return back()->with('success', 'Delivery status updated.');
 }
- 
+
      //for continous check of the delivery id waiting for confirmation
      public function checkStatus($id)
     {
@@ -123,7 +124,7 @@ class DeliveryController extends Controller
 }
 
     //for my deliveries
-    
+
 public function myDeliveries()
 {
     // Only show deliveries by the logged-in user
@@ -131,7 +132,7 @@ public function myDeliveries()
 
     return view('delivery.mine', compact('delivery'));
 }
-     
+
     //when deliveries reach to enter rawMaterialBatch
 public function confirmDelivery(Request $request, $deliveryId)
 {
@@ -177,13 +178,13 @@ public function confirmDelivery(Request $request, $deliveryId)
 
     return back()->with('success', 'Delivery created automatically from order.');
 }
-  
-//approve by supplier to make a delivery 
-public function approveOrderAndCreateDelivery($orderId)
+
+//approve by supplier to make a delivery
+public function createDelivery($orderId)
 {
-    $order = Order::with('items')->findOrFail($orderId);
+    $order = RawMaterialOrder::with('items')->findOrFail($orderId);
     $receiver = User::where('role', 'plant_manager')->first();
-    $plantManagerName = $order->user->name;
+    $plantManagerName = $order->buyer->name;
     $supplierName = Auth::user()->name;
 
     foreach ($order->items as $item) {

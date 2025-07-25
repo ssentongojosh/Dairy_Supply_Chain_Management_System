@@ -16,4 +16,6 @@ class SupplyController extends Controller
         })->get();
         return view('inventory.raw_materials', compact('rawMaterials','query'));
     }
+
+    
 }
