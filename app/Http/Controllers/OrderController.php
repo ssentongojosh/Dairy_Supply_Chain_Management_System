@@ -633,78 +633,7 @@ Log::info("current user role: " . Auth::user()->role->value, [
         $orders = Order::where('seller_id', $user->id)
             ->orderBy('created_at', 'asc')
             ->paginate(10);
-
-        $view = match($user->role->value) {
-            'retailer' => 'retailer.orders',
-            'wholesaler' => 'wholesaler.order_history',
-            default => 'orders.history',
-        };
-
-        if($user->role->value === 'plant_manager'){
-          $orders = RawMaterialOrder::where('seller_id', $user->id)
-            ->orderBy('created_at', 'asc')
-            ->paginate(10);
-          $view = 'plant_manager.order_history';
-        }
-
-        return view($view, compact('orders'));
-    }
-  }
-    /**
-     * View order history (orders where user is the seller)
-     */
-    public function history()
-    {
-        $user = Auth::user();
-
-        // Apply filters if provided
-        $query = Order::where('seller_id', $user->id);
-        $rawMaterialsQuery = RawMaterialOrder::where('seller_id', $user->id);
-
-        if (request('status')) {
-            $query->where('status', request('status'));
-            $rawMaterialsQuery->where('status', request('status'));
-        }
-
-        if (request('date_from')) {
-            $query->whereDate('created_at', '>=', request('date_from'));
-            $rawMaterialsQuery->whereDate('created_at', '>=', request('date_from'));
-        }
-
-        if (request('date_to')) {
-            $query->whereDate('created_at', '<=', request('date_to'));
-            $rawMaterialsQuery->whereDate('created_at', '<=', request('date_to'));
-        }
-
-        if (request('search')) {
-            $query->whereHas('buyer', function($q) {
-                $q->where('name', 'like', '%' . request('search') . '%');
-            });
-            $rawMaterialsQuery->whereHas('buyer', function($q) {
-                $q->where('name', 'like', '%' . request('search') . '%');
-            });
-        }
-
-        $regularOrders = $query->with(['buyer', 'items.product'])
-            ->orderByDesc('created_at')
-            ->paginate(10);
-        $rawMaterialOrders = $rawMaterialsQuery->with(['buyer', 'items.rawMaterial'])
-            ->orderByDesc('created_at')
-            ->paginate(10);
-
-        $orders = $regularOrders->concat($rawMaterialOrders)
-        ->sortByDesc('created_at')
-        ->paginate(10);
-
-        // Calculate order statistics
-        $stats = [
-            'total_orders' => Order::where('seller_id', $user->id)->count() + RawMaterialOrder::where('seller_id', $user->id)->count(),
-            'pending_orders' => Order::where('seller_id', $user->id)->where('status', 'pending')->count() + RawMaterialOrder::where('seller_id', $user->id)->where('status', 'pending')->count(),
-            'completed_orders' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count() + RawMaterialOrder::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->count(),
-            'total_revenue' => Order::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount') + RawMaterialOrder::where('seller_id', $user->id)->whereIn('status', ['delivered', 'received'])->sum('total_amount'),
-        ];
-
-        $view = match($user->role->value) {
+$view = match($user->role->value) {
             'retailer' => 'retailer.orders',
             'wholesaler' => 'wholesaler.order_history',
             'plant_manager' => 'plant_manager.order_history',
@@ -713,6 +642,8 @@ Log::info("current user role: " . Auth::user()->role->value, [
 
         return view($view, compact('orders', 'stats'));
     }
+  }
+   
 
     public function getProductsForSeller($sellerId)
 {

@@ -450,7 +450,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 //retailer orders - CORRECTED SECTION
-Route::get('/retailer/dashboard', [OrderController::class, 'index'])->name('dashboard.retailer'); // Fixed: was '/dashboard'
+Route::get('/retailer/dashboard', [\App\Http\Controllers\dashboard\RetailerDashboard::class, 'index'])->name('retailer.dashboard')->middleware(['auth', 'role:retailer']);
 Route::get('/retailer/orders', [OrderController::class, 'outgoingOrders'])->name('retailer.orders');
 Route::post('/retailer/orders', [OrderController::class, 'storeOrder'])->name('retailer.orders.store');
 Route::get('/retailer/orders/create', [OrderController::class, 'createOrder'])->name('retailer.orders.create');

@@ -12,8 +12,9 @@ use App\Models\Product;
 use App\Models\Inventory;
 use Illuminate\Support\Facades\DB;
 
-class RetailerDashboard extends Controller
-{
+class RetailerDashboard extends Controller{
+
+
     /**
      * Display the retailer dashboard.
      */
@@ -146,22 +147,54 @@ class RetailerDashboard extends Controller
                     'total_orders_this_month' => $orderGroup->order_count
                 ];
             });
+                    $lowStockItems = $inventory->where('quantity', '>', 0)->where('quantity', '<=', 10);
 
-        return view('retailer.dashboard', [
-            'user' => $user,
-            'pendingOrdersCount' => $pendingOrdersCount,
-            'lowStockProductsCount' => $lowStockProductsCount,
-            'totalSalesThisMonth' => $totalSalesThisMonth,
-            'newOrdersToday' => $newOrdersToday,
-            'totalUniqueProducts' => $totalUniqueProducts,
-            'outOfStockProductsCount' => $outOfStockProductsCount,
-            'recentOrders' => $recentOrders,
-            'productsToReorder' => $productsToReorder,
-            'keySuppliers' => $keySuppliers,
-            'salesChartLabels' => $salesChartLabels,
-            'salesChartData' => $salesChartData,
-            'ordersChartLabels' => $ordersChartLabels,
-            'ordersChartData' => $ordersChartData,
-        ]);
+        $orderStats = [
+            'total_orders' => Order::where('buyer_id', $user->id)->count(),
+            'pending_orders' => Order::where('buyer_id', $user->id)->where('status', 'pending')->count(),
+            'completed_orders' => Order::where('buyer_id', $user->id)->where('status', 'received')->count(),
+            'total_revenue' => Order::where('buyer_id', $user->id)->where('status', 'received')->sum('total_amount'),
+        ];
+
+        $inventoryStats = [
+            'total_products' => $inventory->count(),
+            'low_stock_items' => $lowStockProductsCount,
+            'out_of_stock' => $outOfStockProductsCount,
+            'total_value' => $inventory->sum(function($inv) { return $inv->quantity * ($inv->selling_price ?? 0); }),
+        ];
+
+
+        $lowStockItems = $inventory->where('quantity', '>', 0)->where('quantity', '<=', 10);
+
+        // Define topProducts as an empty Collection to avoid count() on array error
+        $topProducts = collect();
+
+
+        // Define monthlyRevenue to avoid undefined variable error
+        $monthlyRevenue = $totalSalesThisMonth;
+
+
+        // Define customerStats to avoid undefined variable error
+        $customerStats = [];
+
+        // Define outgoingOrders to avoid undefined variable error
+        $outgoingOrders = Order::where('buyer_id', $user->id)
+            ->with('seller')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('retailer.dashboard', compact(
+            'orderStats',
+            'inventoryStats',
+            'lowStockItems',
+            'topProducts',
+            'monthlyRevenue',
+            'customerStats',
+            'recentOrders',
+            'productsToReorder',
+            'keySuppliers',
+            'outgoingOrders'
+        ));
     }
 }

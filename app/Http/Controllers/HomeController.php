@@ -74,7 +74,7 @@ class HomeController extends Controller
             case 'admin':
                 return redirect()->route('dashboard.analytics');
             case 'retailer':
-                return redirect()->route('dashboard.retailer');
+                return redirect()->route('retailer.dashboard');
             case 'wholesaler':
                 return redirect()->route('wholesaler.dashboard');
             case 'farmer':
