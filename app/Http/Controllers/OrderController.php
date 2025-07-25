@@ -348,13 +348,9 @@ Log::info("current user role: " . Auth::user()->role->value, [
             DB::commit();
 
             if (Auth::user()->role->value === 'retailer') {
-                return redirect()->route('retailer.dashboard')->with('success', 'Order placed successfully🎉');
+                return redirect()->route('retailer.orders.history')->with('success', 'Order placed successfully!');
             }
-             elseif (Auth::user()->role->value === 'wholesaler') {
-    return redirect()->route('wholesaler.dashboard')->with('success', 'Order placed successfully🎉');
-}
             return back()->with('success', 'Order placed successfully.');
-            
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Failed to place order.');
@@ -772,10 +768,10 @@ else {
             'user_role' => $user->role->value,
             'order_id' => $orderId
         ]);
-        
+
         if ($order && ($user->role->value !== 'supplier' && $user->role->value !== 'farmer')) {
             Log::info("Found regular order", ['order_id' => $order->id]);
-            
+
             // Check if user is authorized to view this order
             if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
                 abort(403, 'Unauthorized access to this order.');
@@ -783,27 +779,27 @@ else {
 
             $order->load(['seller', 'buyer', 'items.product']);
 
-        $view = match($user->role->value) {
-            'retailer' => 'retailer.order-show',
-            'wholesaler' => 'wholesaler.order-show',
-            'plant_manager' => 'plant_manager.order-show',
-            default => 'orders.show',
-        };
+            $view = match($user->role->value) {
+                'retailer' => 'retailer.order-show',
+                'wholesaler' => 'wholesaler.order_detail',
+                'plant_manager' => 'plant_manager.order_show',
+                default => 'orders.show',
+            };
 
             return view($view, compact('order'));
         } else {
             Log::info("Regular order not found, trying raw material order");
-            
+
             // If not found as regular order, try to find it as a raw material order
             $rawMaterialOrder = RawMaterialOrder::find($orderId);
-            
+
             if ($rawMaterialOrder) {
                 Log::info("Found raw material order", [
                     'order_id' => $rawMaterialOrder->id,
                     'seller_id' => $rawMaterialOrder->seller_id,
                     'buyer_id' => $rawMaterialOrder->buyer_id
                 ]);
-                
+
                 // Check if user is authorized to view this raw material order
                 if ($rawMaterialOrder->seller_id !== $user->id && $rawMaterialOrder->buyer_id !== $user->id) {
                     abort(403, 'Unauthorized access to this order.');
@@ -850,7 +846,7 @@ else {
         // if ($order->seller_id !== $user->id && $order->buyer_id !== $user->id) {
         //     abort(403, 'Unauthorized access to this order.');
         // }
-        
+
 
         $order->load(['seller', 'buyer', 'items.rawMaterial']);
 
