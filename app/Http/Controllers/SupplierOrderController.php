@@ -6,6 +6,7 @@ use App\Models\Order;
 use App\Models\RawMaterialOrder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class SupplierOrderController extends Controller
 {
@@ -13,7 +14,7 @@ class SupplierOrderController extends Controller
     {
         // Incoming regular orders from factories
         $incomingOrders = Order::where('seller_id', Auth::id())->with('buyer', 'items.product')->get();
-        
+
         // Incoming raw material orders from plant managers
         $incomingRawMaterialOrders = RawMaterialOrder::where('seller_id', Auth::id())
             ->with('buyer', 'items.rawMaterial')
@@ -29,7 +30,7 @@ class SupplierOrderController extends Controller
             ->with('buyer', 'items.product')
             ->orderBy('created_at', 'desc')
             ->get();
-            
+
         $rawMaterialOrders = RawMaterialOrder::where('seller_id', Auth::id())
             ->with('buyer', 'items.rawMaterial')
             ->orderBy('created_at', 'desc')
@@ -48,7 +49,7 @@ class SupplierOrderController extends Controller
             'user_id' => Auth::id(),
             'user_role' => Auth::user()->role
         ]);
-        
+
         // if ($order) {
         //     if ($order->user_id !== Auth::id()) {
         //         abort(403);
@@ -56,10 +57,10 @@ class SupplierOrderController extends Controller
 
             $order->load('buyer', 'items.rawMaterial');
             return view('supplier.orders.show', compact('order'));
-       
+
             // If not found as regular order, try to find it as a raw material order
             // $rawMaterialOrder = RawMaterialOrder::find($orderId);
-            
+
             if ($rawMaterialOrder) {
                 // Use the existing showRawMaterialOrder method
                 return $this->showRawMaterialOrder($rawMaterialOrder);
@@ -67,7 +68,7 @@ class SupplierOrderController extends Controller
                 abort(404, 'Order not found.');
             }
         }
-    
+
 
     public function showRawMaterialOrder(RawMaterialOrder $order)
     {
@@ -146,6 +147,7 @@ public function markRawMaterialOrderShipped(RawMaterialOrder $rawMaterialOrder)
     }
 
     $rawMaterialOrder->update(['status' => 'shipped']);
+    
     return redirect()->route('supplier.orders')->with('success', 'Raw material order marked as shipped.');
 }
 }
