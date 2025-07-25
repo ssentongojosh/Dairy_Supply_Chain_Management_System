@@ -574,7 +574,10 @@ Route::prefix('wholesaler')->middleware(['auth', 'role:wholesaler'])->group(func
     Route::get('/orders/create', [OrderController::class, 'createOrder'])->name('wholesaler.orders.create');
         Route::post('/orders', [OrderController::class, 'storeOrder'])->name('wholesaler.orders.store');
     Route::post('/orders/{order}/approve', [OrderController::class, 'approveOrder'])->name('wholesaler.orders.approve');
-    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
+    Route::post('/orders/{order}/reject', [OrderController::class, 'rejectOrder'])->name('wholesaler.orders.reject');
+    Route::post('/orders/{order}/ship', [OrderController::class, 'markShipped'])->name('wholesaler.orders.ship');
+    Route::get('/orders/incoming', [OrderController::class, 'incomingOrders'])->name('wholesaler.orders.incoming');
+    Route::get('/orders/incoming', [OrderController::class, 'outgoingOrders'])->name('wholesaler.orders.outgoing');
 
     // Inventory management for wholesaler
     Route::get('/inventory', [InventoryController::class, 'wholesalerInventory'])->name('wholesaler.inventory');
