@@ -24,7 +24,6 @@ return new class extends Migration
             $table->date('manufacture_date')->nullable();
             $table->string('batch_number')->nullable();
             $table->enum('status', ['active', 'expired', 'damaged', 'sold'])->default('active');
-            $table->string('image')->nullable();
             $table->timestamps();
 
             // Prevent duplicate product-user combinations for same batch
